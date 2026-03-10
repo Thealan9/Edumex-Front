@@ -1,0 +1,54 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="--background: transparent; px-4">
+    <ion-title class="text-slate-800 font-bold text-2xl">Gestión de Almacén</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="solid" color="primary" class="rounded-lg font-bold" (click)="openCreateEdit()">
+        <ion-icon slot="start" name="grid-outline"></ion-icon>
+        Nuevo Estante
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding bg-slate-50">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div *ngFor="let loc of locations" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
+      <div class="p-6">
+        <div class="flex justify-between items-start mb-4">
+          <div class="bg-blue-50 p-3 rounded-xl">
+            <ion-icon name="layers" class="text-blue-600 text-2xl"></ion-icon>
+          </div>
+          <ion-button fill="clear" color="medium" (click)="openCreateEdit(loc)">
+            <ion-icon name="ellipsis-vertical"></ion-icon>
+          </ion-button>
+        </div>
+
+        <h2 class="text-xl font-black text-slate-800 mb-1">{{ loc.code }}</h2>
+        <p class="text-xs text-slate-400 uppercase tracking-widest font-bold mb-6">Capacidad de Almacenaje</p>
+
+        <div class="space-y-2">
+          <div class="flex justify-between text-sm font-bold">
+            <span class="text-slate-600">{{ loc.current_capacity }} / {{ loc.max_capacity }} uds.</span>
+            <span [class]="getCapacityColor(loc)">{{ calculatePercent(loc) }}%</span>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+            <div class="h-full transition-all duration-500"
+                 [style.width.%]="calculatePercent(loc)"
+                 [class]="getProgressBarClass(loc)">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-slate-50 px-6 py-3 border-t border-slate-100 flex justify-between items-center">
+        <span class="text-xs font-bold text-slate-400">Estado:</span>
+        <span *ngIf="loc.current_capacity < loc.max_capacity" class="text-xs font-bold text-green-500 flex items-center gap-1">
+          <div class="w-2 h-2 rounded-full bg-green-500"></div> Disponible
+        </span>
+        <span *ngIf="loc.current_capacity >= loc.max_capacity" class="text-xs font-bold text-red-500 flex items-center gap-1">
+          <div class="w-2 h-2 rounded-full bg-red-500"></div> Lleno
+        </span>
+      </div>
+    </div>
+  </div>
+</ion-content>

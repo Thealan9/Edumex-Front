@@ -1,0 +1,51 @@
+<ion-content class="ion-padding bg-slate-50">
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+    <div>
+      <h1 class="text-2xl font-black text-slate-800">Consistencia Real</h1>
+      <p class="text-slate-500 text-sm">Auditoría de inventario: <span class="font-bold text-blue-600">{{ periodo }}</span></p>
+    </div>
+
+    <div class="flex gap-2 bg-white p-2 rounded-2xl border border-slate-200 shadow-sm">
+      <ion-select [(ngModel)]="selectedMonth" (ionChange)="onFilterChange()" interface="popover" class="custom-mini-select">
+        <ion-select-option [value]="1">Enero</ion-select-option>
+        <ion-select-option [value]="2">Febrero</ion-select-option>
+        <ion-select-option [value]="3">Marzo</ion-select-option>
+      </ion-select>
+      <ion-select [(ngModel)]="selectedYear" (ionChange)="onFilterChange()" interface="popover" class="custom-mini-select">
+        <ion-select-option [value]="2025">2025</ion-select-option>
+        <ion-select-option [value]="2026">2026</ion-select-option>
+      </ion-select>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-x-auto">
+    <table class="min-w-full divide-y divide-slate-200">
+      <thead class="bg-slate-50">
+      <tr>
+        <th class="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Libro / Nivel</th>
+        <th class="px-6 py-4 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">Inicial</th>
+        <th class="px-6 py-4 text-center text-[10px] font-black text-emerald-500 uppercase tracking-widest">Entradas</th>
+        <th class="px-6 py-4 text-center text-[10px] font-black text-orange-500 uppercase tracking-widest">Salidas</th>
+        <th class="px-6 py-4 text-center text-[10px] font-black text-slate-800 uppercase tracking-widest">Final</th>
+      </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+      <tr *ngFor="let item of reportData" class="hover:bg-blue-50/30 transition-colors">
+        <td class="px-6 py-4 text-sm">
+          <div class="font-bold text-slate-900">{{ item.titulo }}</div>
+          <div class="text-xs text-blue-500 font-medium">{{ item.isbn }} • {{ item.nivel }}</div>
+        </td>
+        <td class="px-6 py-4 text-center text-slate-500 font-medium">{{ item.stock_inicial }}</td>
+        <td class="px-6 py-4 text-center text-emerald-600 font-bold">+{{ item.entradas }}</td>
+        <td class="px-6 py-4 text-center text-orange-600 font-bold">-{{ item.salidas }}</td>
+        <td class="px-6 py-4 text-center">
+            <span [class]="item.alerta ? 'bg-red-100 text-red-700 border-red-200' : 'bg-slate-100 text-slate-800 border-slate-200'"
+                  class="px-3 py-1 rounded-full font-black text-xs border">
+              {{ item.stock_final }}
+            </span>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</ion-content>

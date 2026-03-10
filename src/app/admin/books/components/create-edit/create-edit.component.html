@@ -1,0 +1,163 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="modal-toolbar">
+    <ion-title class="modal-title">
+      {{ isEdit ? 'Editar' : 'Nuevo' }} <span>Libro</span>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()" class="close-btn">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="form-content">
+  <div class="p-6 md:p-8">
+    <form [formGroup]="form" class="space-y-6">
+
+      <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-5">
+        <h3 class="text-slate-800 font-black text-[10px] uppercase tracking-widest ml-1 flex items-center gap-2">
+          <ion-icon name="cash-outline" class="text-blue-600 text-base"></ion-icon>
+          Datos Comerciales y Precios
+        </h3>
+
+        <div class="form-group">
+          <label class="form-label">Título del Libro</label>
+          <div class="input-wrapper" [class.invalid]="form.get('title')?.touched && form.get('title')?.invalid">
+            <ion-icon name="book-outline" class="input-icon"></ion-icon>
+            <ion-input type="text" formControlName="title" placeholder="Ej: English File Elementary" class="custom-input"></ion-input>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div class="form-group">
+            <label class="form-label">Autor</label>
+            <div class="input-wrapper">
+              <ion-icon name="person-outline" class="input-icon"></ion-icon>
+              <ion-input type="text" formControlName="autor" placeholder="Nombre del autor" class="custom-input"></ion-input>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Editorial / Proveedor</label>
+            <div class="input-wrapper">
+              <ion-icon name="business-outline" class="input-icon"></ion-icon>
+              <ion-input type="text" formControlName="supplier" placeholder="Editorial..." class="custom-input"></ion-input>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div class="form-group">
+            <label class="form-label">ISBN</label>
+            <div class="input-wrapper">
+              <ion-input type="text" formControlName="isbn" placeholder="978..." class="custom-input"></ion-input>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Costo Compra ($)</label>
+            <div class="input-wrapper">
+              <ion-icon name="calculator-outline" class="input-icon text-slate-400"></ion-icon>
+              <ion-input type="number" formControlName="cost" class="custom-input"></ion-input>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Alerta Stock Bajo</label>
+            <div class="input-wrapper">
+              <ion-icon name="notifications-outline" class="input-icon text-orange-400"></ion-icon>
+              <ion-input type="number" formControlName="stock_alert" class="custom-input"></ion-input>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
+          <div class="form-group">
+            <label class="form-label">Unidades x Paquete</label>
+            <div class="input-wrapper bg-blue-50/50">
+              <ion-input type="number" formControlName="units_per_package" class="custom-input"></ion-input>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Precio Unitario ($)</label>
+            <div class="input-wrapper">
+              <ion-input type="number" formControlName="price_unit" class="custom-input"></ion-input>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Precio Paquete ($)</label>
+            <div class="input-wrapper">
+              <ion-input type="number" formControlName="price_package" class="custom-input"></ion-input>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-5">
+        <h3 class="text-slate-800 font-black text-[10px] uppercase tracking-widest ml-1 flex items-center gap-2">
+          <ion-icon name="construct-outline" class="text-blue-600 text-base"></ion-icon>
+          Especificaciones Técnicas
+        </h3>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="form-group">
+            <label class="form-label">Nivel</label>
+            <div class="input-wrapper">
+              <ion-select formControlName="level" interface="popover" toggleIcon="chevron-down-outline" class="custom-select">
+                <ion-select-option *ngFor="let l of ['A1','A2','B1','B2','C1','C2']" [value]="l">{{l}}</ion-select-option>
+              </ion-select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Edición</label>
+            <div class="input-wrapper"><ion-input type="number" formControlName="edition" class="custom-input"></ion-input></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Año</label>
+            <div class="input-wrapper"><ion-input type="number" formControlName="year" class="custom-input"></ion-input></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Páginas</label>
+            <div class="input-wrapper"><ion-input type="number" formControlName="pages" class="custom-input"></ion-input></div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div class="form-group">
+            <label class="form-label">Formato</label>
+            <div class="input-wrapper">
+              <ion-select formControlName="format" interface="popover" class="custom-select">
+                <ion-select-option value="Bolsillo">Bolsillo</ion-select-option>
+                <ion-select-option value="Tapa Blanda">Tapa Blanda</ion-select-option>
+                <ion-select-option value="Tapa Dura">Tapa Dura</ion-select-option>
+              </ion-select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Dimensiones (Size)</label>
+            <div class="input-wrapper">
+              <ion-input type="text" formControlName="size" placeholder="Ej: 15x23 cm" class="custom-input"></ion-input>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Descripción / Sinopsis</label>
+          <div class="input-wrapper !items-start py-3">
+            <ion-textarea formControlName="description" rows="3" placeholder="Breve resumen del contenido..."></ion-textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <button type="button" class="flex-1 py-4 px-6 rounded-2xl border border-slate-200 text-slate-500 font-bold hover:bg-slate-50 transition-all" (click)="close()">
+          Cancelar
+        </button>
+        <button class="submit-modal-btn group flex-[2]" (click)="submit()" [disabled]="form.invalid || isSubmitting">
+          <span *ngIf="!isSubmitting">{{ isEdit ? 'Actualizar Ficha' : 'Registrar Libro' }}</span>
+          <ion-spinner *ngIf="isSubmitting" name="crescent"></ion-spinner>
+          <ion-icon *ngIf="!isSubmitting" name="save-outline" class="group-hover:scale-110 transition-transform"></ion-icon>
+        </button>
+      </div>
+
+    </form>
+  </div>
+</ion-content>

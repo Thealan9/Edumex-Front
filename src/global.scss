@@ -1,0 +1,578 @@
+
+
+// custom components at https://material.angular.dev/guide/theming
+@import "tailwindcss";
+
+@theme {
+  --color-admin-dark: #1e293b;
+  --color-admin-accent: #3b82f6;
+}
+:root {
+  --edumex-bg-main: #f1f5f9;
+
+  --edumex-bg-toolbar: #ffffff;
+
+  --edumex-text-title: #1e293b;
+}
+
+/* Aplicación global al contenido sin scrool*/
+ion-content {
+  --background: var(--edumex-bg-main);
+  --height: 100%;
+  --overflow: hidden;
+
+  &::part(scroll) {
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+
+.page-header-container {
+  background-color: #f1f5f9;
+  @apply flex flex-col md:flex-row md:items-center justify-between gap-4 px-6 pt-6 pb-6;
+
+  .header-info {
+    h1 {
+      @apply text-3xl font-light text-slate-800 tracking-tight;
+      // El azul de EDUMEX
+      span { @apply font-bold text-blue-700; }
+    }
+    p { @apply text-slate-500 text-sm mt-1; }
+  }
+}
+
+.admin-toolbar {
+  --background: #f1f5f9;
+  --border-style: none;
+  --padding-start: 0;
+  --padding-end: 0;
+  --inner-padding-end: 0;
+}
+
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/**
+ * Ionic Dark Mode
+ * -----------------------------------------------------
+ * For more info, please see:
+ * https://ionicframework.com/docs/theming/dark-mode
+ */
+
+/* @import "@ionic/angular/css/palettes/dark.always.css"; */
+/* @import "@ionic/angular/css/palettes/dark.class.css"; */
+@import "@ionic/angular/css/palettes/dark.system.css";
+
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden; /* Evita el scroll del navegador */
+  margin: 0;
+  font-family: Roboto, sans-serif;
+}
+
+#main-content {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Altura de la ventana */
+  overflow: hidden;
+}
+
+router-outlet + * {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.snackbar-success .mdc-snackbar__surface {
+  background-color: #16a34a !important;
+}
+
+.snackbar-success .mdc-snackbar__label {
+  color: white !important;
+}
+
+.snackbar-success .mdc-button {
+  color: #dcfce7 !important;
+}
+
+
+.snackbar-error .mdc-snackbar__surface {
+  background-color: #dc2626 !important;
+}
+
+.snackbar-error .mdc-snackbar__label {
+  color: white !important;
+}
+
+.snackbar-error .mdc-button {
+  color: #fee2e2 !important;
+}
+
+
+.snackbar-warning .mdc-snackbar__surface {
+  background-color: #f59e0b !important;
+}
+
+.snackbar-warning .mdc-snackbar__label {
+  color: black !important;
+}
+
+.snackbar-warning .mdc-button {
+  color: black !important;
+}
+
+
+//alert componet
+.small-alert-modal {
+  --width: 280px !important;  /* Ancho ideal para una alerta pequeña */
+  --height: auto !important;
+  --max-height: 90%;
+  --border-radius: 24px;
+
+  &::part(content) {
+    border-radius: 24px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+}
+
+
+//tablas
+/* --- DISEÑO DE TARJETAS DE DATOS --- */
+.data-card {
+  background: white;
+  border-radius: 20px;
+  padding: 1.5rem;
+  border: 1px solid #f1f5f9; // Slate 100
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: #cbd5e1; // Slate 300
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* --- CAMPOS DE INFORMACIÓN --- */
+.data-field {
+  .label {
+    @apply text-[10px] text-slate-400 uppercase font-bold tracking-tight mb-0.5;
+  }
+  .value {
+    @apply text-sm font-bold text-slate-800;
+  }
+}
+
+/* --- BADGES DE ESTADO --- */
+.status-badge {
+  @apply px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter;
+
+  &.available, &.completado {
+    background: #dcfce7; color: #166534;
+  }
+  &.pending, &.pendiente {
+    background: #fef9c3; color: #854d0e;
+  }
+  &.error, &.vacio {
+    background: #fee2e2; color: #991b1b;
+  }
+}
+
+/* --- BOTONES DE ACCIÓN --- */
+.action-btn-edit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #3b82f6;
+    color: white;
+  }
+
+  ion-icon { font-size: 14px; }
+}
+
+
+//libros
+/* --- ESTILO EDITORIAL DE LIBROS --- */
+
+.book-row {
+  display: flex;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0; // Slate 200
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    box-shadow: 0 10px 20px -5px rgba(0,0,0,0.1);
+    border-color: #3b82f6;
+  }
+}
+
+/* El "lomo" decorativo lateral */
+.book-spine {
+  width: 6px;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.book-row:hover .book-spine {
+  width: 12px; // Se ensancha un poco al pasar el mouse
+}
+
+/* Botones de acción circulares y elegantes */
+.book-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #f1f5f9;
+  background: white;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  ion-icon { font-size: 1.2rem; }
+
+  &.edit:hover {
+    background: #eff6ff;
+    color: #2563eb;
+    border-color: #bfdbfe;
+  }
+
+  &.delete:hover {
+    background: #fef2f2;
+    color: #dc2626;
+    border-color: #fecaca;
+  }
+}
+
+/* Botón principal de añadir */
+.add-book-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #1e293b;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background: #334155;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  ion-icon {
+    font-size: 1.2rem;
+  }
+}
+
+ion-spinner[name="lines-sharp"] {
+  --color: #3b82f6;
+  width: 40px;
+  height: 40px;
+}
+
+// pallets
+
+.bg-green-500 { background-color: #22c55e !important; }
+.bg-blue-500 { background-color: #3b82f6 !important; }
+.bg-orange-500 { background-color: #f97316 !important; }
+
+ion-spinner[name="lines-sharp"] {
+  --color: #3b82f6;
+  width: 45px;
+  height: 45px;
+}
+
+.data-field .label {
+  margin-bottom: 0px;
+  line-height: 1;
+}
+
+//usuarios
+/* --- BOTONES ESPECÍFICOS DE SEGURIDAD --- */
+
+.lock-btn:hover {
+  background: #fff7ed; // Orange 50
+  color: #f97316; // Orange 500
+  border-color: #fdba74;
+}
+
+.unlock-btn:hover {
+  background: #f0fdf4; // Green 50
+  color: #22c55e; // Green 500
+  border-color: #86efac;
+}
+
+/* Opacidad para botones deshabilitados */
+.book-action-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  filter: grayscale(1);
+}
+
+.bg-red-500 { background-color: #ef4444 !important; }
+
+
+
+//componets
+/* --- ESTILOS DE FORMULARIO PREMIUM --- */
+
+.modal-toolbar {
+  --background: #ffffff;
+  --color: #1e293b;
+  padding: 8px 16px;
+
+  .modal-title {
+    font-size: 1.1rem;
+    font-weight: 500;
+    span { font-weight: 800; color: #3b82f6; }
+  }
+
+  .close-btn {
+    --color: #94a3b8;
+    --background-hover: #f1f5f9;
+    --border-radius: 50%;
+    font-size: 1.2rem;
+  }
+}
+
+.form-content {
+  --background: #f8fafc;
+}
+
+.form-label {
+  @apply block text-[11px] font-black uppercase text-slate-400 tracking-widest mb-2 ml-1;
+}
+
+.input-wrapper {
+  @apply flex items-center bg-slate-50 border border-slate-200 rounded-xl px-4 py-1 transition-all focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10;
+
+  .input-icon { @apply text-slate-400 text-lg mr-3; }
+  .input-icon-text { @apply text-slate-400 font-bold mr-3; }
+
+  .custom-input {
+    --padding-start: 0;
+    --color: #1e293b;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .custom-select {
+    --padding-start: 0;
+    width: 100%;
+    font-weight: 600;
+    color: #1e293b;
+  }
+}
+
+.submit-modal-btn {
+  @apply flex items-center justify-center gap-3 w-full bg-blue-600 text-white py-4 rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-blue-500/30 transition-all hover:bg-blue-700 active:scale-[0.98];
+}
+.submit-modal-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+  box-shadow: none;
+}
+
+.submit-modal-btn.btn-reject {
+  background-color: #ef4444; // Red 500
+  box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.2);
+  &:hover { background-color: #dc2626; }
+}
+
+.submit-modal-btn.btn-approve {
+  background-color: #10b981; // Emerald 500
+  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.2);
+  &:hover { background-color: #059669; }
+}
+
+.type-icon-container {
+  @apply w-10 h-10 rounded-xl flex items-center justify-center text-xl;
+
+  &.sale {
+    @apply bg-blue-50 text-blue-600;
+  }
+
+  &.entry {
+    @apply bg-indigo-50 text-indigo-600;
+  }
+}
+
+.action-btn-success {
+  @apply flex items-center gap-2 bg-green-50 text-green-600 px-4 py-2 rounded-xl text-[11px] font-black uppercase transition-all active:scale-95 border border-green-100;
+
+  &:hover {
+    @apply bg-green-100;
+  }
+}
+.action-btn-edit {
+  @apply active:scale-95 transition-transform;
+}
+
+/* Alineación del Spinner personalizado */
+ion-spinner[name="lines-sharp"] {
+  width: 50px;
+  height: 50px;
+}
+
+/* Espaciado para tablets/desktop */
+@media (min-width: 768px) {
+  .data-card {
+    padding: 2rem;
+  }
+}
+
+
+.edumex-action-sheet {
+  --background: #ffffff;
+
+  .action-sheet-title {
+    color: #64748b !important; /* slate-500 */
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    font-size: 11px !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+  }
+
+  .action-sheet-button {
+    color: #1e293b !important; /* slate-800 */
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    text-transform: uppercase !important;
+  }
+
+  /* Estilo para el texto de botones seleccionados o de énfasis */
+  .action-sheet-button-inner {
+    justify-content: center !important;
+  }
+}
+
+/* 2. Alert Personalizado (General y con Inputs) */
+.edumex-alert {
+  --background: #ffffff;
+  --max-width: 320px;
+
+  .alert-wrapper {
+    border-radius: 24px !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+  }
+
+  .alert-title {
+    font-weight: 900 !important;
+    color: #1e293b !important;
+    text-transform: uppercase !important;
+    letter-spacing: -0.025em !important;
+    font-size: 1.1rem !important;
+  }
+
+  .alert-sub-title {
+    font-weight: 600 !important;
+    color: #49505b !important; /* slate-400 */
+    font-size: 0.85rem !important;
+  }
+
+  .alert-message {
+    color: #475569 !important; /* slate-600 */
+    font-size: 0.9rem !important;
+  }
+
+  /* Estilo de los Inputs dentro del Alert */
+  .alert-input-group {
+    margin-top: 10px !important;
+
+    .alert-input {
+      background-color: #f8fafc !important; /* slate-50 */
+      border: 1px solid #e2e8f0 !important; /* slate-200 */
+      border-radius: 12px !important;
+      color: #1e293b !important;
+      font-weight: 600 !important;
+      margin-bottom: 8px !important;
+      padding: 12px !important;
+    }
+  }
+
+  /* Botones del Alert */
+  .alert-button-group {
+    padding: 8px !important;
+  }
+
+  .alert-button {
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    font-size: 11px !important;
+
+    /* Botón de confirmar/aceptar suele ser el último */
+    &:last-child {
+      color: #3b82f6 !important;
+    }
+
+    /* Botón de cancelar */
+    span.alert-button-inner {
+      justify-content: center !important;
+    }
+  }
+}

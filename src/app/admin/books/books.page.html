@@ -1,0 +1,76 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="--background: transparent; px-4">
+    <ion-title class="text-slate-800 font-bold text-2xl">Catálogo de Libros</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="solid" color="primary" class="rounded-lg font-bold" (click)="openCreateEdit()">
+        <ion-icon slot="start" name="add-outline" ></ion-icon>
+        Nuevo Libro
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding bg-slate-50">
+  <div class="mb-6 max-w-md">
+    <ion-searchbar
+      placeholder="Buscar por ISBN o Título..."
+      (ionInput)="onSearch($event)"
+      class="custom-search"
+      debounce="500">
+    </ion-searchbar>
+  </div>
+
+  <div class="overflow-hidden bg-white rounded-xl border border-slate-200 shadow-sm">
+    <table class="min-w-full divide-y divide-slate-200">
+      <thead class="bg-slate-50">
+      <tr>
+        <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Libro / ISBN</th>
+        <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Nivel</th>
+        <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Stock Real</th>
+        <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Precio Unit.</th>
+        <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Estado</th>
+        <th class="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Acciones</th>
+      </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+      <tr *ngFor="let book of books" class="hover:bg-slate-50 transition-colors">
+        <td class="px-6 py-4">
+          <div class="text-sm font-bold text-slate-900">{{ book.title }}</div>
+          <div class="text-xs text-slate-500">{{ book.isbn }}</div>
+        </td>
+        <td class="px-6 py-4">
+            <span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-700">
+              {{ book.level }}
+            </span>
+        </td>
+        <td class="px-6 py-4">
+          <div [class]="(book.total_stock! <= book.stock_alert!) ? 'text-red-600 font-bold' : 'text-slate-700'">
+            {{ book.total_stock }} uds.
+          </div>
+          <p *ngIf="book.total_stock! <= book.stock_alert!" class="text-[10px] text-red-500 italic">Bajo Stock</p>
+        </td>
+        <td class="px-6 py-4 text-sm text-slate-700 font-medium">
+          ${{ book.price_unit }}
+        </td>
+        <td class="px-6 py-4">
+          <ion-toggle [checked]="book.active" (ionChange)="toggleStatus(book)" color="success"></ion-toggle>
+        </td>
+        <td class="px-6 py-4 text-right">
+          <ion-button fill="clear" color="primary" (click)="openCreateEdit(book)">
+            <ion-icon name="create-outline"></ion-icon>
+          </ion-button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ion-refresher slot="fixed" (ionRefresh)="loadBooks($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div *ngIf="books.length === 0 && !loading" class="text-center py-12">
+    <ion-icon name="book-outline" class="text-5xl text-slate-300 mb-2"></ion-icon>
+    <p class="text-slate-500">No se encontraron libros en el inventario.</p>
+  </div>
+</ion-content>

@@ -1,0 +1,88 @@
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription, finalize } from 'rxjs';
+import { ModalController, AlertController } from '@ionic/angular';
+import { AdminLocation, Location } from '../services/admin-location';
+import { CreateEditComponent } from './components/create-edit/create-edit.component';
+@Component({
+  selector: 'app-location',
+  templateUrl: './location.page.html',
+  styleUrls: ['./location.page.scss'],
+  standalone: false
+})
+export class LocationPage implements OnInit, OnDestroy {
+  locations: Location[] = [];
+  loading: boolean = false;
+  private refreshSub!: Subscription;
+
+  constructor(
+    private adminLocations: AdminLocation,
+    private modalCtrl: ModalController,
+    private alertCtrl: AlertController
+  ) {}
+
+  ngOnInit() {
+    this.loadLocations();
+    // Refresco automático tras crear/editar
+    this.refreshSub = this.adminLocations.refresh$.subscribe(() => {
+      this.loadLocations();
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.refreshSub) this.refreshSub.unsubscribe();
+  }
+
+  loadLocations(event?: any) {
+    this.loading = true;
+    this.adminLocations.getLocations().pipe(
+      finalize(() => {
+        this.loading = false;
+        if (event) event.target.complete();
+      })
+    ).subscribe({
+      next: (res) => this.locations = res.data,
+      error: () => this.showError('No se pudo cargar la lista de estantes.')
+    });
+  }
+
+  async openCreateEdit(location?: Location) {
+    const modal = await this.modalCtrl.create({
+      component: CreateEditComponent,
+      componentProps: { data: location },
+      cssClass: 'small-modal' // Un modal más angosto que el de libros
+    });
+
+    await modal.present();
+    const { data } = await modal.onWillDismiss();
+    if (data?.refresh) this.loadLocations();
+  }
+
+  // --- Lógica de Visualización de Capacidad ---
+
+  calculatePercent(loc: Location): number {
+    if (!loc.max_capacity) return 0;
+    const percent = (loc.current_capacity / loc.max_capacity) * 100;
+    return Math.min(Math.round(percent), 100);
+  }
+
+  getProgressBarClass(loc: Location): string {
+    const percent = this.calculatePercent(loc);
+    if (percent >= 90) return 'bg-red-500';      // Crítico
+    if (percent >= 70) return 'bg-orange-500';   // Advertencia
+    return 'bg-blue-500';                         // Saludable
+  }
+
+  getCapacityColor(loc: Location): string {
+    const percent = this.calculatePercent(loc);
+    return percent >= 90 ? 'text-red-600' : 'text-slate-700';
+  }
+
+  private async showError(message: string) {
+    const alert = await this.alertCtrl.create({
+      header: 'Error',
+      message,
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
+}
