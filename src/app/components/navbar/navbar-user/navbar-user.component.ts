@@ -8,12 +8,14 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MenuController } from '@ionic/angular';
 import { Cart } from 'src/app/user/services/cart';
 import {AlertComponent} from "../../alert/alert.component";
+import {FormsModule} from "@angular/forms";
+
 @Component({
   selector: 'app-navbar-user',
   templateUrl: './navbar-user.component.html',
   styleUrls: ['./navbar-user.component.scss'],
   standalone: true,
-  imports: [IonicModule, RouterModule, CommonModule]
+  imports: [IonicModule, RouterModule, CommonModule,FormsModule]
 })
 export class NavbarUserComponent {
   isMobile$: Observable<boolean>;
@@ -22,7 +24,20 @@ export class NavbarUserComponent {
   cartItems$: Observable<any[]>;
   cartItemsCount$: Observable<number>;
 
-
+  addressForm = {
+    recipient_name: '',
+    recipient_phone: '',
+    postal_code: '',
+    state: '',
+    municipality: '',
+    locality: '', // Podemos usar el mismo valor que neighborhood por ahora
+    neighborhood: '',
+    street: '',
+    external_number: '', // O extraerlo del campo street
+    internal_number: '',
+    references: '',
+    is_default: true
+  };
   constructor(
     private modalCtrl: ModalController,
     private auth: Auth,
@@ -50,9 +65,16 @@ export class NavbarUserComponent {
     this.isCollapsed = !this.isCollapsed;
   }
 
+  isFormValid() {
+    return this.addressForm.recipient_name &&
+      this.addressForm.recipient_phone &&
+      this.addressForm.postal_code &&
+      this.addressForm.street;
+  }
 
   async checkout() {
-    this.cartService.checkout().subscribe({
+    if (!this.isFormValid()) return;
+    this.cartService.checkout(this.addressForm).subscribe({
       next: async (res) => {
         await this.closeCart();
         this.showAlert('¡Gracias por tu compra!', 'success');
@@ -60,7 +82,7 @@ export class NavbarUserComponent {
         window.location.reload();
       },
       error: (err) => {
-        this.showAlert(err.error?.message || 'Error al procesar la compra', 'warning');
+        this.showAlert(err.error?.message || 'Error al procesar la compra', 'error');
       }
     });
   }

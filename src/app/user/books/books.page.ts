@@ -3,6 +3,8 @@ import { AdminBooks, Book } from 'src/app/admin/services/admin-books';
 import { Cart } from '../services/cart';
 import { ToastController } from '@ionic/angular';
 import { Observable } from 'rxjs';
+import {Router} from "@angular/router";
+import {Auth} from "../../core/auth";
 
 @Component({
   selector: 'app-books',
@@ -15,14 +17,17 @@ export class BooksPage implements OnInit {
   books: Book[] = [];
   loading: boolean = false;
   cart$: Observable<any[]>;
+  user: any;
   constructor(
     private bookService: AdminBooks,
     private cartService: Cart,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private auth: Auth
   ) {this.cart$ = this.cartService.cart$;}
 
   ngOnInit() {
     this.loadCatalog();
+    this.auth.yo().subscribe(u => this.user = u);
   }
   loadCatalog(event?: any) {
     this.loading = true;
@@ -41,9 +46,9 @@ export class BooksPage implements OnInit {
     });
   }
 
-  async addToCart(book: Book) {
+  async addToCart(book: Book,type: 'unit' | 'package') {
     if (book.total_stock && book.total_stock > 0) {
-      this.cartService.addToCart(book);
+      this.cartService.addToCart(book, type);
 
       const toast = await this.toastCtrl.create({
         message: `${book.title} añadido al carrito`,

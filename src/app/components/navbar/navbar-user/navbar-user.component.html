@@ -82,45 +82,124 @@
   <ion-menu side="end" menuId="cart-menu" contentId="main-content" type="overlay">
     <ion-header class="ion-no-border">
       <ion-toolbar class="--background: #701188; color: white;">
-        <ion-title class="text-sm font-bold">Tu Bolsa ({{ (cartItems$ | async)?.length || 0 }} productos)</ion-title>
+        <ion-title class="text-sm font-black uppercase tracking-widest">Mi Bolsa</ion-title>
         <ion-buttons slot="end">
-          <ion-button (click)="closeCart()">
-            <ion-icon name="close-outline"></ion-icon>
-          </ion-button>
+          <ion-button (click)="closeCart()"><ion-icon name="close-outline"></ion-icon></ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
-    <ion-content class="bg-white">
-      <div *ngIf="(cartItems$ | async)?.length === 0" class="flex flex-col items-center justify-center h-full p-10 text-center">
-        <ion-icon name="bag-outline" class="text-6xl mb-4 text-slate-300"></ion-icon>
-        <h3 class="text-slate-800 font-bold text-lg">Tu bolsa está vacía.</h3>
-      </div>
+    <ion-content class="bg-slate-50">
+      <div class="p-4">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold">1</span>
+          <h3 class="text-slate-800 font-bold text-sm">Resumen de productos</h3>
+        </div>
 
-      <ion-list *ngIf="(cartItems$ | async) as items">
-        <ion-item *ngFor="let item of cartItems$ | async" lines="full">
-          <div class="flex w-full py-4 gap-3">
-            <div class="w-12 h-16 bg-slate-100 rounded flex items-center justify-center text-[10px] font-bold">
-              {{ item.book.level }}
-            </div>
-            <div class="flex-1">
-              <h4 class="text-xs font-bold text-slate-800 line-clamp-2">{{ item.book.title }}</h4>
-              <p class="text-[10px] text-slate-500">{{ item.quantity }} unidad(es)</p>
-              <p class="text-sm font-black text-slate-900 mt-1">${{ item.book.price_unit * item.quantity }}</p>
+        <ion-list class="bg-transparent" *ngIf="(cartItems$ | async) as items">
+          <div *ngFor="let item of items" class="bg-white rounded-2xl p-3 mb-2 shadow-sm border border-slate-100 flex gap-3">
+            <div class="w-10 h-14 bg-slate-50 rounded-lg flex items-center justify-center text-[8px] font-black border border-slate-100">{{ item.book.level }}</div>
+            <div class="flex-1 min-w-0">
+              <p class="text-[11px] font-bold text-slate-800 truncate">{{ item.book.title }}</p>
+              <p class="text-[9px] text-slate-400">{{ item.quantity }} {{ item.buy_type === 'package' ? 'Paquete(s)' : 'Unidad(es)' }}</p>
+              <p class="text-xs font-black text-blue-600">${{ (item.buy_type === 'package' ? item.book.price_package : item.book.price_unit) * item.quantity }}</p>
             </div>
           </div>
-        </ion-item>
-      </ion-list>
+        </ion-list>
+      </div>
+
+      <div class="p-4 pt-0">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold">2</span>
+          <h3 class="text-slate-800 font-bold text-sm">Información de Entrega</h3>
+        </div>
+
+        <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 space-y-4">
+          <div>
+            <label class="form-label">¿Quién recibe?</label>
+            <div class="input-wrapper">
+              <ion-icon name="person-outline" class="input-icon"></ion-icon>
+              <ion-input [(ngModel)]="addressForm.recipient_name" placeholder="Nombre completo" class="custom-input"></ion-input>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="form-label">Teléfono</label>
+              <div class="input-wrapper">
+                <ion-input [(ngModel)]="addressForm.recipient_phone" placeholder="10 dígitos" class="custom-input"></ion-input>
+              </div>
+            </div>
+            <div>
+              <label class="form-label">Código Postal</label>
+              <div class="input-wrapper">
+                <ion-input [(ngModel)]="addressForm.postal_code" placeholder="CP" class="custom-input"></ion-input>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="form-label">Estado</label>
+              <div class="input-wrapper">
+                <ion-input [(ngModel)]="addressForm.state" placeholder="Ej. Veracruz" class="custom-input"></ion-input>
+              </div>
+            </div>
+            <div>
+              <label class="form-label">Municipio</label>
+              <div class="input-wrapper">
+                <ion-input [(ngModel)]="addressForm.municipality" placeholder="Ej. Papantla" class="custom-input"></ion-input>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Colonia / Localidad</label>
+            <div class="input-wrapper">
+              <ion-input [(ngModel)]="addressForm.neighborhood" placeholder="Nombre de la colonia" class="custom-input"></ion-input>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Calle y Número Exterior</label>
+            <div class="input-wrapper">
+              <ion-input [(ngModel)]="addressForm.street" placeholder="Nombre de la calle y # ext" class="custom-input"></ion-input>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="form-label">Num. Interior</label>
+              <div class="input-wrapper">
+                <ion-input [(ngModel)]="addressForm.internal_number" placeholder="Opcional" class="custom-input"></ion-input>
+              </div>
+            </div>
+            <div class="flex items-end">
+              <ion-item lines="none" class="--background: transparent; font-size: 10px;">
+                <ion-checkbox labelPlacement="end" [(ngModel)]="addressForm.is_default">Predeterminada</ion-checkbox>
+              </ion-item>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Referencias / Indicaciones</label>
+            <div class="input-wrapper">
+              <ion-textarea [(ngModel)]="addressForm.references" placeholder="Ej. Portón azul, junto a la tienda..." rows="2" class="custom-input"></ion-textarea>
+            </div>
+          </div>
+        </div>
+      </div>
     </ion-content>
 
-    <ion-footer class="ion-no-border p-4 bg-white border-t" *ngIf="((cartItems$ | async)?.length ?? 0) > 0">
+    <ion-footer class="ion-no-border p-6 bg-white border-t border-slate-100">
       <div class="flex justify-between items-center mb-4">
-        <span class="text-slate-500 font-bold uppercase text-[10px]">Subtotal</span>
-        <span class="text-xl font-black text-slate-900">${{ cartService.total }}</span>
+        <span class="text-slate-400 font-bold text-xs uppercase tracking-tighter">Total a pagar</span>
+        <span class="text-2xl font-black text-slate-900">${{ cartService.total }}</span>
       </div>
-      <button (click)="checkout()" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold uppercase tracking-widest text-xs active:scale-95 transition-all">
-        Finalizar Compra
+
+      <button (click)="checkout()" [disabled]="!isFormValid()"
+              class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-blue-200 active:scale-95 transition-all disabled:opacity-30 disabled:shadow-none">
+        Confirmar y Pagar
       </button>
     </ion-footer>
-  </ion-menu>
-</ion-app>
+  </ion-menu></ion-app>

@@ -17,9 +17,18 @@
             <div class="text-[10px] text-slate-400">
               Disponibles: <span class="font-bold text-slate-600">{{ book.total_stock }}</span>
             </div>
-            <button (click)="addToCart(book)" class="bg-blue-600 text-white p-2 rounded-xl active:scale-90 transition-all">
-              <ion-icon name="add-outline" class="text-xl"></ion-icon>
-            </button>
+            <div class="flex items-center gap-2">
+              <button (click)="addToCart(book, 'unit')"
+                      class="flex-1 bg-blue-600 text-white py-2 px-3 rounded-xl text-xs font-bold active:scale-95 transition-all">
+                <ion-icon name="add-outline" class="mr-1"></ion-icon> Unidad
+              </button>
+
+              <button *ngIf="user?.customer_type === 'institutional' && book.price_package"
+                      (click)="addToCart(book, 'package')"
+                      class="flex-1 bg-purple-600 text-white py-2 px-3 rounded-xl text-xs font-bold active:scale-95 transition-all">
+                <ion-icon name="layers-outline" class="mr-1"></ion-icon> Paquete
+              </button>
+            </div>
           </div>
         </div>
       </div>

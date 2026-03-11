@@ -7,6 +7,7 @@ import { tap } from 'rxjs/operators';
 export interface CartItem {
   book: Book;
   quantity: number;
+  buy_type: 'unit' | 'package';
 }
 @Injectable({
   providedIn: 'root',
@@ -18,28 +19,39 @@ export class Cart {
 
   constructor(private http: HttpClient) {}
 
-  addToCart(book: Book) {
-    const exists = this.items.find(i => i.book.id === book.id);
+  addToCart(book: Book, buy_type: 'unit' | 'package' = 'unit') {
+    // 1. Buscamos si ya existe el libro con el MISMO tipo de compra
+    const exists = this.items.find(i =>
+      i.book.id === book.id && i.buy_type === buy_type
+    );
+
     if (exists) {
       exists.quantity += 1;
     } else {
-      this.items.push({ book, quantity: 1 });
+      // 2. Ahora incluimos buy_type para cumplir con la interfaz
+      this.items.push({
+        book,
+        quantity: 1,
+        buy_type
+      });
     }
+
     this._cart.next([...this.items]);
   }
 
   // Método para enviar la orden al servidor
-  checkout(): Observable<any> {
+  checkout(addressData: any): Observable<any> {
     const payload = {
-      // Transformamos el carrito al formato que espera la API
+      address_id: null, // Si es nueva
+      address_data: addressData, // Enviamos el objeto completo para que el backend lo cree
       items: this.items.map(i => ({
         id: i.book.id,
-        quantity: i.quantity
+        quantity: i.quantity,
+        buy_type: i.buy_type
       }))
     };
-
     return this.http.post(`${environment.apiUrl}/user/orders`, payload).pipe(
-      tap(() => this.clearCart()) // Si sale bien, vaciamos la bolsa
+      tap(() => this.clearCart())
     );
   }
 
@@ -49,6 +61,13 @@ export class Cart {
   }
 
   get total() {
-    return this.items.reduce((acc, item) => acc + (item.book.price_unit * item.quantity), 0);
+    return this.items.reduce((acc, item) => {
+      // Si el precio es null/undefined, usamos 0
+      const price = item.buy_type === 'package'
+        ? (item.book.price_package ?? 0)
+        : (item.book.price_unit ?? 0);
+
+      return acc + (price * item.quantity);
+    }, 0);
   }
 }
