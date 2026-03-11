@@ -9,6 +9,8 @@ import { MenuController } from '@ionic/angular';
 import { Cart } from 'src/app/user/services/cart';
 import {AlertComponent} from "../../alert/alert.component";
 import {FormsModule} from "@angular/forms";
+import {HttpClient} from "@angular/common/http";
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-navbar-user',
@@ -17,12 +19,16 @@ import {FormsModule} from "@angular/forms";
   standalone: true,
   imports: [IonicModule, RouterModule, CommonModule,FormsModule]
 })
-export class NavbarUserComponent {
+export class NavbarUserComponent implements OnInit {
   isMobile$: Observable<boolean>;
   isCollapsed = false;
 
   cartItems$: Observable<any[]>;
   cartItemsCount$: Observable<number>;
+
+  savedAddresses: any[] = [];
+  selectedAddressId: number | null = null;
+  showNewAddressForm: boolean = false;
 
   addressForm = {
     recipient_name: '',
@@ -30,13 +36,13 @@ export class NavbarUserComponent {
     postal_code: '',
     state: '',
     municipality: '',
-    locality: '', // Podemos usar el mismo valor que neighborhood por ahora
+    locality: '',
     neighborhood: '',
     street: '',
-    external_number: '', // O extraerlo del campo street
+    external_number: '',
     internal_number: '',
     references: '',
-    is_default: true
+    is_default: false
   };
   constructor(
     private modalCtrl: ModalController,
@@ -44,13 +50,45 @@ export class NavbarUserComponent {
     private router: Router,
     private breakpointObserver: BreakpointObserver,
     private menuCtrl: MenuController,
-    public cartService: Cart
+    public cartService: Cart,
+    private http: HttpClient
   ) {
     this.isMobile$ = this.breakpointObserver
       .observe(['(max-width: 1023px)'])
       .pipe(map(result => result.matches));
     this.cartItems$ = this.cartService.cart$;
     this.cartItemsCount$ = this.cartService.cart$.pipe(map(items => items.length));
+  }
+
+  ngOnInit() {
+    this.loadAddresses();
+  }
+  isOrderReady() {
+    if (this.showNewAddressForm) {
+      return this.addressForm.recipient_name &&
+        this.addressForm.street &&
+        this.addressForm.locality && // Ciudad obligatoria
+        this.addressForm.postal_code;
+    }
+    return this.selectedAddressId !== null;
+  }
+  loadAddresses() {
+    this.http.get(`${environment.apiUrl}/user/addresses`).subscribe((res: any) => {
+      this.savedAddresses = res;
+      // Si tiene direcciones, selecciona la predeterminada por default
+      if (this.savedAddresses.length > 0) {
+        const def = this.savedAddresses.find(a => a.is_default);
+        this.selectedAddressId = def ? def.id : this.savedAddresses[0].id;
+      } else {
+        this.showNewAddressForm = true; // Si no tiene, abre el formulario
+      }
+    });
+  }
+
+  deleteAddress(id: number) {
+    this.http.delete(`${environment.apiUrl}/user/addresses/${id}`).subscribe(() => {
+      this.loadAddresses();
+    });
   }
   async openCart() {
     await this.menuCtrl.enable(true, 'cart-menu');
@@ -73,20 +111,40 @@ export class NavbarUserComponent {
   }
 
   async checkout() {
-    if (!this.isFormValid()) return;
-    this.cartService.checkout(this.addressForm).subscribe({
+    if (!this.isOrderReady()) return;
+
+    const addressId = this.showNewAddressForm ? null : this.selectedAddressId;
+    const addressData = this.showNewAddressForm ? this.addressForm : null;
+
+    this.cartService.checkout(addressId, addressData).subscribe({
       next: async (res) => {
         await this.closeCart();
-        this.showAlert('¡Gracias por tu compra!', 'success');
-        // Opcional: Recargar los libros de la página actual para ver el nuevo stock
+        this.resetAddressForm();
+        this.showAlert('¡Pedido realizado con éxito!', 'success');
         window.location.reload();
+        this.loadAddresses(); // Recarga para ver la nueva en la lista
       },
       error: (err) => {
-        this.showAlert(err.error?.message || 'Error al procesar la compra', 'error');
+        this.showAlert(err.error?.message || 'Error al procesar la compra', 'warning');
       }
     });
   }
-
+  resetAddressForm() {
+    this.addressForm = {
+      recipient_name: '',
+      recipient_phone: '',
+      postal_code: '',
+      state: '',
+      municipality: '',
+      locality: '',
+      neighborhood: '',
+      street: '',
+      external_number: '',
+      internal_number: '',
+      references: '',
+      is_default: true
+    };
+  }
   logout() {
     this.auth.logoutApi().subscribe({
       next: async () => {

@@ -1,205 +1,201 @@
-<ion-app>
-  <ion-split-pane contentId="main-content" when="lg" [style.--side-width]="isCollapsed ? '80px' : '280px'">
+<ion-split-pane contentId="main-content" when="lg" [style.--side-width]="isCollapsed ? '80px' : '280px'">
 
-    <ion-menu contentId="main-content" type="overlay">
-      <ion-content class="--background: #0f172a;">
-        <div class="flex flex-col min-h-full bg-slate-900 border-r border-slate-800 transition-all duration-300">
+  <ion-menu contentId="main-content" type="overlay">
+    <ion-content class="--background: #0f172a;">
+      <div class="flex flex-col min-h-full bg-slate-900 border-r border-slate-800 transition-all duration-300">
 
-          <div class="flex items-center pt-6 pb-4 transition-all duration-300"
-               [class.px-6]="!isCollapsed" [class.justify-center]="isCollapsed">
-            <div *ngIf="!isCollapsed" class="flex items-center gap-3 bg-slate-800/50 p-3 rounded-xl border border-slate-700">
-              <div class="bg-blue-600 p-2 rounded-lg shadow-lg shadow-blue-500/20">
-                <ion-icon name="grid" class="text-white text-xl flex"></ion-icon>
-              </div>
-              <span class="text-white font-bold tracking-tight text-lg italic text-nowrap">EDUMEX</span>
+        <div class="flex items-center pt-6 pb-4 transition-all duration-300"
+             [class.px-6]="!isCollapsed" [class.justify-center]="isCollapsed">
+          <div *ngIf="!isCollapsed" class="flex items-center gap-3 bg-slate-800/50 p-3 rounded-xl border border-slate-700">
+            <div class="bg-blue-600 p-2 rounded-lg shadow-lg shadow-blue-500/20">
+              <ion-icon name="grid" class="text-white text-xl flex"></ion-icon>
             </div>
-            <button (click)="isCollapsed = !isCollapsed" class="hidden lg:flex text-slate-400 p-2 hover:bg-slate-800 rounded-lg">
-              <ion-icon [name]="isCollapsed ? 'chevron-forward-outline' : 'chevron-back-outline'"></ion-icon>
-            </button>
+            <span class="text-white font-bold tracking-tight text-lg italic text-nowrap">EDUMEX</span>
           </div>
-
-          <div class="flex-1 px-4 space-y-1">
-            <ion-menu-toggle auto-hide="false">
-              <nav class="space-y-1">
-                <ion-item routerLink="/home" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" lines="none" class="sidebar-item" [class.collapsed]="isCollapsed">
-                  <ion-icon slot="start" name="home-outline"></ion-icon>
-                  <ion-label *ngIf="!isCollapsed">Inicio</ion-label>
-                </ion-item>
-                <ion-item routerLink="/home/libros" routerLinkActive="active-link" lines="none" class="sidebar-item" [class.collapsed]="isCollapsed">
-                  <ion-icon slot="start" name="people-outline"></ion-icon>
-                  <ion-label *ngIf="!isCollapsed">Libros</ion-label>
-                </ion-item>
-
-                <ion-item (click)="openCart()" lines="none" class="sidebar-item" [class.collapsed]="isCollapsed" style="cursor:pointer">
-                  <ion-icon slot="start" name="bag-handle-outline"></ion-icon>
-                  <ion-label *ngIf="!isCollapsed">Mi carrito</ion-label>
-                  <ion-badge slot="end" color="danger" *ngIf="((cartItemsCount$ | async) ?? 0) > 0">{{ cartItemsCount$ | async }}</ion-badge>
-                </ion-item>
-              </nav>
-            </ion-menu-toggle>
-          </div>
-
-          <div class="p-4 border-t border-slate-800">
-            <div id="profile-trigger" class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" [class.justify-center]="isCollapsed">
-              <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center border border-blue-400/30 shrink-0">
-                <ion-icon name="person" class="text-blue-400 text-xl"></ion-icon>
-              </div>
-              <div *ngIf="!isCollapsed" class="flex-1 min-w-0">
-                <p class="text-sm font-semibold text-white truncate flex items-center gap-1">
-                  Perfil <ion-icon name="chevron-up-outline" class="text-xs"></ion-icon></p>
-              </div>
-            </div>
-
-            <ion-popover trigger="profile-trigger" triggerAction="click" [dismissOnSelect]="true" class="profile-popover">
-              <ng-template>
-                <ion-content class="--background: #1e293b;">
-                  <ion-list lines="none" class="bg-slate-800 p-2">
-                    <ion-item button routerLink="/admin/profile" class="popover-item">
-                      <ion-icon slot="start" name="person-outline" class="text-blue-400"></ion-icon>
-                      <ion-label class="text-white text-sm">Mi Perfil</ion-label>
-                    </ion-item>
-                    <div class="h-px bg-slate-700 my-1"></div>
-                    <ion-item button (click)="logout()" class="popover-item logout">
-                      <ion-icon slot="start" name="log-out-outline" class="text-red-400"></ion-icon>
-                      <ion-label class="text-red-400 text-sm">Cerrar Sesión</ion-label>
-                    </ion-item>
-                  </ion-list>
-                </ion-content>
-              </ng-template>
-            </ion-popover>
-          </div>
-        </div>
-      </ion-content>
-    </ion-menu>
-
-    <div class="ion-page flex flex-col" id="main-content">
-      <main class="flex-1 overflow-hidden relative">
-        <router-outlet></router-outlet>
-      </main>
-    </div>
-  </ion-split-pane>
-
-  <ion-menu side="end" menuId="cart-menu" contentId="main-content" type="overlay">
-    <ion-header class="ion-no-border">
-      <ion-toolbar class="--background: #701188; color: white;">
-        <ion-title class="text-sm font-black uppercase tracking-widest">Mi Bolsa</ion-title>
-        <ion-buttons slot="end">
-          <ion-button (click)="closeCart()"><ion-icon name="close-outline"></ion-icon></ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-content class="bg-slate-50">
-      <div class="p-4">
-        <div class="flex items-center gap-2 mb-4">
-          <span class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold">1</span>
-          <h3 class="text-slate-800 font-bold text-sm">Resumen de productos</h3>
+          <button (click)="isCollapsed = !isCollapsed" class="hidden lg:flex text-slate-400 p-2 hover:bg-slate-800 rounded-lg">
+            <ion-icon [name]="isCollapsed ? 'chevron-forward-outline' : 'chevron-back-outline'"></ion-icon>
+          </button>
         </div>
 
-        <ion-list class="bg-transparent" *ngIf="(cartItems$ | async) as items">
-          <div *ngFor="let item of items" class="bg-white rounded-2xl p-3 mb-2 shadow-sm border border-slate-100 flex gap-3">
-            <div class="w-10 h-14 bg-slate-50 rounded-lg flex items-center justify-center text-[8px] font-black border border-slate-100">{{ item.book.level }}</div>
-            <div class="flex-1 min-w-0">
-              <p class="text-[11px] font-bold text-slate-800 truncate">{{ item.book.title }}</p>
-              <p class="text-[9px] text-slate-400">{{ item.quantity }} {{ item.buy_type === 'package' ? 'Paquete(s)' : 'Unidad(es)' }}</p>
-              <p class="text-xs font-black text-blue-600">${{ (item.buy_type === 'package' ? item.book.price_package : item.book.price_unit) * item.quantity }}</p>
-            </div>
-          </div>
-        </ion-list>
-      </div>
-
-      <div class="p-4 pt-0">
-        <div class="flex items-center gap-2 mb-4">
-          <span class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold">2</span>
-          <h3 class="text-slate-800 font-bold text-sm">Información de Entrega</h3>
-        </div>
-
-        <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 space-y-4">
-          <div>
-            <label class="form-label">¿Quién recibe?</label>
-            <div class="input-wrapper">
-              <ion-icon name="person-outline" class="input-icon"></ion-icon>
-              <ion-input [(ngModel)]="addressForm.recipient_name" placeholder="Nombre completo" class="custom-input"></ion-input>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="form-label">Teléfono</label>
-              <div class="input-wrapper">
-                <ion-input [(ngModel)]="addressForm.recipient_phone" placeholder="10 dígitos" class="custom-input"></ion-input>
-              </div>
-            </div>
-            <div>
-              <label class="form-label">Código Postal</label>
-              <div class="input-wrapper">
-                <ion-input [(ngModel)]="addressForm.postal_code" placeholder="CP" class="custom-input"></ion-input>
-              </div>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="form-label">Estado</label>
-              <div class="input-wrapper">
-                <ion-input [(ngModel)]="addressForm.state" placeholder="Ej. Veracruz" class="custom-input"></ion-input>
-              </div>
-            </div>
-            <div>
-              <label class="form-label">Municipio</label>
-              <div class="input-wrapper">
-                <ion-input [(ngModel)]="addressForm.municipality" placeholder="Ej. Papantla" class="custom-input"></ion-input>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <label class="form-label">Colonia / Localidad</label>
-            <div class="input-wrapper">
-              <ion-input [(ngModel)]="addressForm.neighborhood" placeholder="Nombre de la colonia" class="custom-input"></ion-input>
-            </div>
-          </div>
-
-          <div>
-            <label class="form-label">Calle y Número Exterior</label>
-            <div class="input-wrapper">
-              <ion-input [(ngModel)]="addressForm.street" placeholder="Nombre de la calle y # ext" class="custom-input"></ion-input>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="form-label">Num. Interior</label>
-              <div class="input-wrapper">
-                <ion-input [(ngModel)]="addressForm.internal_number" placeholder="Opcional" class="custom-input"></ion-input>
-              </div>
-            </div>
-            <div class="flex items-end">
-              <ion-item lines="none" class="--background: transparent; font-size: 10px;">
-                <ion-checkbox labelPlacement="end" [(ngModel)]="addressForm.is_default">Predeterminada</ion-checkbox>
+        <div class="flex-1 px-4 space-y-1">
+          <ion-menu-toggle auto-hide="false">
+            <nav class="space-y-1">
+              <ion-item routerLink="/home" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" lines="none" class="sidebar-item" [class.collapsed]="isCollapsed">
+                <ion-icon slot="start" name="home-outline"></ion-icon>
+                <ion-label *ngIf="!isCollapsed">Inicio</ion-label>
               </ion-item>
+              <ion-item routerLink="/home/libros" routerLinkActive="active-link" lines="none" class="sidebar-item" [class.collapsed]="isCollapsed">
+                <ion-icon slot="start" name="book-outline"></ion-icon>
+                <ion-label *ngIf="!isCollapsed">Libros</ion-label>
+              </ion-item>
+
+              <ion-item (click)="openCart()" lines="none" class="sidebar-item" [class.collapsed]="isCollapsed" style="cursor:pointer">
+                <ion-icon slot="start" name="bag-handle-outline"></ion-icon>
+                <ion-label *ngIf="!isCollapsed">Mi carrito</ion-label>
+                <ion-badge slot="end" color="danger" *ngIf="((cartItemsCount$ | async) ?? 0) > 0">{{ cartItemsCount$ | async }}</ion-badge>
+              </ion-item>
+            </nav>
+          </ion-menu-toggle>
+        </div>
+
+        <div class="p-4 border-t border-slate-800">
+          <div id="profile-trigger" class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" [class.justify-center]="isCollapsed">
+            <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center border border-blue-400/30 shrink-0">
+              <ion-icon name="person" class="text-blue-400 text-xl"></ion-icon>
+            </div>
+            <div *ngIf="!isCollapsed" class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-white truncate flex items-center gap-1">
+                Perfil <ion-icon name="chevron-up-outline" class="text-xs"></ion-icon></p>
             </div>
           </div>
 
-          <div>
-            <label class="form-label">Referencias / Indicaciones</label>
-            <div class="input-wrapper">
-              <ion-textarea [(ngModel)]="addressForm.references" placeholder="Ej. Portón azul, junto a la tienda..." rows="2" class="custom-input"></ion-textarea>
-            </div>
-          </div>
+          <ion-popover trigger="profile-trigger" triggerAction="click" [dismissOnSelect]="true" class="profile-popover">
+            <ng-template>
+              <ion-content class="--background: #1e293b;">
+                <ion-list lines="none" class="bg-slate-800 p-2">
+                  <ion-item button routerLink="/admin/profile" class="popover-item">
+                    <ion-icon slot="start" name="person-outline" class="text-blue-400"></ion-icon>
+                    <ion-label class="text-white text-sm">Mi Perfil</ion-label>
+                  </ion-item>
+                  <div class="h-px bg-slate-700 my-1"></div>
+                  <ion-item button (click)="logout()" class="popover-item logout">
+                    <ion-icon slot="start" name="log-out-outline" class="text-red-400"></ion-icon>
+                    <ion-label class="text-red-400 text-sm">Cerrar Sesión</ion-label>
+                  </ion-item>
+                </ion-list>
+              </ion-content>
+            </ng-template>
+          </ion-popover>
         </div>
       </div>
     </ion-content>
+  </ion-menu>
 
-    <ion-footer class="ion-no-border p-6 bg-white border-t border-slate-100">
-      <div class="flex justify-between items-center mb-4">
-        <span class="text-slate-400 font-bold text-xs uppercase tracking-tighter">Total a pagar</span>
-        <span class="text-2xl font-black text-slate-900">${{ cartService.total }}</span>
+  <div class="ion-page flex flex-col" id="main-content">
+    <main class="flex-1 overflow-hidden relative">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</ion-split-pane>
+
+<ion-menu side="end" menuId="cart-menu" contentId="main-content" type="overlay">
+  <ion-header class="ion-no-border">
+    <ion-toolbar class="--background: #701188; color: white;">
+      <ion-title class="text-sm font-black uppercase tracking-widest">Mi Bolsa</ion-title>
+      <ion-buttons slot="end">
+        <ion-button (click)="closeCart()"><ion-icon name="close-outline"></ion-icon></ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="bg-slate-50">
+    <div class="p-4">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold">1</span>
+        <h3 class="text-slate-800 font-bold text-sm">Resumen de productos</h3>
+      </div>
+      <ion-list class="bg-transparent" *ngIf="(cartItems$ | async) as items">
+        <div *ngFor="let item of items" class="bg-white rounded-2xl p-3 mb-2 shadow-sm border border-slate-100 flex gap-3">
+          <div class="w-10 h-14 bg-slate-50 rounded-lg flex items-center justify-center text-[8px] font-black border border-slate-100">{{ item.book.level }}</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[11px] font-bold text-slate-800 truncate">{{ item.book.title }}</p>
+            <p class="text-[9px] text-slate-400 font-medium">{{ item.quantity }} {{ item.buy_type === 'package' ? 'Paquete(s)' : 'Unidad(es)' }}</p>
+            <p class="text-xs font-black text-blue-600">${{ (item.buy_type === 'package' ? item.book.price_package : item.book.price_unit) * item.quantity }}</p>
+          </div>
+        </div>
+      </ion-list>
+    </div>
+
+    <div class="p-4 pt-0">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2">
+          <span class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold">2</span>
+          <h3 class="text-slate-800 font-bold text-sm">Información de Entrega</h3>
+        </div>
+        <button (click)="showNewAddressForm = !showNewAddressForm"
+                class="text-blue-600 text-[10px] font-black uppercase tracking-tighter">
+          {{ showNewAddressForm ? 'Ver guardadas' : '+ Nueva' }}
+        </button>
       </div>
 
-      <button (click)="checkout()" [disabled]="!isFormValid()"
-              class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-blue-200 active:scale-95 transition-all disabled:opacity-30 disabled:shadow-none">
-        Confirmar y Pagar
-      </button>
-    </ion-footer>
-  </ion-menu></ion-app>
+      <div *ngIf="!showNewAddressForm" class="space-y-3">
+        <div *ngIf="savedAddresses.length === 0" class="bg-blue-50 border border-blue-100 p-6 rounded-3xl text-center">
+          <ion-icon name="location-outline" class="text-3xl text-blue-400 mb-2"></ion-icon>
+          <p class="text-blue-800 text-[10px] font-medium">No tienes direcciones guardadas.</p>
+        </div>
+
+        <div *ngFor="let addr of savedAddresses"
+             (click)="selectedAddressId = addr.id"
+             [class.border-blue-600]="selectedAddressId === addr.id"
+             class="bg-white p-4 rounded-3xl border-2 border-transparent shadow-sm transition-all cursor-pointer relative group">
+          <div class="flex items-start gap-3">
+            <ion-icon [name]="selectedAddressId === addr.id ? 'checkmark-circle' : 'ellipse-outline'"
+                      [class.text-blue-600]="selectedAddressId === addr.id" class="text-xl text-slate-300"></ion-icon>
+            <div class="flex-1">
+              <div class="flex items-center gap-2">
+                <p class="text-[11px] font-black text-slate-900 uppercase">{{ addr.recipient_name }}</p>
+                <span *ngIf="addr.is_default" class="bg-blue-100 text-blue-600 text-[8px] px-2 py-0.5 rounded-full font-bold">PREDETERMINADA</span>
+              </div>
+              <p class="text-[10px] text-slate-500 mt-1">
+                {{ addr.street }} #{{ addr.external_number }}<br>
+                Col. {{ addr.neighborhood }}, {{ addr.locality }}
+              </p>
+            </div>
+          </div>
+          <button (click)="deleteAddress(addr.id); $event.stopPropagation()" class="absolute top-3 right-3 text-slate-300 hover:text-red-500">
+            <ion-icon name="trash-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="showNewAddressForm" class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 space-y-4">
+        <div class="space-y-3">
+          <div class="input-wrapper">
+            <ion-input [(ngModel)]="addressForm.recipient_name" placeholder="¿Quién recibe?" class="custom-input"></ion-input>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="input-wrapper"><ion-input [(ngModel)]="addressForm.recipient_phone" placeholder="Teléfono" class="custom-input"></ion-input></div>
+            <div class="input-wrapper"><ion-input [(ngModel)]="addressForm.postal_code" placeholder="CP" class="custom-input"></ion-input></div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="input-wrapper"><ion-input [(ngModel)]="addressForm.state" placeholder="Estado" class="custom-input"></ion-input></div>
+            <div class="input-wrapper"><ion-input [(ngModel)]="addressForm.municipality" placeholder="Municipio" class="custom-input"></ion-input></div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="input-wrapper"><ion-input [(ngModel)]="addressForm.locality" placeholder="Ciudad" class="custom-input"></ion-input></div>
+            <div class="input-wrapper"><ion-input [(ngModel)]="addressForm.neighborhood" placeholder="Colonia" class="custom-input"></ion-input></div>
+          </div>
+          <div class="grid grid-cols-3 gap-3">
+            <div class="col-span-2 input-wrapper"><ion-input [(ngModel)]="addressForm.street" placeholder="Calle" class="custom-input"></ion-input></div>
+            <div class="input-wrapper"><ion-input [(ngModel)]="addressForm.external_number" placeholder="# Ext" class="custom-input"></ion-input></div>
+          </div>
+          <div class="mt-2">
+            <label class="form-label text-[10px] font-bold text-slate-400 uppercase tracking-widest">Referencias / Indicaciones</label>
+            <div class="input-wrapper !items-start p-2">
+              <ion-icon name="map-outline" class="input-icon mt-1"></ion-icon>
+              <ion-textarea [(ngModel)]="addressForm.references"
+                            placeholder="Ej. Portón azul, frente al parque, entre calle X y Y..."
+                            rows="2"
+                            class="custom-input !min-h-[60px] text-xs">
+              </ion-textarea>
+            </div>
+          </div>
+          <ion-item lines="none" class="--background: transparent; font-size: 11px;">
+            <ion-checkbox [(ngModel)]="addressForm.is_default" labelPlacement="end">S/N</ion-checkbox>
+          </ion-item>
+        </div>
+      </div>
+    </div>
+  </ion-content>
+
+  <ion-footer class="ion-no-border p-6 bg-white border-t border-slate-100">
+    <div class="flex justify-between items-center mb-4">
+      <span class="text-slate-400 font-bold text-xs uppercase tracking-tighter">Total</span>
+      <span class="text-2xl font-black text-slate-900">${{ cartService.total }}</span>
+    </div>
+    <button (click)="checkout()" [disabled]="!isOrderReady()"
+            class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black uppercase text-[11px] shadow-xl shadow-blue-200 active:scale-95 transition-all disabled:opacity-30">
+      Confirmar y Pagar
+    </button>
+  </ion-footer>
+</ion-menu>

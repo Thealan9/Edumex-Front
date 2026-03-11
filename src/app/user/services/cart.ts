@@ -40,10 +40,10 @@ export class Cart {
   }
 
   // Método para enviar la orden al servidor
-  checkout(addressData: any): Observable<any> {
+  checkout(addressId: number | null, addressData: any = null): Observable<any> {
     const payload = {
-      address_id: null, // Si es nueva
-      address_data: addressData, // Enviamos el objeto completo para que el backend lo cree
+      address_id: addressId,
+      address_data: addressData,
       items: this.items.map(i => ({
         id: i.book.id,
         quantity: i.quantity,
