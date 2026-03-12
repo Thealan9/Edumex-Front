@@ -10,6 +10,7 @@ import {HttpClient} from "@angular/common/http";
 })
 export class MyOrdersPage implements OnInit {
   orders: any[] = [];
+  selectedOrder: any = null;
 
   constructor(private http: HttpClient) {}
 
@@ -25,13 +26,16 @@ export class MyOrdersPage implements OnInit {
 
   // Método para el Stepper visual
   getStatusStep(status: string): number {
-    switch(status) {
-      case 'paid': return 1;
-      case 'shipped': return 2;
-      case 'in_transit': return 3;
-      case 'delivered': return 4;
-      default: return 1;
-    }
+    const steps: any = { 'paid': 1, 'shipped': 2, 'in_transit': 3, 'delivered': 4 };
+    return steps[status] || 1;
+  }
+
+  viewDetail(order: any) {
+    this.selectedOrder = order;
+  }
+
+  closeDetail() {
+    this.selectedOrder = null;
   }
   statusLabels: any = {
     'paid': 'Preparando en Bodega',
