@@ -24,6 +24,8 @@ export interface Book {
   size: string;
   supplier: string;
   total_stock?: number;
+  image_url?: string; // Para mostrar la imagen en el front
+  image_path?: string;
 }
 
 @Injectable({
@@ -71,4 +73,15 @@ export class AdminBooks {
       tap(() => this._refresh.next())
     );
   }
+
+  uploadImage(id: number, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    // Usamos el endpoint específico que definimos en Laravel
+    return this.http.post(`${environment.apiUrl}/admin/books/${id}/image`, formData).pipe(
+      tap(() => this._refresh.next())
+    );
+  }
+
 }

@@ -1,9 +1,9 @@
 <ion-header class="ion-no-border">
   <ion-toolbar class="--background: transparent; px-4">
-    <ion-title class="text-slate-800 font-bold text-2xl">Catálogo de Libros</ion-title>
+    <ion-title class="text-slate-800 font-bold text-2xl uppercase tracking-tighter italic">Cartelera de Libros</ion-title>
     <ion-buttons slot="end">
-      <ion-button fill="solid" color="primary" class="rounded-lg font-bold" (click)="openCreateEdit()">
-        <ion-icon slot="start" name="add-outline" ></ion-icon>
+      <ion-button fill="solid" color="primary" class="rounded-2xl font-bold shadow-lg" (click)="openCreateEdit()">
+        <ion-icon slot="start" name="add-outline"></ion-icon>
         Nuevo Libro
       </ion-button>
     </ion-buttons>
@@ -11,7 +11,7 @@
 </ion-header>
 
 <ion-content class="ion-padding bg-slate-50">
-  <div class="mb-6 max-w-md">
+  <div class="mb-8 max-w-xl mx-auto">
     <ion-searchbar
       placeholder="Buscar por ISBN o Título..."
       (ionInput)="onSearch($event)"
@@ -20,57 +20,60 @@
     </ion-searchbar>
   </div>
 
-  <div class="overflow-hidden bg-white rounded-xl border border-slate-200 shadow-sm">
-    <table class="min-w-full divide-y divide-slate-200">
-      <thead class="bg-slate-50">
-      <tr>
-        <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Libro / ISBN</th>
-        <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Nivel</th>
-        <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Stock Real</th>
-        <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Precio Unit.</th>
-        <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Estado</th>
-        <th class="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Acciones</th>
-      </tr>
-      </thead>
-      <tbody class="divide-y divide-slate-100">
-      <tr *ngFor="let book of books" class="hover:bg-slate-50 transition-colors">
-        <td class="px-6 py-4">
-          <div class="text-sm font-bold text-slate-900">{{ book.title }}</div>
-          <div class="text-xs text-slate-500">{{ book.isbn }}</div>
-        </td>
-        <td class="px-6 py-4">
-            <span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-700">
-              {{ book.level }}
-            </span>
-        </td>
-        <td class="px-6 py-4">
-          <div [class]="(book.total_stock! <= book.stock_alert!) ? 'text-red-600 font-bold' : 'text-slate-700'">
-            {{ book.total_stock }} uds.
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+
+    <div *ngFor="let book of books" class="group relative bg-white rounded-[2rem] p-3 shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col">
+
+      <div class="relative aspect-[3/4] rounded-[1.5rem] overflow-hidden bg-slate-200 shadow-inner group-hover:scale-[1.02] transition-transform duration-300">
+
+        <img [src]="book.image_url || 'assets/no-book.png'"
+             class="w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all">
+
+        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3">
+          <button (click)="triggerFileInput(book.id!)"
+                  class="bg-white text-blue-600 px-4 py-2 rounded-full font-black text-[10px] uppercase shadow-xl active:scale-90 transition-all">
+            Cambiar Portada
+          </button>
+          <input type="file" [id]="'file-input-' + book.id" (change)="onFileSelected($event, book.id!)" accept="image/*" class="hidden">
+        </div>
+
+        <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-md text-slate-900 px-3 py-1 rounded-xl text-[10px] font-black shadow-sm">
+          {{ book.level }}
+        </div>
+      </div>
+
+      <div class="mt-4 px-2 flex-1 flex flex-col">
+        <h3 class="text-sm font-black text-slate-900 leading-tight uppercase truncate">{{ book.title }}</h3>
+        <p class="text-[10px] text-slate-400 font-bold mb-2">{{ book.isbn }}</p>
+
+        <div class="flex justify-between items-center mt-auto pt-3 border-t border-slate-50">
+          <div>
+            <p class="text-[9px] font-bold text-slate-400 uppercase">Precio Unit.</p>
+            <p class="text-sm font-black text-blue-600">${{ book.price_unit }}</p>
           </div>
-          <p *ngIf="book.total_stock! <= book.stock_alert!" class="text-[10px] text-red-500 italic">Bajo Stock</p>
-        </td>
-        <td class="px-6 py-4 text-sm text-slate-700 font-medium">
-          ${{ book.price_unit }}
-        </td>
-        <td class="px-6 py-4">
-          <ion-toggle [checked]="book.active" (ionChange)="toggleStatus(book)" color="success"></ion-toggle>
-        </td>
-        <td class="px-6 py-4 text-right">
-          <ion-button fill="clear" color="primary" (click)="openCreateEdit(book)">
-            <ion-icon name="create-outline"></ion-icon>
-          </ion-button>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+          <div class="text-right">
+            <p class="text-[9px] font-bold text-slate-400 uppercase">Stock</p>
+            <p class="text-xs font-bold" [class.text-red-500]="book.total_stock! <= book.stock_alert!">
+              {{ book.total_stock }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-3 flex gap-2 items-center">
+        <button (click)="openCreateEdit(book)"
+                class="flex-1 bg-slate-100 hover:bg-blue-100 text-slate-600 hover:text-blue-600 p-2 rounded-xl transition-colors">
+          <ion-icon name="create-outline" class="text-lg"></ion-icon>
+        </button>
+        <div class="bg-slate-50 px-2 py-1 rounded-xl flex items-center">
+          <ion-toggle [checked]="book.active" (ionChange)="toggleStatus(book)" color="success" class="scale-75"></ion-toggle>
+        </div>
+      </div>
+
+    </div>
   </div>
 
   <ion-refresher slot="fixed" (ionRefresh)="loadBooks($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-
-  <div *ngIf="books.length === 0 && !loading" class="text-center py-12">
-    <ion-icon name="book-outline" class="text-5xl text-slate-300 mb-2"></ion-icon>
-    <p class="text-slate-500">No se encontraron libros en el inventario.</p>
-  </div>
 </ion-content>

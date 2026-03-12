@@ -1,42 +1,47 @@
 <ion-content class="bg-slate-50">
   <div class="p-6">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div *ngFor="let book of books" class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
-        <div class="p-6">
-          <div class="flex justify-between items-start mb-4">
-            <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-[10px] font-black uppercase">
+      <div *ngFor="let book of books" class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+
+        <div class="relative aspect-[4/3] overflow-hidden bg-slate-200">
+          <img [src]="book.image_url"
+               class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+               alt="{{ book.title }}">
+
+          <div class="absolute top-4 left-4">
+            <span class="px-3 py-1 rounded-xl bg-white/90 backdrop-blur-md text-blue-700 text-[10px] font-black uppercase shadow-sm">
               {{ book.level }}
             </span>
-            <div class="text-emerald-500 font-bold text-lg">${{ book.price_unit }}</div>
+          </div>
+        </div>
+
+        <div class="p-6">
+          <div class="flex justify-between items-start mb-2">
+            <h3 class="text-slate-800 font-bold text-base leading-tight h-10 overflow-hidden">{{ book.title }}</h3>
+            <div class="text-emerald-500 font-black text-lg">${{ book.price_unit }}</div>
           </div>
 
-          <h3 class="text-slate-800 font-bold text-lg mb-1 leading-tight h-12 overflow-hidden">{{ book.title }}</h3>
-          <p class="text-slate-400 text-xs mb-4">{{ book.autor }}</p>
+          <p class="text-slate-400 text-[10px] mb-4 uppercase font-bold tracking-widest">{{ book.autor }}</p>
 
           <div class="flex items-center justify-between pt-4 border-t border-slate-50">
             <div class="text-[10px] text-slate-400">
-              Disponibles: <span class="font-bold text-slate-600">{{ book.total_stock }}</span>
+              Stock: <span class="font-bold text-slate-600">{{ book.total_stock }}</span>
             </div>
             <div class="flex items-center gap-2">
               <button (click)="addToCart(book, 'unit')"
-                      class="flex-1 bg-blue-600 text-white py-2 px-3 rounded-xl text-xs font-bold active:scale-95 transition-all">
-                <ion-icon name="add-outline" class="mr-1"></ion-icon> Unidad
+                      class="bg-blue-600 text-white py-2 px-3 rounded-xl text-[10px] font-bold active:scale-95 transition-all">
+                + UNIDAD
               </button>
 
               <button *ngIf="user?.customer_type === 'institutional' && book.price_package"
                       (click)="addToCart(book, 'package')"
-                      class="flex-1 bg-purple-600 text-white py-2 px-3 rounded-xl text-xs font-bold active:scale-95 transition-all">
-                <ion-icon name="layers-outline" class="mr-1"></ion-icon> Paquete
+                      class="bg-purple-600 text-white py-2 px-3 rounded-xl text-[10px] font-bold active:scale-95 transition-all">
+                + PAQUETE
               </button>
             </div>
           </div>
         </div>
       </div>
-    </div>
-
-    <div *ngIf="books.length === 0 && !loading" class="text-center py-20">
-      <ion-icon name="book-outline" class="text-6xl text-slate-200 mb-4"></ion-icon>
-      <p class="text-slate-400 font-medium">No se encontraron libros en el catálogo.</p>
     </div>
   </div>
 </ion-content>

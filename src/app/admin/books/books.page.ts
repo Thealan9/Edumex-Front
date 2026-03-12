@@ -71,6 +71,39 @@ export class BooksPage implements OnInit, OnDestroy {
     }
   }
 
+  // Método para disparar el selector de archivos
+  triggerFileInput(id: number) {
+    document.getElementById('file-input-' + id)?.click();
+  }
+
+// Método que procesa la subida
+  async onFileSelected(event: any, bookId: number) {
+    const file: File = event.target.files[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert('La imagen es muy pesada (máx 2MB)');
+      return;
+    }
+
+    const loading = await this.loadingCtrl.create({
+      message: 'Subiendo portada...',
+      spinner: 'crescent'
+    });
+    await loading.present();
+
+    this.bookService.uploadImage(bookId, file).subscribe({
+      next: () => {
+        loading.dismiss();
+        // El refresh$ del servicio hará que loadBooks() se dispare solo
+      },
+      error: (err) => {
+        loading.dismiss();
+        console.log(err);
+      }
+    });
+  }
+
 
   onSearch(event: any) {
     this.searchTerm = event.detail.value;
