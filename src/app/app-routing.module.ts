@@ -36,7 +36,14 @@ const routes: Routes = [
       {
         path: 'pedidos',
         loadChildren: () => import('./user/my-orders/my-orders.module').then( m => m.MyOrdersPageModule)
-      }
+      },
+      {
+        path: 'perfil',
+        resolve: {
+          user: UserResolver
+        },
+        loadChildren: () => import('./user/perfil/perfil.module').then( m => m.PerfilPageModule)
+      },
     ]
   },
 

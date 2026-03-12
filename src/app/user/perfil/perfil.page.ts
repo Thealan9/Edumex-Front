@@ -3,15 +3,16 @@ import { ActivatedRoute } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { EditComponent } from './components/edit/edit.component';
 import { Auth } from 'src/app/core/auth';
-import { ChangePasswordComponent } from './components/change-password/change-password.component';
+import {ChangePasswordComponent} from "./components/change-password/change-password.component";
+
 
 @Component({
-  selector: 'app-profile',
-  templateUrl: './profile.page.html',
-  styleUrls: ['./profile.page.scss'],
-  standalone: false,
+  selector: 'app-perfil',
+  templateUrl: './perfil.page.html',
+  styleUrls: ['./perfil.page.scss'],
+  standalone: false
 })
-export class ProfilePage implements OnInit {
+export class PerfilPage implements OnInit {
   user: any;
 
   constructor(
@@ -32,6 +33,7 @@ export class ProfilePage implements OnInit {
     //   }
     // });
     this.user = this.route.snapshot.data['user'];
+    console.log(this.user);
   }
 
   async openEdit() {
@@ -49,7 +51,6 @@ export class ProfilePage implements OnInit {
 
     await modal.present();
   }
-
   async openChangePassword() {
     const modal = await this.modalCtrl.create({
       component: ChangePasswordComponent,
