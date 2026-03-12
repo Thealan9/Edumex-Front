@@ -28,7 +28,10 @@
                 <ion-icon slot="start" name="book-outline"></ion-icon>
                 <ion-label *ngIf="!isCollapsed">Libros</ion-label>
               </ion-item>
-
+              <ion-item routerLink="/home/pedidos" routerLinkActive="active-link" lines="none" class="sidebar-item" [class.collapsed]="isCollapsed">
+                <ion-icon slot="start" name="book-outline"></ion-icon>
+                <ion-label *ngIf="!isCollapsed">Mis pedidos</ion-label>
+              </ion-item>
               <ion-item (click)="openCart()" lines="none" class="sidebar-item" [class.collapsed]="isCollapsed" style="cursor:pointer">
                 <ion-icon slot="start" name="bag-handle-outline"></ion-icon>
                 <ion-label *ngIf="!isCollapsed">Mi carrito</ion-label>

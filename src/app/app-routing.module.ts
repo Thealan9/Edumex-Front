@@ -32,6 +32,10 @@ const routes: Routes = [
         path: 'libros',
         loadChildren: () =>
           import('./user/books/books.module').then(m => m.BooksPageModule)
+      },
+      {
+        path: 'pedidos',
+        loadChildren: () => import('./user/my-orders/my-orders.module').then( m => m.MyOrdersPageModule)
       }
     ]
   },
@@ -95,13 +99,12 @@ const routes: Routes = [
     loadChildren: () => import('./warehouseman/home/home.module').then( m => m.HomePageModule)
   },
   {
-    path: 'location',
-    loadChildren: () => import('./admin/location/location.module').then( m => m.LocationPageModule)
+    path: 'warehouseman/orders',
+    canMatch: [AuthGuard,RoleGuard],
+    data: { roles: ['warehouseman'] },
+    loadChildren: () => import('./warehouseman/orders/orders.module').then( m => m.OrdersPageModule)
   },
-  {
-    path: 'books',
-    loadChildren: () => import('./user/books/books.module').then( m => m.BooksPageModule)
-  }
+
 
 
 
