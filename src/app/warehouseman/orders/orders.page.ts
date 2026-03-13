@@ -50,10 +50,10 @@ export class OrdersPage implements OnInit, OnDestroy {
           text: 'Finalizar',
           handler: (companyValue) => {
             const randomTrack = Math.floor(Math.random() * 8999999999 + 1000000000);
-
+            const trackingString = `${randomTrack}`;
             this.http.post(`${environment.apiUrl}/warehouseman/orders/${orderId}/dispatch`, {
               tracking_company: companyValue,
-              tracking_number: randomTrack
+              tracking_number: trackingString
             }).subscribe(() => {
               this.pendingOrders = this.pendingOrders.filter(o => o.id !== orderId);
               this.showAlert('Pedido enviado correctamente', 'success');

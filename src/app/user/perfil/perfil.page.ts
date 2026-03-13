@@ -4,6 +4,9 @@ import { ModalController } from '@ionic/angular';
 import { EditComponent } from './components/edit/edit.component';
 import { Auth } from 'src/app/core/auth';
 import {ChangePasswordComponent} from "./components/change-password/change-password.component";
+import {HttpClient} from "@angular/common/http";
+import {environment} from "../../../environments/environment";
+import {AddressComponent} from "./components/address/address.component";
 
 
 @Component({
@@ -14,26 +17,18 @@ import {ChangePasswordComponent} from "./components/change-password/change-passw
 })
 export class PerfilPage implements OnInit {
   user: any;
+  addresses: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
     private modalCtrl: ModalController,
     private auth: Auth,
+    private http: HttpClient
   ) {}
 
   ngOnInit() {
-    // this.auth.yo().subscribe({
-    //   next: (res) => {
-    //     this.user = res;
-    //     this.loading = false;
-    //     //console.log('Usuario:', res);
-    //   },
-    //   error: () => {
-    //     this.loading = false;
-    //   }
-    // });
     this.user = this.route.snapshot.data['user'];
-    console.log(this.user);
+    this.loadAddresses();
   }
 
   async openEdit() {
@@ -65,6 +60,35 @@ export class PerfilPage implements OnInit {
     });
 
     await modal.present();
+  }
+
+  async openAddressModal(address?: any) {
+    const modal = await this.modalCtrl.create({
+      component: AddressComponent,
+      componentProps: {
+        address: address || null
+      },
+      cssClass: 'address-modal'
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+    if (data?.refresh) {
+      this.loadAddresses();
+    }
+  }
+
+  loadAddresses() {
+    this.http.get<any[]>(`${environment.apiUrl}/user/addresses`).subscribe(res => {
+      this.addresses = res;
+    });
+  }
+
+  deleteAddress(id: number) {
+    this.http.delete(`${environment.apiUrl}/user/addresses/${id}`).subscribe(() => {
+      this.loadAddresses(); // Recargar lista
+    });
   }
 
   refreshUserData() {
