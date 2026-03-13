@@ -4,11 +4,16 @@ import { environment } from 'src/environments/environment';
 import { Observable, Subject, tap } from 'rxjs';
 
 export interface InventoryMovement {
+  id?: number;
   book_id: number;
   location_id: number;
   type: 'input' | 'output' | 'adjustment' | 'return';
   quantity: number;
   description?: string;
+  created_at?: string;
+  book?: any;      // Para que el Home pueda leer el título
+  location?: any;  // Para que el Home pueda leer el código del estante
+  user?: any;
 }
 @Injectable({
   providedIn: 'root',
@@ -21,15 +26,13 @@ export class WarehouseInventory {
 
   constructor(private http: HttpClient) {}
 
-  // Registrar Entrada/Salida de libros
-  registerMovement(movement: InventoryMovement): Observable<any> {
+  registerMovement(movement: any): Observable<any> {
     return this.http.post(`${this.API}/move`, movement).pipe(
       tap(() => this._refresh.next())
     );
   }
 
-  // Historial de movimientos realizados por este bodeguero
   getMyMovements(): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/warehouseman/movements`);
+    return this.http.get(`${this.API}/history`);
   }
 }

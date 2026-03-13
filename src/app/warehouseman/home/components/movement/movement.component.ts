@@ -23,8 +23,8 @@ export class MovementComponent  implements OnInit {
     book_id: [null, [Validators.required]],
     location_id: [null, [Validators.required]],
     quantity: [1, [Validators.required, Validators.min(1)]],
-    description: [''],
-    type: [''] // Se asignará en ngOnInit
+    description: ['', [Validators.required, Validators.minLength(5)]],
+    type: ['']
   });
 
   constructor(
@@ -48,9 +48,9 @@ export class MovementComponent  implements OnInit {
       error: (err) => console.error('Error libros:', err)
     });
 
-    this.adminLocations.getLocations().subscribe(res => {
-      this.locations = res.data;
-      console.log('Datos de estantes:', res.data);
+    this.adminLocations.getLocations().subscribe({
+      next: (res) => this.locations = res.data,
+      error: (err) => console.error('Error cargando ubicaciones:', err)
     });
   }
 
@@ -58,7 +58,7 @@ export class MovementComponent  implements OnInit {
     if (this.form.invalid) return;
     this.isSubmitting = true;
 
-    const data = this.form.getRawValue() as any;
+    const data = this.form.getRawValue();
 
     this.warehouseService.registerMovement(data)
       .pipe(finalize(() => this.isSubmitting = false))
