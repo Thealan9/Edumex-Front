@@ -15,6 +15,8 @@ import {Auth} from "../../core/auth";
 export class BooksPage implements OnInit {
   categories = ['Todos', 'General English', 'Grammar & Vocabulary', 'Exam Preparation', 'Business English','Readers','Teacher Resources'];
   selectedCategory = 'Todos';
+  searchText = '';
+
   allBooks: Book[] = [];
   books: Book[] = [];
   loading: boolean = false;
@@ -36,7 +38,7 @@ export class BooksPage implements OnInit {
     this.bookService.getBooks().subscribe({
       next: (res) => {
         this.allBooks = res.data;
-        this.books = res.data;
+        this.applyFilters(); // <--- Centralizamos aquí
         this.loading = false;
         if (event) event.target.complete();
       },
@@ -47,13 +49,33 @@ export class BooksPage implements OnInit {
       }
     });
   }
+
+  applyFilters() {
+    this.books = this.allBooks.filter(book => {
+
+      // 1. Normalización
+      const title = book.title ? book.title.toLowerCase() : '';
+      const search = this.searchText ? this.searchText.toLowerCase().trim() : '';
+
+      // 2. Filtro por Categoría (Sigue funcionando con los Chips)
+      const categoryMatch = this.selectedCategory === 'Todos' ||
+        book.category === this.selectedCategory;
+
+      // 3. Filtro por Texto (AHORA SOLO POR NOMBRE)
+      const textMatch = title.includes(search);
+
+      return categoryMatch && textMatch;
+    });
+  }
+
   filterByCategory(category: string) {
     this.selectedCategory = category;
-    if (category === 'Todos') {
-      this.books = this.allBooks;
-    } else {
-      this.books = this.allBooks.filter(b => b.category === category);
-    }
+    this.applyFilters();
+  }
+
+  onSearch(event: any) {
+    this.searchText = event.target.value || '';
+    this.applyFilters();
   }
 
   async addToCart(book: Book,type: 'unit' | 'package') {

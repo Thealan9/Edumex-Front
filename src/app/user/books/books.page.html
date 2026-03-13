@@ -1,5 +1,16 @@
 <ion-content class="bg-slate-50">
   <div class="p-6">
+    <div class="max-w-2xl mx-auto mb-6">
+      <ion-searchbar
+        placeholder="¿Qué libro buscas?"
+        (ionInput)="onSearch($event)"
+        class="custom-search"
+        mode="ios"
+        animated="true"
+        debounce="300">
+      </ion-searchbar>
+    </div>
+
     <div class="flex overflow-x-auto gap-2 px-6 mb-6 no-scrollbar">
       <ion-chip *ngFor="let cat of categories"
                 [outline]="selectedCategory !== cat"
@@ -50,6 +61,11 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <div *ngIf="books.length === 0 && !loading" class="text-center py-20">
+      <ion-icon name="search-outline" class="text-6xl text-slate-200 mb-4"></ion-icon>
+      <p class="text-slate-400 font-medium italic">No hay coincidencias para "{{ searchText }}" en {{ selectedCategory }}</p>
     </div>
   </div>
 </ion-content>
