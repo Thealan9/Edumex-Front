@@ -26,6 +26,7 @@ export interface Book {
   total_stock?: number;
   image_url?: string; // Para mostrar la imagen en el front
   image_path?: string;
+  category: string;
 }
 
 @Injectable({

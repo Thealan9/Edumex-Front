@@ -1,5 +1,13 @@
 <ion-content class="bg-slate-50">
   <div class="p-6">
+    <div class="flex overflow-x-auto gap-2 px-6 mb-6 no-scrollbar">
+      <ion-chip *ngFor="let cat of categories"
+                [outline]="selectedCategory !== cat"
+                (click)="filterByCategory(cat)"
+                class="font-black text-[10px] uppercase tracking-widest transition-all">
+        <ion-label>{{ cat }}</ion-label>
+      </ion-chip>
+    </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <div *ngFor="let book of books" class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
 

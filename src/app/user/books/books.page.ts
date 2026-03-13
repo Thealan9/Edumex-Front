@@ -13,7 +13,9 @@ import {Auth} from "../../core/auth";
   standalone: false
 })
 export class BooksPage implements OnInit {
-
+  categories = ['Todos', 'General English', 'Grammar & Vocabulary', 'Exam Preparation', 'Business English','Readers','Teacher Resources'];
+  selectedCategory = 'Todos';
+  allBooks: Book[] = [];
   books: Book[] = [];
   loading: boolean = false;
   cart$: Observable<any[]>;
@@ -33,7 +35,7 @@ export class BooksPage implements OnInit {
     this.loading = true;
     this.bookService.getBooks().subscribe({
       next: (res) => {
-        // Solo mostramos libros activos y con stock para el cliente
+        this.allBooks = res.data;
         this.books = res.data;
         this.loading = false;
         if (event) event.target.complete();
@@ -44,6 +46,14 @@ export class BooksPage implements OnInit {
         console.error('Error al cargar catálogo', err);
       }
     });
+  }
+  filterByCategory(category: string) {
+    this.selectedCategory = category;
+    if (category === 'Todos') {
+      this.books = this.allBooks;
+    } else {
+      this.books = this.allBooks.filter(b => b.category === category);
+    }
   }
 
   async addToCart(book: Book,type: 'unit' | 'package') {

@@ -38,6 +38,7 @@ export class CreateEditComponent implements OnInit {
     edition: [1, [Validators.required]],
     format: ['Tapa Blanda', [Validators.required]],
     size: ['', [Validators.required]],
+    category:['', [Validators.required]],
     supplier: ['', [Validators.required]],
   });
 
