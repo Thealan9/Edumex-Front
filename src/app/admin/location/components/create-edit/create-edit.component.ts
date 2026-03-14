@@ -31,7 +31,6 @@ export class CreateEditComponent  implements OnInit {
     if (this.data) {
       this.isEdit = true;
       this.form.patchValue(this.data);
-      // El código del estante no debería cambiarse si ya tiene libros (trazabilidad)
       this.form.get('code')?.disable();
     }
   }

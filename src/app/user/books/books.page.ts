@@ -38,7 +38,7 @@ export class BooksPage implements OnInit {
     this.bookService.getBooks().subscribe({
       next: (res) => {
         this.allBooks = res.data;
-        this.applyFilters(); // <--- Centralizamos aquí
+        this.applyFilters();
         this.loading = false;
         if (event) event.target.complete();
       },
@@ -53,15 +53,12 @@ export class BooksPage implements OnInit {
   applyFilters() {
     this.books = this.allBooks.filter(book => {
 
-      // 1. Normalización
       const title = book.title ? book.title.toLowerCase() : '';
       const search = this.searchText ? this.searchText.toLowerCase().trim() : '';
 
-      // 2. Filtro por Categoría (Sigue funcionando con los Chips)
       const categoryMatch = this.selectedCategory === 'Todos' ||
         book.category === this.selectedCategory;
 
-      // 3. Filtro por Texto (AHORA SOLO POR NOMBRE)
       const textMatch = title.includes(search);
 
       return categoryMatch && textMatch;
@@ -91,7 +88,6 @@ export class BooksPage implements OnInit {
           {
             text: 'Ver',
             handler: () => {
-              // Navegar al carrito si lo deseas
             }
           }
         ]

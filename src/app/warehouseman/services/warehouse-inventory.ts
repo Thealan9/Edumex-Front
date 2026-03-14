@@ -11,8 +11,8 @@ export interface InventoryMovement {
   quantity: number;
   description?: string;
   created_at?: string;
-  book?: any;      // Para que el Home pueda leer el título
-  location?: any;  // Para que el Home pueda leer el código del estante
+  book?: any;
+  location?: any;
   user?: any;
 }
 @Injectable({

@@ -20,7 +20,6 @@ export class Cart {
   constructor(private http: HttpClient) {}
 
   addToCart(book: Book, buy_type: 'unit' | 'package' = 'unit') {
-    // 1. Buscamos si ya existe el libro con el MISMO tipo de compra
     const exists = this.items.find(i =>
       i.book.id === book.id && i.buy_type === buy_type
     );
@@ -28,7 +27,6 @@ export class Cart {
     if (exists) {
       exists.quantity += 1;
     } else {
-      // 2. Ahora incluimos buy_type para cumplir con la interfaz
       this.items.push({
         book,
         quantity: 1,
@@ -39,7 +37,6 @@ export class Cart {
     this._cart.next([...this.items]);
   }
 
-  // Método para enviar la orden al servidor
   checkout(addressId: number | null, addressData: any = null): Observable<any> {
     const payload = {
       address_id: addressId,
@@ -62,7 +59,6 @@ export class Cart {
 
   get total() {
     return this.items.reduce((acc, item) => {
-      // Si el precio es null/undefined, usamos 0
       const price = item.buy_type === 'package'
         ? (item.book.price_package ?? 0)
         : (item.book.price_unit ?? 0);

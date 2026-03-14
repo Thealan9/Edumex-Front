@@ -4,7 +4,6 @@ import { environment } from 'src/environments/environment';
 import { Observable, Subject, tap } from 'rxjs';
 import { Auth } from 'src/app/core/auth';
 
-// Interface basada en tu migración de Laravel
 export interface Book {
   id?: number;
   title: string;
@@ -24,7 +23,7 @@ export interface Book {
   size: string;
   supplier: string;
   total_stock?: number;
-  image_url?: string; // Para mostrar la imagen en el front
+  image_url?: string;
   image_path?: string;
   category: string;
 }
@@ -56,7 +55,6 @@ export class AdminBooks {
     return this.http.get<{success: boolean, data: Book[]}>(this.baseUrl, { params });
   }
 
-  // USAR this.baseUrl en lugar de this.API
   storeBook(book: Book): Observable<any> {
     return this.http.post(this.baseUrl, book).pipe(
       tap(() => this._refresh.next())
@@ -79,7 +77,6 @@ export class AdminBooks {
     const formData = new FormData();
     formData.append('image', file);
 
-    // Usamos el endpoint específico que definimos en Laravel
     return this.http.post(`${environment.apiUrl}/admin/books/${id}/image`, formData).pipe(
       tap(() => this._refresh.next())
     );

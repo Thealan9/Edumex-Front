@@ -24,7 +24,7 @@ export class CreateEditComponent  implements OnInit {
     password: ['', [Validators.required, Validators.minLength(8)]],
     role: ['user', [Validators.required]],
     customer_type: ['individual', [Validators.required]],
-    tax_id: [''], // Opcional para individuales, recomendado para instituciones
+    tax_id: [''],
     active: [true]
   });
 
@@ -38,7 +38,6 @@ export class CreateEditComponent  implements OnInit {
     if (this.data) {
       this.isEdit = true;
       this.form.patchValue(this.data);
-      // En edición la contraseña no es obligatoria a menos que se quiera cambiar
       this.form.get('password')?.clearValidators();
       this.form.get('password')?.updateValueAndValidity();
     }
@@ -48,20 +47,19 @@ export class CreateEditComponent  implements OnInit {
     if (this.form.invalid) return;
     this.isSubmitting = true;
 
-    // 1. Obtenemos los valores.
-    // Usamos 'as any' momentáneamente para manipular el password o casteamos a User
+
     const rawData = this.form.getRawValue();
 
-    // 2. Manejo de contraseña y tipos para evitar el error de 'delete'
+
     const payload: any = { ...rawData };
 
     if (this.isEdit) {
-      // Si estamos editando y no hay password, lo quitamos del envío
+
       if (!payload.password) {
         delete payload.password;
       }
 
-      // Aquí usamos this.data!.id porque en isEdit el ID es seguro
+
       this.userService.updateUser(this.data!.id!, payload as Partial<User>)
         .pipe(finalize(() => this.isSubmitting = false))
         .subscribe({
@@ -84,7 +82,6 @@ export class CreateEditComponent  implements OnInit {
     }
   }
 
-// Helper para no repetir código de error
   private handleError(err: any) {
     const message = err.error?.message || 'Error en el servidor';
     this.showAlert(message, 'warning');

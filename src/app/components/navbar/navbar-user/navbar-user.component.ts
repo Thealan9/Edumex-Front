@@ -67,7 +67,7 @@ export class NavbarUserComponent implements OnInit {
     if (this.showNewAddressForm) {
       return this.addressForm.recipient_name &&
         this.addressForm.street &&
-        this.addressForm.locality && // Ciudad obligatoria
+        this.addressForm.locality &&
         this.addressForm.postal_code;
     }
     return this.selectedAddressId !== null;
@@ -75,12 +75,11 @@ export class NavbarUserComponent implements OnInit {
   loadAddresses() {
     this.http.get(`${environment.apiUrl}/user/addresses`).subscribe((res: any) => {
       this.savedAddresses = res;
-      // Si tiene direcciones, selecciona la predeterminada por default
       if (this.savedAddresses.length > 0) {
         const def = this.savedAddresses.find(a => a.is_default);
         this.selectedAddressId = def ? def.id : this.savedAddresses[0].id;
       } else {
-        this.showNewAddressForm = true; // Si no tiene, abre el formulario
+        this.showNewAddressForm = true;
       }
     });
   }
@@ -122,7 +121,7 @@ export class NavbarUserComponent implements OnInit {
         this.resetAddressForm();
         this.showAlert('¡Pedido realizado con éxito!', 'success');
         window.location.reload();
-        this.loadAddresses(); // Recarga para ver la nueva en la lista
+        this.loadAddresses();
       },
       error: (err) => {
         this.showAlert(err.error?.message || 'Error al procesar la compra', 'warning');

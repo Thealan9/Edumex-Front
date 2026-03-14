@@ -26,7 +26,6 @@ export class HomePage implements OnInit, OnDestroy {
   ngOnInit() {
     this.loadRecentMovements();
 
-    // Suscripción para refrescar la lista cuando se haga un nuevo movimiento
     this.refreshSub = this.warehouseService.refresh$.subscribe(() => {
       this.loadRecentMovements();
     });
@@ -39,7 +38,6 @@ export class HomePage implements OnInit, OnDestroy {
   loadRecentMovements() {
     this.warehouseService.getMyMovements().subscribe({
       next: (res) => {
-        // Tomamos los últimos 5 para el resumen del home
         this.recentMovements = res.data.slice(0, 5);
       },
       error: (err) => console.error('Error cargando movimientos', err)
@@ -49,7 +47,7 @@ export class HomePage implements OnInit, OnDestroy {
   async openMovementModal(type: 'input' | 'output') {
     const modal = await this.modalCtrl.create({
       component: MovementComponent,
-      componentProps: { type }, // Le pasamos si es Entrada o Salida
+      componentProps: { type },
       cssClass: 'movement-modal'
     });
 

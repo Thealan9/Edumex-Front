@@ -25,7 +25,6 @@ export class BooksPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadBooks();
-    // Suscripción al refresh para recargar cuando se cree/edite un libro
     this.refreshSub = this.bookService.refresh$.subscribe(() => {
       this.loadBooks();
     });
@@ -71,12 +70,11 @@ export class BooksPage implements OnInit, OnDestroy {
     }
   }
 
-  // Método para disparar el selector de archivos
   triggerFileInput(id: number) {
     document.getElementById('file-input-' + id)?.click();
   }
 
-// Método que procesa la subida
+
   async onFileSelected(event: any, bookId: number) {
     const file: File = event.target.files[0];
     if (!file) return;

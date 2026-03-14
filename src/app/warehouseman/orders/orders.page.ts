@@ -18,7 +18,7 @@ export class OrdersPage implements OnInit, OnDestroy {
   constructor(private http: HttpClient,private modalCtrl: ModalController,private alertCtrl: AlertController,) {}
 
   ngOnInit() {
-    this.pollingSub = interval(10000) // 10 segundos
+    this.pollingSub = interval(10000)
       .pipe(
         startWith(0),
         switchMap(() => this.http.get<any[]>(`${environment.apiUrl}/warehouseman/pending-despatch`))

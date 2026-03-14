@@ -6,9 +6,9 @@ import {Auth} from "../../core/auth";
 
 export interface Location {
   id?: number;
-  code: string;           // Ej: 'ESTANTE-A1'
-  max_capacity: number;   // Límite de unidades
-  current_capacity: number; // Cantidad actual ocupada
+  code: string;
+  max_capacity: number;
+  current_capacity: number;
   created_at?: string;
 }
 @Injectable({

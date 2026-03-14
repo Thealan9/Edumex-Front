@@ -1,113 +1,113 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar>
-    <ion-title class="text-xs font-black uppercase tracking-widest">Mis Pedidos</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content class="bg-slate-50">
 
   <div class="p-4 space-y-3" *ngIf="!selectedOrder">
     <div *ngFor="let order of orders"
          (click)="viewDetail(order)"
-         class="bg-white rounded-3xl p-4 shadow-sm border border-slate-100 flex items-center justify-between active:scale-95 transition-all cursor-pointer">
+         class="group bg-white rounded-2xl p-4 shadow-sm border-none hover:shadow-md transition-all cursor-pointer flex items-center justify-between active:scale-[0.98]">
+
       <div class="flex items-center gap-4">
-        <div class="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-blue-600">
+        <div class="w-12 h-12 rounded-xl bg-edumex-light flex items-center justify-center text-edumex-blue group-hover:bg-edumex-gold group-hover:text-edumex-navy transition-colors">
           <ion-icon name="cube-outline" class="text-xl"></ion-icon>
         </div>
         <div>
-          <p class="text-[10px] text-slate-400 font-bold">Llegó el {{ order.shipped_at | date:'dd MMM yyyy' }}</p>
-          <p class="text-[10px] font-black"
-             [ngClass]="order.status === 'delivered' ? 'text-green-500' : 'text-blue-500'">
-            {{ statusLabels[order.status] }}
-          </p>
+          <p class="text-[10px] text-slate-400 font-bold">Llegó el {{ order.shipped_at | date:'dd MMM yyyy' }}</p>          <div class="flex items-center gap-1.5 mt-1">
+            <div [class]="order.status === 'delivered' ? 'bg-emerald-500' : 'bg-edumex-gold'" class="w-1.5 h-1.5 rounded-full animate-pulse"></div>
+            <p class="text-[10px] font-black uppercase"
+               [ngClass]="order.status === 'delivered' ? 'text-emerald-600' : 'text-edumex-gold'">
+              {{ statusLabels[order.status] }}
+            </p>
+          </div>
         </div>
       </div>
-      <div class="text-right">
-        <p class="text-sm font-black text-slate-900">${{ order.total }}</p>
+
+      <div class="flex items-center gap-3">
+        <div class="text-right">
+          <p class="text-xs font-black text-edumex-gray uppercase tracking-tighter">Total</p>
+          <p class="text-sm font-black text-edumex-navy">${{ order.total }}</p>
+        </div>
         <ion-icon name="chevron-forward" class="text-slate-300"></ion-icon>
       </div>
     </div>
   </div>
 
-  <div class="p-4" *ngIf="selectedOrder">
-    <button (click)="closeDetail()" class="flex items-center gap-2 text-blue-600 text-[10px] font-black uppercase mb-4">
-      <ion-icon name="arrow-back"></ion-icon> Volver a la lista
+  <div class="p-4 md:p-8 max-w-3xl mx-auto" *ngIf="selectedOrder">
+    <button (click)="closeDetail()" class="flex items-center gap-2 text-edumex-blue text-[10px] font-black uppercase mb-6 hover:text-edumex-navy transition-colors">
+      <ion-icon name="arrow-back-circle" class="text-lg"></ion-icon> Volver a mis compras
     </button>
 
-    <div class="bg-white rounded-[40px] shadow-xl overflow-hidden border border-slate-100">
-      <div class="bg-slate-900 p-6 text-white text-center">
-        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Estado del Envío</p>
-        <h2 class="text-lg font-black mt-1">{{ statusLabels[selectedOrder.status] }}</h2>
+    <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+      <div class="bg-edumex-navy p-8 text-center">
+        <p class="text-[10px] font-bold text-edumex-gray uppercase tracking-[0.3em]">Status de Operación</p>
+        <h2 class="text-xl font-black text-white mt-1 uppercase tracking-tight">{{ statusLabels[selectedOrder.status] }}</h2>
       </div>
 
-      <div class="p-6 bg-white flex items-center justify-between">
+      <div class="p-8 bg-white flex items-center justify-between border-b border-slate-50">
         <div *ngFor="let step of [1,2,3,4]" class="flex flex-col items-center flex-1 relative">
-          <div class="w-8 h-8 rounded-full flex items-center justify-center z-10 transition-all duration-500"
-               [class.bg-blue-600]="getStatusStep(selectedOrder.status) >= step"
+          <div class="w-10 h-10 rounded-full flex items-center justify-center z-10 transition-all duration-500 border-4 border-white shadow-sm"
+               [class.bg-edumex-gold]="getStatusStep(selectedOrder.status) >= step"
                [class.bg-slate-100]="getStatusStep(selectedOrder.status) < step">
-            <ion-icon [name]="step === 1 ? 'card' : (step === 2 ? 'cube' : (step === 3 ? 'airplane' : 'home'))"
-                      [class.text-white]="getStatusStep(selectedOrder.status) >= step"
+            <ion-icon [name]="step === 1 ? 'card-outline' : (step === 2 ? 'cube-outline' : (step === 3 ? 'airplane-outline' : 'home-outline'))"
+                      [class.text-edumex-navy]="getStatusStep(selectedOrder.status) >= step"
                       [class.text-slate-300]="getStatusStep(selectedOrder.status) < step"></ion-icon>
           </div>
-          <div *ngIf="step < 4" class="absolute w-full h-[2px] top-4 left-1/2 -z-0"
-               [class.bg-blue-600]="getStatusStep(selectedOrder.status) > step"
+          <div *ngIf="step < 4" class="absolute w-full h-[3px] top-5 left-1/2 -z-0"
+               [class.bg-edumex-gold]="getStatusStep(selectedOrder.status) > step"
                [class.bg-slate-100]="getStatusStep(selectedOrder.status) <= step"></div>
         </div>
       </div>
 
-      <div class="p-6 pt-0 space-y-6">
-        <div *ngIf="selectedOrder.tracking_number" class="bg-blue-50 border border-blue-100 rounded-3xl p-4 flex justify-between items-center">
+      <div class="p-6 md:p-8 space-y-8">
+
+        <div *ngIf="selectedOrder.tracking_number" class="bg-edumex-light rounded-2xl p-4 flex justify-between items-center border border-edumex-blue/10">
           <div>
-            <p class="text-[9px] font-black text-blue-400 uppercase">Guía {{ selectedOrder.tracking_company }}</p>
-            <p class="text-sm font-black tracking-widest text-blue-800">{{ selectedOrder.tracking_number }}</p>
+            <p class="text-[8px] font-black text-edumex-blue uppercase tracking-widest">Guía de rastreo ({{ selectedOrder.tracking_company }})</p>
+            <p class="text-sm font-black tracking-[0.2em] text-edumex-navy mt-0.5">{{ selectedOrder.tracking_number }}</p>
           </div>
-          <ion-icon name="copy-outline" class="text-blue-400 text-lg"></ion-icon>
+          <button class="bg-white p-2 rounded-lg shadow-sm active:scale-90 transition-all">
+            <ion-icon name="copy-outline" class="text-edumex-blue text-lg"></ion-icon>
+          </button>
         </div>
 
-        <div>
-          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Dirección de Entrega</p>
-          <div class="bg-slate-50 rounded-2xl p-4">
-            <p class="text-xs font-black text-slate-800">{{ selectedOrder.shipping_details.recipient }}</p>
-            <p class="text-[11px] text-slate-500 leading-relaxed mt-1">
-              {{ selectedOrder.shipping_details.full_address }}<br>
-              Col. {{ selectedOrder.shipping_details.colonia }}, {{ selectedOrder.shipping_details.ciudad }}<br>
-              CP {{ selectedOrder.shipping_details.cp }}, {{ selectedOrder.shipping_details.estado }}
-            </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <p class="text-[10px] font-black text-edumex-gray uppercase tracking-widest mb-3">Dirección de Destino</p>
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-100">
+              <p class="text-xs font-black text-edumex-navy">{{ selectedOrder.shipping_details.recipient }}</p>
+              <p class="text-[10px] text-edumex-gray font-bold leading-relaxed mt-2 uppercase">
+                {{ selectedOrder.shipping_details.full_address }}<br>
+                {{ selectedOrder.shipping_details.colonia }}, {{ selectedOrder.shipping_details.ciudad }}<br>
+                C.P. {{ selectedOrder.shipping_details.cp }}
+              </p>
+            </div>
           </div>
-        </div>
 
-        <div>
-          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Artículos en este pedido</p>
-          <div class="space-y-2">
-            <div *ngFor="let item of selectedOrder.items" class="flex justify-between items-center bg-slate-50 p-3 rounded-2xl">
-              <div class="flex items-center gap-3">
-
-                <div class="w-12 h-16 bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm shrink-0">
-                  <img [src]="item.book.image_url"
-                       class="w-full h-full object-cover"
-                       alt="Portada del libro">
+          <div>
+            <p class="text-[10px] font-black text-edumex-gray uppercase tracking-widest mb-3">Artículos del Pedido</p>
+            <div class="space-y-3">
+              <div *ngFor="let item of selectedOrder.items" class="flex justify-between items-center bg-white p-2 rounded-xl border border-slate-50 shadow-sm">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-14 bg-slate-100 rounded-lg overflow-hidden shrink-0">
+                    <img [src]="item.book.image_url" class="w-full h-full object-cover">
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-black text-edumex-navy uppercase leading-tight line-clamp-1">{{ item.book.title }}</p>
+                    <p class="text-[8px] text-edumex-blue font-bold mt-1 uppercase">
+                      Cant: {{ item.quantity }} | {{ item.buy_type === 'package' ? 'Pack' : 'Uni' }}
+                    </p>
+                  </div>
                 </div>
-
-                <div>
-                  <p class="text-[11px] font-bold text-slate-800 leading-tight">{{ item.book.title }}</p>
-                  <p class="text-[9px] text-slate-400 font-black uppercase mt-1">
-                    {{ item.quantity }} {{ item.buy_type === 'package' ? 'Paquete(s)' : 'Unidad(es)' }}
-                  </p>
-                  <span class="text-[8px] bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded font-bold">
-            {{ item.book.level }}
-          </span>
-                </div>
-              </div>
-              <div class="text-right">
-                <p class="text-xs font-black text-slate-900">${{ item.price * item.quantity }}</p>
+                <p class="text-[11px] font-black text-edumex-navy">${{ item.price * item.quantity }}</p>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="flex justify-between items-center border-t border-slate-100 pt-4">
-          <p class="text-[10px] font-black text-slate-400 uppercase">Total Pagado</p>
-          <p class="text-xl font-black text-blue-600">${{ selectedOrder.total }}</p>
+        <div class="flex justify-between items-center border-t border-slate-100 pt-6">
+          <div>
+            <p class="text-[10px] font-black text-edumex-gray uppercase tracking-widest">Inversión Total</p>
+            <p class="text-[9px] text-emerald-600 font-bold uppercase">Pago Confirmado</p>
+          </div>
+          <p class="text-2xl font-black text-edumex-navy">${{ selectedOrder.total }}</p>
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 <ion-content class="bg-slate-50">
   <div class="p-6">
+
     <div class="max-w-2xl mx-auto mb-6">
       <ion-searchbar
         placeholder="¿Qué libro buscas?"
@@ -11,61 +12,78 @@
       </ion-searchbar>
     </div>
 
-    <div class="flex overflow-x-auto gap-2 px-6 mb-6 no-scrollbar">
-      <ion-chip *ngFor="let cat of categories"
-                [outline]="selectedCategory !== cat"
-                (click)="filterByCategory(cat)"
-                class="font-black text-[10px] uppercase tracking-widest transition-all">
-        <ion-label>{{ cat }}</ion-label>
-      </ion-chip>
+    <div class="flex overflow-x-auto gap-3 pb-8 no-scrollbar justify-start md:justify-center">
+      <button *ngFor="let cat of categories"
+              (click)="filterByCategory(cat)"
+              [class]="selectedCategory === cat ? 'bg-gold text-navy shadow-lg shadow-gold/20' : 'bg-white text-gray border-slate-100 hover:bg-light'"
+              class="px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 border whitespace-nowrap active:scale-95">
+        {{ cat }}
+      </button>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div *ngFor="let book of books" class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
 
-        <div class="relative aspect-[4/3] overflow-hidden bg-slate-200">
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-5">
+
+      <div *ngFor="let book of books"
+           class="group bg-white rounded-2xl p-3 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 flex flex-col border-none">
+
+        <div class="relative aspect-[3/4] rounded-xl overflow-hidden bg-slate-100 shadow-inner">
           <img [src]="book.image_url"
-               class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-               alt="{{ book.title }}">
+               [class.grayscale]="book.total_stock === 0"
+               class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
 
-          <div class="absolute top-4 left-4">
-            <span class="px-3 py-1 rounded-xl bg-white/90 backdrop-blur-md text-blue-700 text-[10px] font-black uppercase shadow-sm">
-              {{ book.level }}
-            </span>
+          <div class="absolute top-2 left-2 bg-white/95 backdrop-blur-md text-navy px-2 py-0.5 rounded-lg text-[9px] font-black shadow-sm">
+            {{ book.level }}
+          </div>
+
+          <div *ngIf="book.total_stock === 0" class="absolute inset-0 flex items-center justify-center bg-navy/40 backdrop-blur-[2px]">
+            <span class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest shadow-xl">Agotado</span>
           </div>
         </div>
 
-        <div class="p-6">
-          <div class="flex justify-between items-start mb-2">
-            <h3 class="text-slate-800 font-bold text-base leading-tight h-10 overflow-hidden">{{ book.title }}</h3>
-            <div class="text-emerald-500 font-black text-lg">${{ book.price_unit }}</div>
+        <div class="mt-3 px-1 flex-1 flex flex-col">
+          <div class="mb-2">
+            <h3 class="text-[11px] font-black text-navy leading-tight uppercase line-clamp-2 min-h-[28px]">{{ book.title }}</h3>
+            <p class="text-[8px] text-gray font-bold tracking-widest mt-0.5 uppercase">{{ book.category }}</p>
           </div>
 
-          <p class="text-slate-400 text-[10px] mb-4 uppercase font-bold tracking-widest">{{ book.autor }}</p>
-
-          <div class="flex items-center justify-between pt-4 border-t border-slate-50">
-            <div class="text-[10px] text-slate-400">
-              Stock: <span class="font-bold text-slate-600">{{ book.total_stock }}</span>
+          <div class="bg-light/40 rounded-xl p-2 mb-3 flex justify-between items-center">
+            <div>
+              <p class="text-[7px] font-black text-gray uppercase">Unit.</p>
+              <p class="text-sm font-black text-emerald-600">${{ book.price_unit }}</p>
             </div>
-            <div class="flex items-center gap-2">
-              <button (click)="addToCart(book, 'unit')"
-                      class="bg-blue-600 text-white py-2 px-3 rounded-xl text-[10px] font-bold active:scale-95 transition-all">
-                + UNIDAD
-              </button>
-
-              <button *ngIf="user?.customer_type === 'institutional' && book.price_package"
-                      (click)="addToCart(book, 'package')"
-                      class="bg-purple-600 text-white py-2 px-3 rounded-xl text-[10px] font-bold active:scale-95 transition-all">
-                + PAQUETE
-              </button>
+            <div class="text-right" *ngIf="book.price_package">
+              <p class="text-[7px] font-black text-blue uppercase">Pack</p>
+              <p class="text-[11px] font-black text-navy">${{ book.price_package }}</p>
             </div>
+          </div>
+
+          <div class="mt-auto space-y-1.5">
+            <button (click)="addToCart(book, 'unit')"
+                    [disabled]="book.total_stock! <= 0"
+                    class="w-full flex items-center justify-center gap-2 bg-[#181848] text-white py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-20 shadow-md">
+              <ion-icon name="cart-outline" class="text-xs"></ion-icon>
+              Comprar
+            </button>
+
+            <button *ngIf="user?.customer_type === 'institutional' && book.price_package"
+                    (click)="addToCart(book, 'package')"
+                    [disabled]="book.total_stock! < book.units_per_package"
+                    class="w-full flex items-center justify-center gap-1.5 bg-white text-navy border border-navy py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all active:scale-95">
+              <ion-icon name="apps-outline" class="text-xs"></ion-icon>
+              Paquetes en {{ book.units_per_package}} uds
+            </button>
+
+            <p class="text-[8px] text-center font-bold" [class.text-red-600]="book.total_stock! < 10" [class.text-gray]="book.total_stock! >= 10">
+              Stock: {{ book.total_stock }}
+            </p>
           </div>
         </div>
       </div>
     </div>
-
-    <div *ngIf="books.length === 0 && !loading" class="text-center py-20">
+    <div *ngIf="books.length === 0 && !loading" class="text-center py-20 bg-white rounded-[3rem] border border-slate-100 mt-10 shadow-sm">
       <ion-icon name="search-outline" class="text-6xl text-slate-200 mb-4"></ion-icon>
-      <p class="text-slate-400 font-medium italic">No hay coincidencias para "{{ searchText }}" en {{ selectedCategory }}</p>
+      <p class="text-navy font-black text-xs uppercase tracking-[0.2em]">Sin resultados</p>
+      <p class="text-gray text-xs font-bold mt-2">No encontramos coincidencias para "{{ searchText }}"</p>
     </div>
   </div>
 </ion-content>

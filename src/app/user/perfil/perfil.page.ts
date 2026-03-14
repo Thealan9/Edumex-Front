@@ -87,7 +87,7 @@ export class PerfilPage implements OnInit {
 
   deleteAddress(id: number) {
     this.http.delete(`${environment.apiUrl}/user/addresses/${id}`).subscribe(() => {
-      this.loadAddresses(); // Recargar lista
+      this.loadAddresses();
     });
   }
 

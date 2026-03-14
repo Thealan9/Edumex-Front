@@ -24,7 +24,6 @@ export class MyOrdersPage implements OnInit {
     });
   }
 
-  // Método para el Stepper visual
   getStatusStep(status: string): number {
     const steps: any = { 'paid': 1, 'shipped': 2, 'in_transit': 3, 'delivered': 4 };
     return steps[status] || 1;

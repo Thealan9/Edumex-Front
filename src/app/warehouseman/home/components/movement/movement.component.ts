@@ -13,7 +13,7 @@ import { finalize } from 'rxjs';
   standalone: false
 })
 export class MovementComponent  implements OnInit {
-  @Input() type!: 'input' | 'output'; // Recibe el tipo desde el home
+  @Input() type!: 'input' | 'output';
 
   books: Book[] = [];
   locations: Location[] = [];
@@ -68,7 +68,6 @@ export class MovementComponent  implements OnInit {
           this.close(true);
         },
         error: (err) => {
-          // Aquí capturamos el Error 409 de capacidad del estante de Laravel
           this.showAlert(err.error?.message || 'Error en el movimiento', 'warning');
         }
       });

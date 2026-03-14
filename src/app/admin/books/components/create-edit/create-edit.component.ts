@@ -77,7 +77,6 @@ export class CreateEditComponent implements OnInit {
           this.close(true);
         },
         error: (err) => {
-          // Manejo de errores 422 (Validación) o 409 (Conflicto) de Laravel
           const errorMessage = err.error?.message || 'Ocurrió un error inesperado';
           this.showAlert(errorMessage, 'warning');
         }

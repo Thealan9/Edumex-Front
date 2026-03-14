@@ -11,7 +11,6 @@ export class ReportsPage implements OnInit {reportData: InventoryReportItem[] = 
   periodo: string = '';
   loading: boolean = false;
 
-  // Filtros iniciales: mes y año actual
   selectedMonth: number = new Date().getMonth() + 1;
   selectedYear: number = new Date().getFullYear();
 

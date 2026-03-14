@@ -5,7 +5,6 @@ import { finalize } from 'rxjs';
 import { AdminUsers } from 'src/app/admin/services/admin-users';
 import { AlertComponent } from 'src/app/components/alert/alert.component';
 
-// Validador personalizado para comparar contraseñas
 export const passwordMatchValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const password = control.get('password');
   const confirmPassword = control.get('confirmPassword');

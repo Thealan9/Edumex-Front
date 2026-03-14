@@ -49,7 +49,7 @@ export class LocationPage implements OnInit, OnDestroy {
     const modal = await this.modalCtrl.create({
       component: CreateEditComponent,
       componentProps: { data: location },
-      cssClass: 'small-modal' // Un modal más angosto que el de libros
+      cssClass: 'small-modal'
     });
 
     await modal.present();
@@ -57,7 +57,6 @@ export class LocationPage implements OnInit, OnDestroy {
     if (data?.refresh) this.loadLocations();
   }
 
-  // --- Lógica de Visualización de Capacidad ---
 
   calculatePercent(loc: Location): number {
     if (!loc.max_capacity) return 0;
@@ -69,7 +68,7 @@ export class LocationPage implements OnInit, OnDestroy {
     const percent = this.calculatePercent(loc);
     if (percent >= 90) return 'bg-red-500';      // Crítico
     if (percent >= 70) return 'bg-orange-500';   // Advertencia
-    return 'bg-blue-500';                         // Saludable
+    return 'bg-blue-500';                         // Correcto
   }
 
   getCapacityColor(loc: Location): string {

@@ -1,7 +1,4 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { Auth } from 'src/app/core/auth';
-import { AdminDashboard } from '../services/admin-dashboard';
 import { AdminDashboardResponse } from 'src/app/interfaces/admin/admin-dashboard.interface';
 import {
   AlertController,
