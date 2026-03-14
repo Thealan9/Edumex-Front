@@ -1,13 +1,101 @@
+// Variables EDUMEX
+$navy: #181848;
+$blue: #304878;
+$gold: #F0A818;
+$gray: #7890A8;
+$light: #F0F4F8;
+
+// Sidebar container
+.sidebar-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  background: $navy;
+  border-right: 1px solid rgba(48, 72, 120, 0.2);
+  transition: all 0.3s ease;
+}
+
+// Header
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  padding-top: 1.5rem;
+  padding-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.brand-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 10px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(240, 168, 24, 0.15);
+}
+
+.sidebar-logo-wrap {
+  width: 40px;
+  height: 40px;
+  background: white;
+  border-radius: 10px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(240, 168, 24, 0.2);
+}
+
+.sidebar-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.brand-name {
+  color: white;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  font-size: 1.1rem;
+  white-space: nowrap;
+}
+
+.collapse-btn {
+  color: $gray;
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.05);
+  }
+}
+
+.nav-section-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: $gray;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  margin-left: 8px;
+  white-space: nowrap;
+}
+
+// Sidebar items
 .sidebar-item {
   --background: transparent;
-  --color: #94a3b8;
+  --color: #{$gray};
   --border-radius: 12px;
   --padding-start: 12px;
   margin-bottom: 4px;
   font-weight: 500;
   height: 50px;
-
-  --inner-padding-end: 0px;
+  --inner-padding-end: 16px;
   --padding-end: 0px;
 
   &::part(native) {
@@ -24,7 +112,6 @@
   }
 
   &.collapsed {
-    // 1. Quitamos todos los paddings del contenedor padre
     --padding-start: 0px !important;
     --inner-padding-end: 0px !important;
     --padding-end: 0px !important;
@@ -34,59 +121,64 @@
       justify-content: center !important;
     }
 
-    // 2. ESTA ES LA CLAVE: Atacamos el contenedor del slot "start"
-    // que es el que envuelve al icono y suele tener un ancho fijo
     &::part(inner) {
       padding: 0 !important;
       margin: 0 !important;
       display: flex;
       justify-content: center !important;
-      flex: 1; // Hacemos que ocupe todo el ancho para poder centrar dentro
+      flex: 1;
     }
 
-    // 3. Forzamos al icono a ignorar el espacio del slot
     ion-icon {
       margin: 0 !important;
       padding: 0 !important;
-      position: absolute; // Lo sacamos del flujo para centrarlo respecto al item
+      position: absolute;
       left: 50%;
       top: 50%;
-      transform: translate(-50%, -50%); // Centrado matemático perfecto
+      transform: translate(-50%, -50%);
       font-size: 1.6rem;
     }
 
-    // 4. Ocultamos el wrapper sobrante que mencionabas
     .input-wrapper {
       display: none !important;
     }
   }
 
   &:hover {
-    --background: rgba(59, 130, 246, 0.1);
+    --background: rgba(240, 168, 24, 0.08);
     --color: #ffffff;
     ion-icon { opacity: 1; }
   }
 
   &.active-link {
-    --background: #3b82f6;
-    --color: #ffffff;
+    --background: linear-gradient(135deg, #{$gold} 0%, #E89800 100%);
+    --color: #{$navy};
     font-weight: 700;
-    box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
-    ion-icon { opacity: 1; filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2)); }
+    box-shadow: 0 8px 20px -4px rgba(240, 168, 24, 0.35);
+
+    ion-icon {
+      opacity: 1;
+      filter: drop-shadow(0 0 3px rgba(24, 24, 72, 0.2));
+    }
   }
 }
 
-// 2. BOTÓN ABRIR TICKET (Corregido y estético)
+.sidebar-divider {
+  margin: 1.5rem 0.5rem;
+  border-top: 1px solid rgba(48, 72, 120, 0.2);
+}
+
+// Ticket button
 .ticket-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background-color: #2563eb;
+  background: $blue;
   color: white;
   width: 100%;
   height: 48px;
-  border-radius: 12px; // Redondeado
+  border-radius: 12px;
   font-weight: 700;
   font-size: 0.875rem;
   border: none;
@@ -94,7 +186,7 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 
-  &:hover { background-color: #3b82f6; }
+  &:hover { background: #3d5a8a; }
   &:active { transform: scale(0.95); }
 
   ion-icon { font-size: 1.5rem; flex-shrink: 0; }
@@ -107,27 +199,66 @@
   }
 }
 
-// 3. Ajustes de Layout
-ion-split-pane {
-  --side-min-width: var(--side-width);
-  --side-max-width: var(--side-width);
-  transition: --side-width 0.3s ease;
+// Footer / Profile
+.sidebar-footer {
+  padding: 1rem;
+  border-top: 1px solid rgba(48, 72, 120, 0.2);
 }
 
-ion-header.ion-no-border::after { display: none; }
+.profile-trigger {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease;
 
+  &:hover { background: rgba(255, 255, 255, 0.05); }
+}
+
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(48, 72, 120, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(240, 168, 24, 0.2);
+  flex-shrink: 0;
+
+  ion-icon { color: $gold; }
+}
+
+.profile-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+}
+
+// Popover
 .profile-popover {
   --width: 180px;
-  --background: #1e293b;
+  --background: #{$navy};
   --box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
 
   ion-content {
-    --background: #1e293b;
+    --background: #{$navy};
     --color: #ffffff;
   }
 
+  .popover-list {
+    background: $navy !important;
+    padding: 4px 0;
+  }
+
   .popover-item {
-    --background: #1e293b;
+    --background: #{$navy};
     --color: #ffffff !important;
     --padding-start: 12px;
     --border-radius: 8px;
@@ -142,25 +273,52 @@ ion-header.ion-no-border::after { display: none; }
 
     &.logout {
       --color: #f87171 !important;
-      ion-label {
-        color: #f87171 !important;
-      }
+      ion-label { color: #f87171 !important; }
     }
 
-    &:hover {
-      --background: #334155; // Gris un poco más claro al pasar el mouse
-    }
+    &:hover { --background: #{$blue}; }
   }
 
-  ion-list {
-    background: #1e293b !important;
-    padding: 4px 0;
+  .popover-divider {
+    height: 1px;
+    background: rgba(48, 72, 120, 0.4);
+    margin: 4px 8px;
   }
 }
+
+.popover-icon-profile { color: $gold; }
+.popover-icon-logout { color: #f87171; }
+
+// Mobile toolbar
+.mobile-toolbar {
+  --background: #{$navy};
+  border-bottom: 1px solid rgba(48, 72, 120, 0.3);
+}
+
+.mobile-menu-btn {
+  color: $gold;
+}
+
+.mobile-title {
+  color: white;
+  font-weight: 800;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+
+// Layout
+ion-split-pane {
+  --side-min-width: var(--side-width);
+  --side-max-width: var(--side-width);
+  transition: --side-width 0.3s ease;
+}
+
+ion-header.ion-no-border::after { display: none; }
 
 ion-menu {
   ion-content {
     --overflow: auto;
+    --background: #{$navy};
 
     &::part(scroll) {
       &::-webkit-scrollbar {

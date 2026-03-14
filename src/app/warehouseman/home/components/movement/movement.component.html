@@ -1,84 +1,82 @@
 <ion-header class="ion-no-border">
-  <ion-toolbar class="--background: #0f172a; border-b border-slate-800">
-    <ion-title class="text-white font-bold">
-      Registrar <span [class]="type === 'input' ? 'text-emerald-400' : 'text-orange-400'">
+  <ion-toolbar class="modal-toolbar">
+    <ion-title class="modal-title">
+      Registrar <span [class]="type === 'input' ? 'text-emerald-500' : 'text-orange-500'">
         {{ type === 'input' ? 'Entrada' : 'Salida' }}
       </span>
     </ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="close()" class="text-slate-400">
+      <ion-button (click)="close()" class="close-btn">
         <ion-icon name="close-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="--background: #0f172a;">
+<ion-content class="form-content">
   <div class="p-6">
     <form [formGroup]="form" class="space-y-6">
 
-      <div class="form-group">
-        <label class="text-[10px] uppercase tracking-widest text-slate-500 font-black ml-1 mb-2 block">
-          Libro / Material
-        </label>
-        <div class="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
-          <ion-item lines="none" class="--background: transparent; --color: white;">
-            <ion-icon slot="start" name="book-outline" class="text-blue-400"></ion-icon>
-            <ion-select formControlName="book_id" placeholder="Seleccionar libro" interface="action-sheet" class="text-white w-full">
+      <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-5">
+
+        <div class="form-group">
+          <label class="form-label">Libro / Material</label>
+          <div class="input-wrapper" [class.invalid]="form.get('book_id')?.touched && form.get('book_id')?.invalid">
+            <ion-icon name="book-outline" class="input-icon text-blue-500"></ion-icon>
+            <ion-select formControlName="book_id" placeholder="Seleccionar libro" interface="action-sheet" class="custom-select">
               <ion-select-option *ngFor="let book of books" [value]="book.id">
                 [{{ book.level }}] {{ book.title }}
               </ion-select-option>
             </ion-select>
-          </ion-item>
+          </div>
         </div>
-      </div>
 
-      <div class="form-group">
-        <label class="text-[10px] uppercase tracking-widest text-slate-500 font-black ml-1 mb-2 block">
-          Ubicación (Estante)
-        </label>
-        <div class="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
-          <ion-item lines="none" class="--background: transparent; --color: white;">
-            <ion-icon slot="start" name="grid-outline" class="text-purple-400"></ion-icon>
-            <ion-select formControlName="location_id" placeholder="¿Dónde se ubica?" interface="popover" class="text-white w-full">
+        <div class="form-group">
+          <label class="form-label">Ubicación (Estante)</label>
+          <div class="input-wrapper" [class.invalid]="form.get('location_id')?.touched && form.get('location_id')?.invalid">
+            <ion-icon name="grid-outline" class="input-icon text-purple-500"></ion-icon>
+            <ion-select formControlName="location_id" placeholder="¿Dónde se ubica?" interface="popover" class="custom-select">
               <ion-select-option *ngFor="let loc of locations" [value]="loc.id">
                 {{ loc.code }} (Disp: {{ (loc.max_capacity || 0) - (loc.current_capacity || 0) }})
               </ion-select-option>
             </ion-select>
-          </ion-item>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 gap-5">
-        <div class="form-group">
-          <label class="text-[10px] uppercase tracking-widest text-slate-500 font-black ml-1 mb-2 block">
-            Cantidad de Unidades
-          </label>
-          <div class="flex items-center bg-slate-800 border border-slate-700 rounded-2xl px-4 py-1">
-            <ion-icon name="layers-outline" class="text-slate-400 mr-2"></ion-icon>
-            <ion-input type="number" formControlName="quantity" class="text-white font-bold text-lg"></ion-input>
           </div>
         </div>
 
-        <div class="form-group">
-          <label class="text-[10px] uppercase tracking-widest text-slate-500 font-black ml-1 mb-2 block">
-            Observaciones (Opcional)
-          </label>
-          <div class="bg-slate-800 border border-slate-700 rounded-2xl p-2">
-            <ion-textarea formControlName="description" rows="3" placeholder="Ej: Ingreso por nueva compra..." class="text-white text-sm"></ion-textarea>
+        <div class="grid grid-cols-1 gap-5">
+          <div class="form-group">
+            <label class="form-label">Cantidad de Unidades</label>
+            <div class="input-wrapper">
+              <ion-icon name="layers-outline" class="input-icon text-slate-400"></ion-icon>
+              <ion-input type="number" formControlName="quantity" class="custom-input font-bold"></ion-input>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Observaciones (Opcional)</label>
+            <div class="input-wrapper !items-start py-3">
+              <ion-textarea formControlName="description" rows="3" placeholder="Ej: Ingreso por nueva compra..." class="text-sm"></ion-textarea>
+            </div>
           </div>
         </div>
       </div>
 
-      <button
-        (click)="submit()"
-        [disabled]="form.invalid || isSubmitting"
-        [class]="type === 'input' ? 'bg-emerald-600 shadow-emerald-900/20' : 'bg-orange-600 shadow-orange-900/20'"
-        class="w-full py-5 rounded-2xl text-white font-black uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl active:scale-95 transition-all mt-4">
-        <span *ngIf="!isSubmitting">Confirmar {{ type === 'input' ? 'Ingreso' : 'Salida' }}</span>
-        <ion-spinner *ngIf="isSubmitting" name="crescent"></ion-spinner>
-        <ion-icon *ngIf="!isSubmitting" [name]="type === 'input' ? 'cloud-upload' : 'cloud-download'"></ion-icon>
-      </button>
+      <div class="flex items-center gap-4">
+        <button type="button" class="flex-1 py-4 px-6 rounded-2xl border border-slate-200 text-slate-500 font-bold hover:bg-slate-50 transition-all" (click)="close()">
+          Cancelar
+        </button>
+
+        <button
+          (click)="submit()"
+          [disabled]="form.invalid || isSubmitting"
+          class="submit-modal-btn group flex-[2] !shadow-lg"
+          [ngClass]="type === 'input' ? 'btn-approve' : 'btn-reject'">
+
+          <span *ngIf="!isSubmitting">Confirmar {{ type === 'input' ? 'Ingreso' : 'Salida' }}</span>
+          <ion-spinner *ngIf="isSubmitting" name="crescent"></ion-spinner>
+          <ion-icon *ngIf="!isSubmitting" [name]="type === 'input' ? 'cloud-upload-outline' : 'cloud-download-outline'" class="group-hover:scale-110 transition-transform"></ion-icon>
+        </button>
+      </div>
 
     </form>
   </div>

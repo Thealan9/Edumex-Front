@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { finalize } from 'rxjs';
@@ -12,55 +12,61 @@ import { Auth } from 'src/app/core/auth';
   styleUrls: ['./login.page.scss'],
   standalone: false,
 })
-export class LoginPage {
+export class LoginPage implements OnInit {
   isSubmitting = false;
+  showPassword = false;
+  passwordType = 'password';
 
-  form = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', Validators.required],
-  });
+  // Para animaciones de foco
+  focusedField: string = '';
+
+  form: FormGroup;
 
   constructor(
     private fb: FormBuilder,
     private auth: Auth,
     private router: Router,
     private modalCtrl: ModalController,
-  ) {}
+  ) {
+    this.form = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
+    });
+  }
+
+  ngOnInit() {}
 
   async ionViewWillEnter() {
     const token = await this.auth.getToken();
-    if (token) {
-      this.router.navigateByUrl('/home', { replaceUrl: true });
-    }
+    if (token) this.router.navigateByUrl('/home', { replaceUrl: true });
+  }
+
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+    this.passwordType = this.showPassword ? 'text' : 'password';
   }
 
   login() {
-    if (this.form.invalid) return;
-    if (this.isSubmitting) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
     this.isSubmitting = true;
-
     const { email, password } = this.form.value;
-    if (!email || !password) return;
 
-    this.auth
-      .login({ email, password })
+    this.auth.login({ email, password })
       .pipe(finalize(() => (this.isSubmitting = false)))
       .subscribe({
         next: (res) => {
-          if (res.user.role === 'admin') {
-            this.router.navigateByUrl('/admin', { replaceUrl: true });
-          }else if(res.user.role === 'warehouseman'){
-              this.router.navigateByUrl('/warehouseman', { replaceUrl: true });
-            } else if(res.user.role === 'user'){
-            this.router.navigateByUrl('/home', { replaceUrl: true });
-          }
+          const role = res.user.role;
+          if (role === 'admin') this.router.navigateByUrl('/admin', { replaceUrl: true });
+          else if (role === 'warehouseman') this.router.navigateByUrl('/warehouseman', { replaceUrl: true });
+          else this.router.navigateByUrl('/home', { replaceUrl: true });
         },
         error: (err) => {
-          if (err.status === 401 || err.status === 403) {
-            this.showAlert(err.error.message, 'warning');
-          } else {
-            this.showAlert('Oops, ocurrió un error!', 'error');
-          }
+          const msg = err.status === 401 ? 'Credenciales inválidas.' : 'Error de conexión.';
+          this.showAlert(msg, err.status === 401 ? 'warning' : 'error');
         },
       });
   }
@@ -70,12 +76,9 @@ export class LoginPage {
       component: AlertComponent,
       componentProps: { message, type },
       cssClass: 'small-alert-modal',
-      backdropDismiss: false,
+      backdropDismiss: true
     });
-
     await modal.present();
-    setTimeout(() => {
-      modal.dismiss();
-    }, 2500);
+    setTimeout(() => modal.dismiss(), 3000);
   }
 }

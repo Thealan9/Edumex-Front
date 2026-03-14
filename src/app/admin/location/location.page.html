@@ -1,53 +1,81 @@
 <ion-header class="ion-no-border">
-  <ion-toolbar class="--background: transparent; px-4">
-    <ion-title class="text-slate-800 font-bold text-2xl">Gestión de Almacén</ion-title>
-    <ion-buttons slot="end">
-      <ion-button fill="solid" color="primary" class="rounded-lg font-bold" (click)="openCreateEdit()">
-        <ion-icon slot="start" name="grid-outline"></ion-icon>
-        Nuevo Estante
-      </ion-button>
-    </ion-buttons>
+  <ion-toolbar class="admin-toolbar">
+    <div class="page-header-container">
+      <div class="header-info">
+        <h1>Gestión de <span>Almacén</span></h1>
+        <p class="text-slate-500 text-sm mt-1">Control de estanterías, pasillos y optimización de espacio físico</p>
+      </div>
+
+      <button (click)="openCreateEdit()" class="add-book-btn">
+        <ion-icon name="grid-outline"></ion-icon>
+        <span>Nuevo Estante</span>
+      </button>
+    </div>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding bg-slate-50">
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <div *ngFor="let loc of locations" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
-      <div class="p-6">
-        <div class="flex justify-between items-start mb-4">
-          <div class="bg-blue-50 p-3 rounded-xl">
-            <ion-icon name="layers" class="text-blue-600 text-2xl"></ion-icon>
+<ion-content class="bg-slate-50">
+  <div class="p-6">
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+
+      <div *ngFor="let loc of locations"
+           class="group bg-white rounded-[2.5rem] p-6 border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col relative overflow-hidden">
+
+        <div [class]="loc.current_capacity >= loc.max_capacity ? 'bg-red-500' : 'bg-gold'"
+             class="absolute top-0 left-0 w-2 h-full opacity-20 group-hover:opacity-100 transition-opacity"></div>
+
+        <div class="flex justify-between items-start mb-6">
+          <div [class]="loc.current_capacity >= loc.max_capacity ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-700'"
+               class="p-4 rounded-2xl transition-colors duration-500">
+            <ion-icon [name]="loc.current_capacity >= loc.max_capacity ? 'alert-circle' : 'layers'" class="text-2xl"></ion-icon>
           </div>
-          <ion-button fill="clear" color="medium" (click)="openCreateEdit(loc)">
-            <ion-icon name="ellipsis-vertical"></ion-icon>
-          </ion-button>
+
+          <button (click)="openCreateEdit(loc)"
+                  class="bg-light text-navy p-2 rounded-xl hover:bg-navy hover:text-white transition-all">
+            <ion-icon name="settings-sharp" class="text-lg"></ion-icon>
+          </button>
         </div>
 
-        <h2 class="text-xl font-black text-slate-800 mb-1">{{ loc.code }}</h2>
-        <p class="text-xs text-slate-400 uppercase tracking-widest font-bold mb-6">Capacidad de Almacenaje</p>
+        <div class="mb-6">
+          <h2 class="text-2xl font-black text-navy tracking-tighter uppercase">{{ loc.code }}</h2>
+          <p class="text-[9px] text-gray font-black uppercase tracking-[0.2em] mt-1">Capacidad de Almacenaje</p>
+        </div>
 
-        <div class="space-y-2">
-          <div class="flex justify-between text-sm font-bold">
-            <span class="text-slate-600">{{ loc.current_capacity }} / {{ loc.max_capacity }} uds.</span>
-            <span [class]="getCapacityColor(loc)">{{ calculatePercent(loc) }}%</span>
+        <div class="space-y-3 flex-1">
+          <div class="flex justify-between items-end">
+            <div>
+              <p class="text-[8px] font-black text-gray uppercase tracking-widest">Ocupación Actual</p>
+              <p class="text-sm font-black text-navy">{{ loc.current_capacity }} <span class="text-gray font-bold">/ {{ loc.max_capacity }} uds.</span></p>
+            </div>
+            <div class="text-right">
+              <span [class]="getCapacityColor(loc)" class="text-lg font-black tracking-tighter">
+                {{ calculatePercent(loc) }}%
+              </span>
+            </div>
           </div>
-          <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
-            <div class="h-full transition-all duration-500"
+
+          <div class="w-full bg-light rounded-full h-4 overflow-hidden p-1 shadow-inner">
+            <div class="h-full rounded-full transition-all duration-1000 ease-out shadow-sm"
                  [style.width.%]="calculatePercent(loc)"
                  [class]="getProgressBarClass(loc)">
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="bg-slate-50 px-6 py-3 border-t border-slate-100 flex justify-between items-center">
-        <span class="text-xs font-bold text-slate-400">Estado:</span>
-        <span *ngIf="loc.current_capacity < loc.max_capacity" class="text-xs font-bold text-green-500 flex items-center gap-1">
-          <div class="w-2 h-2 rounded-full bg-green-500"></div> Disponible
-        </span>
-        <span *ngIf="loc.current_capacity >= loc.max_capacity" class="text-xs font-bold text-red-500 flex items-center gap-1">
-          <div class="w-2 h-2 rounded-full bg-red-500"></div> Lleno
-        </span>
+        <div class="mt-8 pt-4 border-t border-slate-50 flex justify-between items-center">
+          <div class="flex items-center gap-2">
+            <div [class]="loc.current_capacity < loc.max_capacity ? 'bg-emerald-500 shadow-emerald-200' : 'bg-red-500 shadow-red-200'"
+                 class="w-2.5 h-2.5 rounded-full shadow-lg animate-pulse"></div>
+            <span class="text-[10px] font-black uppercase tracking-widest"
+                  [class]="loc.current_capacity < loc.max_capacity ? 'text-emerald-600' : 'text-red-600'">
+              {{ loc.current_capacity < loc.max_capacity ? 'Disponible' : 'Lleno' }}
+            </span>
+          </div>
+
+          <ion-icon name="chevron-forward-outline" class="text-gray opacity-30"></ion-icon>
+        </div>
+
       </div>
     </div>
   </div>
