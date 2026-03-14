@@ -1,85 +1,104 @@
-<ion-split-pane contentId="main-content" when="lg" [style.--side-width]="isCollapsed ? '80px' : '280px'">
-
-  <ion-menu contentId="main-content" type="overlay">
+<ion-app>
+  <ion-menu side="start" menuId="user-mobile-menu" contentId="main-content">
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="--background: #181848; color: white;">
+        <ion-title class="text-sm font-black uppercase italic">Menú</ion-title>
+      </ion-toolbar>
+    </ion-header>
     <ion-content class="--background: #0f172a;">
-      <div class="flex flex-col min-h-full bg-slate-900 border-r border-slate-800 transition-all duration-300">
-
-        <div class="flex items-center pt-6 pb-4 transition-all duration-300"
-             [class.px-6]="!isCollapsed" [class.justify-center]="isCollapsed">
-          <div *ngIf="!isCollapsed" class="flex items-center gap-3 bg-slate-800/50 p-3 rounded-xl border border-slate-700">
-            <div class="bg-blue-600 p-2 rounded-lg shadow-lg shadow-blue-500/20">
-              <ion-icon name="grid" class="text-white text-xl flex"></ion-icon>
-            </div>
-            <span class="text-white font-bold tracking-tight text-lg italic text-nowrap">EDUMEX</span>
-          </div>
-          <button (click)="isCollapsed = !isCollapsed" class="hidden lg:flex text-slate-400 p-2 hover:bg-slate-800 rounded-lg">
-            <ion-icon [name]="isCollapsed ? 'chevron-forward-outline' : 'chevron-back-outline'"></ion-icon>
-          </button>
-        </div>
-
-        <div class="flex-1 px-4 space-y-1">
-          <ion-menu-toggle auto-hide="false">
-            <nav class="space-y-1">
-              <ion-item routerLink="/home" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" lines="none" class="sidebar-item" [class.collapsed]="isCollapsed">
-                <ion-icon slot="start" name="home-outline"></ion-icon>
-                <ion-label *ngIf="!isCollapsed">Inicio</ion-label>
-              </ion-item>
-              <ion-item routerLink="/home/libros" routerLinkActive="active-link" lines="none" class="sidebar-item" [class.collapsed]="isCollapsed">
-                <ion-icon slot="start" name="book-outline"></ion-icon>
-                <ion-label *ngIf="!isCollapsed">Libros</ion-label>
-              </ion-item>
-              <ion-item routerLink="/home/pedidos" routerLinkActive="active-link" lines="none" class="sidebar-item" [class.collapsed]="isCollapsed">
-                <ion-icon slot="start" name="book-outline"></ion-icon>
-                <ion-label *ngIf="!isCollapsed">Mis pedidos</ion-label>
-              </ion-item>
-              <ion-item (click)="openCart()" lines="none" class="sidebar-item" [class.collapsed]="isCollapsed" style="cursor:pointer">
-                <ion-icon slot="start" name="bag-handle-outline"></ion-icon>
-                <ion-label *ngIf="!isCollapsed">Mi carrito</ion-label>
-                <ion-badge slot="end" color="danger" *ngIf="((cartItemsCount$ | async) ?? 0) > 0">{{ cartItemsCount$ | async }}</ion-badge>
-              </ion-item>
-            </nav>
-          </ion-menu-toggle>
-        </div>
-
-        <div class="p-4 border-t border-slate-800">
-          <div id="profile-trigger" class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" [class.justify-center]="isCollapsed">
-            <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center border border-blue-400/30 shrink-0">
-              <ion-icon name="person" class="text-blue-400 text-xl"></ion-icon>
-            </div>
-            <div *ngIf="!isCollapsed" class="flex-1 min-w-0">
-              <p class="text-sm font-semibold text-white truncate flex items-center gap-1">
-                Perfil <ion-icon name="chevron-up-outline" class="text-xs"></ion-icon></p>
-            </div>
-          </div>
-
-          <ion-popover trigger="profile-trigger" triggerAction="click" [dismissOnSelect]="true" class="profile-popover">
-            <ng-template>
-              <ion-content class="--background: #1e293b;">
-                <ion-list lines="none" class="bg-slate-800 p-2">
-                  <ion-item button routerLink="/home/perfil" class="popover-item">
-                    <ion-icon slot="start" name="person-outline" class="text-blue-400"></ion-icon>
-                    <ion-label class="text-white text-sm">Mi Perfil</ion-label>
-                  </ion-item>
-                  <div class="h-px bg-slate-700 my-1"></div>
-                  <ion-item button (click)="logout()" class="popover-item logout">
-                    <ion-icon slot="start" name="log-out-outline" class="text-red-400"></ion-icon>
-                    <ion-label class="text-red-400 text-sm">Cerrar Sesión</ion-label>
-                  </ion-item>
-                </ion-list>
-              </ion-content>
-            </ng-template>
-          </ion-popover>
-        </div>
-      </div>
+      <ion-list lines="none" class="bg-slate-900 p-4">
+        <ion-item routerLink="/home" routerLinkActive="active-nav" (click)="closeCart()" class="sidebar-item mb-2">
+          <ion-icon slot="start" name="home-outline"></ion-icon>
+          <ion-label>Inicio</ion-label>
+        </ion-item>
+        <ion-item routerLink="/home/libros" routerLinkActive="active-nav" (click)="closeCart()" class="sidebar-item mb-2">
+          <ion-icon slot="start" name="book-outline"></ion-icon>
+          <ion-label>Libros</ion-label>
+        </ion-item>
+        <ion-item routerLink="/home/pedidos" routerLinkActive="active-nav"  (click)="closeCart()" class="sidebar-item mb-2">
+          <ion-icon slot="start" name="receipt-outline"></ion-icon>
+          <ion-label>Mis pedidos</ion-label>
+        </ion-item>
+        <ion-item (click)="openCart()" class="cart-link" style="cursor:pointer" class="sidebar-item mb-2">
+          <ion-icon name="bag-handle-outline"></ion-icon>
+          <span class="cart-badge" *ngIf="((cartItemsCount$ | async) ?? 0) > 0">
+            {{ cartItemsCount$ | async }}
+          </span>
+          <ion-label> Mi carrito</ion-label>
+        </ion-item>
+      </ion-list>
     </ion-content>
   </ion-menu>
 
-  <div class="ion-page flex flex-col" id="main-content">
-    <main class="flex-1 overflow-hidden relative">
-      <router-outlet></router-outlet>
-    </main>
-  </div>
-</ion-split-pane>
+  <ion-header class="ion-no-border navbar-superior">
+    <ion-toolbar>
+      <div class="navbar-container">
+
+        <div class="flex items-center gap-2">
+
+
+          <div class="brand-box-horizontal" routerLink="/home">
+            <div class="sidebar-logo-wrap">
+              <img src="assets/logo-educamex.png" alt="EDUCAMEX" class="sidebar-logo">
+            </div>
+            <span class="brand-name hidden sm:inline">EDUMEX</span>
+          </div>
+        </div>
+
+        <nav class="nav-links-horizontal hidden lg:flex">
+          <a routerLink="/home" routerLinkActive="active-nav" [routerLinkActiveOptions]="{exact: true}">
+            <ion-icon name="home-outline"></ion-icon> Inicio
+          </a>
+          <a routerLink="/home/libros" routerLinkActive="active-nav">
+            <ion-icon name="book-outline"></ion-icon> Libros
+          </a>
+          <a routerLink="/home/pedidos" routerLinkActive="active-nav">
+            <ion-icon name="receipt-outline"></ion-icon> Mis pedidos
+          </a>
+          <a (click)="openCart()" class="cart-link" style="cursor:pointer">
+            <div class="cart-icon-wrapper">
+              <ion-icon name="bag-handle-outline"></ion-icon>
+              <span class="cart-badge" *ngIf="((cartItemsCount$ | async) ?? 0) > 0">
+                {{ cartItemsCount$ | async }}
+              </span>
+            </div>
+            Mi carrito
+          </a>
+        </nav>
+
+        <div class="navbar-actions">
+          <ion-menu-button menu="user-mobile-menu" class="lg:hidden text-white"></ion-menu-button>
+          <div id="profile-trigger-nav" class="profile-trigger-horizontal">
+            <div class="profile-avatar-small"><ion-icon name="person"></ion-icon></div>
+            <span class="profile-text hidden md:inline">Mi Cuenta</span>
+          </div>
+        </div>
+      </div>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content id="main-content" [fullscreen]="true">
+    <router-outlet></router-outlet>
+  </ion-content>
+
+  <ion-popover trigger="profile-trigger-nav" triggerAction="click" [dismissOnSelect]="true" class="profile-popover">
+    <ng-template>
+      <ion-content>
+        <ion-list lines="none" class="popover-list">
+          <ion-item button routerLink="/home/perfil">
+            <ion-icon slot="start" name="person-outline"></ion-icon>
+            <ion-label >Mi Perfil</ion-label>
+          </ion-item>
+          <div class="popover-divider"></div>
+          <ion-item button (click)="logout()" class="logout">
+            <ion-icon slot="start" name="log-out-outline"></ion-icon>
+            <ion-label>Cerrar Sesión</ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ng-template>
+  </ion-popover>
+</ion-app>
 
 <ion-menu side="end" menuId="cart-menu" contentId="main-content" type="overlay">
   <ion-header class="ion-no-border">
@@ -190,12 +209,9 @@
 
   <ion-footer class="ion-no-border p-6 bg-white border-t border-slate-100">
     <div class="flex justify-between items-center mb-4">
-      <span class="text-slate-400 font-bold text-xs uppercase tracking-tighter">Total</span>
+      <span class="text-slate-400 font-bold text-xs uppercase">Total</span>
       <span class="text-2xl font-black text-slate-900">${{ cartService.total }}</span>
     </div>
-    <button (click)="checkout()" [disabled]="!isOrderReady()"
-            class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black uppercase text-[11px] shadow-xl shadow-blue-200 active:scale-95 transition-all disabled:opacity-30">
-      Confirmar y Pagar
-    </button>
+    <button (click)="checkout()" [disabled]="!isOrderReady()" class="submit-modal-btn">Confirmar y Pagar</button>
   </ion-footer>
 </ion-menu>

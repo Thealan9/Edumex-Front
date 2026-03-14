@@ -49,7 +49,7 @@ export class NavbarUserComponent implements OnInit {
     private auth: Auth,
     private router: Router,
     private breakpointObserver: BreakpointObserver,
-    private menuCtrl: MenuController,
+    public menuCtrl: MenuController,
     public cartService: Cart,
     private http: HttpClient
   ) {
