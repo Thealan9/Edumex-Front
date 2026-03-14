@@ -79,20 +79,20 @@ export class BooksPage implements OnInit {
     if (book.total_stock && book.total_stock > 0) {
       this.cartService.addToCart(book, type);
 
-      const toast = await this.toastCtrl.create({
-        message: `${book.title} añadido al carrito`,
-        duration: 1500,
-        position: 'bottom',
-        color: 'success',
-        buttons: [
-          {
-            text: 'Ver',
-            handler: () => {
-            }
-          }
-        ]
-      });
-      await toast.present();
+      // const toast = await this.toastCtrl.create({
+      //   message: `${book.title} añadido al carrito`,
+      //   duration: 1500,
+      //   position: 'bottom',
+      //   color: 'success',
+      //   buttons: [
+      //     {
+      //       text: 'Ver',
+      //       handler: () => {
+      //       }
+      //     }
+      //   ]
+      // });
+      // await toast.present();
     } else {
       this.presentErrorToast('Lo sentimos, este libro no tiene stock disponible.');
     }

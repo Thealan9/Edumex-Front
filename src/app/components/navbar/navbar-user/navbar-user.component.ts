@@ -119,8 +119,8 @@ export class NavbarUserComponent implements OnInit {
       next: async (res) => {
         await this.closeCart();
         this.resetAddressForm();
-        this.showAlert('¡Pedido realizado con éxito!', 'success');
         window.location.reload();
+        this.showAlert('¡Pedido realizado con éxito!', 'success');
         this.loadAddresses();
       },
       error: (err) => {
