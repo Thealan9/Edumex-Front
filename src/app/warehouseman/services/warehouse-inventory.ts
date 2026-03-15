@@ -26,6 +26,10 @@ export class WarehouseInventory {
 
   constructor(private http: HttpClient) {}
 
+  getPendingPurchases(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/warehouseman/pending-purchases`);
+  }
+
   registerMovement(movement: any): Observable<any> {
     return this.http.post(`${this.API}/move`, movement).pipe(
       tap(() => this._refresh.next())

@@ -9,6 +9,7 @@ import { HomePageRoutingModule } from './home-routing.module';
 import { HomePage } from './home.page';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AlertComponent } from 'src/app/components/alert/alert.component';
+import {CreateOrderComponent} from "./components/create-order/create-order.component";
 
 @NgModule({
   imports: [
@@ -20,6 +21,6 @@ import { AlertComponent } from 'src/app/components/alert/alert.component';
     MatSnackBarModule,
 
   ],
-  declarations: [HomePage,AlertComponent]
+  declarations: [HomePage,AlertComponent,CreateOrderComponent],
 })
 export class HomePageModule {}

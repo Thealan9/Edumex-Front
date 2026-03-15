@@ -14,6 +14,7 @@ import {Router} from "@angular/router";
 export class HomePage implements OnInit, OnDestroy {
   recentMovements: any[] = [];
   private refreshSub!: Subscription;
+  pendingOrders: any[] = [];
 
   constructor(
     private warehouseService: WarehouseInventory,
@@ -25,7 +26,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadRecentMovements();
-
+    this.loadPendingOrders();
     this.refreshSub = this.warehouseService.refresh$.subscribe(() => {
       this.loadRecentMovements();
     });
@@ -41,6 +42,15 @@ export class HomePage implements OnInit, OnDestroy {
         this.recentMovements = res.data.slice(0, 5);
       },
       error: (err) => console.error('Error cargando movimientos', err)
+    });
+  }
+
+  loadPendingOrders() {
+    this.warehouseService.getPendingPurchases().subscribe({
+      next: (res) => {
+        this.pendingOrders = res;
+      },
+      error: (err) => console.error('Error cargando órdenes pendientes', err)
     });
   }
 
@@ -70,5 +80,29 @@ export class HomePage implements OnInit, OnDestroy {
         this.router.navigateByUrl('/login', { replaceUrl: true });
       }
     });
+  }
+
+  async receiveBookFromOrder(order: any, item: any) {
+    const modal = await this.modalCtrl.create({
+      component: MovementComponent,
+      componentProps: {
+        type: 'input',
+        pendingOrderData: {
+          po_id: order.id,
+          po_number: order.po_number,
+          book_id: item.book_id,
+          book_title: item.book.title,
+          quantity: item.quantity,
+        }
+      },
+      cssClass: 'movement-modal'
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+    if (data?.refresh) {
+      this.loadPendingOrders(); // Recargamos para ver si el libro ya desapareció de la lista
+    }
   }
 }

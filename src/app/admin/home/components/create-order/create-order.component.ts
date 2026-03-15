@@ -1,0 +1,85 @@
+import { Component, OnInit } from '@angular/core';
+import { ModalController } from '@ionic/angular';
+import { AdminBooks, Book } from 'src/app/admin/services/admin-books';
+import { PurchaseOrder } from 'src/app/admin/services/purchase-order';
+import { finalize } from 'rxjs';
+interface OrderItem {
+  book_id: number;
+  title: string;
+  quantity: number;
+  unit_cost: number;
+}
+@Component({
+  selector: 'app-create-order',
+  templateUrl: './create-order.component.html',
+  styleUrls: ['./create-order.component.scss'],
+  standalone: false
+})
+export class CreateOrderComponent  implements OnInit {
+  supplierName: string = '';
+  notes: string = '';
+  items: OrderItem[] = [];
+
+  allBooks: Book[] = [];
+  searchResults: Book[] = [];
+  isSubmitting = false;
+
+  constructor(
+    private modalCtrl: ModalController,
+    private bookService: AdminBooks,
+    private poService: PurchaseOrder
+  ) {}
+
+  ngOnInit() {
+    this.bookService.getBooks().subscribe(res => this.allBooks = res.data);
+  }
+
+  searchBook(event: any) {
+    const text = event.target.value.toLowerCase();
+    this.searchResults = text.length > 2
+      ? this.allBooks.filter(b => b.title.toLowerCase().includes(text) || b.isbn.includes(text))
+      : [];
+  }
+
+  addItem(book: Book) {
+    if (!this.items.find(i => i.book_id === book.id)) {
+      this.items.push({
+        book_id: book.id!,
+        title: book.title,
+        quantity: 1,
+        unit_cost: 0
+      });
+    }
+    this.searchResults = [];
+  }
+
+  removeItem(index: number) {
+    this.items.splice(index, 1);
+  }
+
+  calculateTotal() {
+    return this.items.reduce((acc, item) => acc + (item.quantity * item.unit_cost), 0);
+  }
+
+  submitOrder() {
+    if (!this.supplierName || this.items.length === 0) return;
+    this.isSubmitting = true;
+
+    const orderData = {
+      supplier_name: this.supplierName,
+      notes: this.notes,
+      items: this.items
+    };
+
+    this.poService.createOrder(orderData)
+      .pipe(finalize(() => this.isSubmitting = false))
+      .subscribe({
+        next: () => this.modalCtrl.dismiss({ success: true }),
+        error: (err) => console.error(err)
+      });
+  }
+
+  close() {
+    this.modalCtrl.dismiss();
+  }
+}

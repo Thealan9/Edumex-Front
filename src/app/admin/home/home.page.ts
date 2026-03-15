@@ -7,6 +7,7 @@ import {
 } from '@ionic/angular';
 import { AlertComponent } from 'src/app/components/alert/alert.component';
 import { forkJoin, Subject, takeUntil } from 'rxjs';
+import {CreateOrderComponent} from "./components/create-order/create-order.component";
 
 @Component({
   selector: 'app-home',
@@ -29,6 +30,18 @@ export class HomePage implements OnInit{
   private destroy$ = new Subject<void>();
 
   ngOnInit() {
+
+  }
+
+  async openCreateOrderModal() {
+    const modal = await this.modalCtrl.create({
+      component: CreateOrderComponent,
+      cssClass: 'create-order-modal'
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
 
   }
 

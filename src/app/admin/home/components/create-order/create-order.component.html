@@ -1,0 +1,119 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="modal-toolbar">
+    <ion-title class="modal-title">
+      Nueva Orden de <span class="text-emerald-500">Compra</span>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()" class="close-btn">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bg-slate-50">
+  <div class="p-6 space-y-6">
+
+    <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
+      <div class="form-group">
+        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Proveedor / Editorial</label>
+        <div class="input-wrapper mt-2">
+          <ion-icon name="business-outline" class="input-icon text-blue-500"></ion-icon>
+          <ion-input [(ngModel)]="supplierName" placeholder="Nombre del proveedor" class="custom-input"></ion-input>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+      <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Paso 1: Agregar Libros</label>
+      <div class="input-wrapper mt-2">
+        <ion-icon name="search-outline" class="input-icon text-slate-400"></ion-icon>
+        <ion-input placeholder="Buscar título o ISBN..." (ionInput)="searchBook($event)" class="custom-input"></ion-input>
+      </div>
+
+      <div *ngIf="searchResults.length > 0" class="mt-4 bg-slate-50 rounded-2xl overflow-hidden border border-slate-100">
+        <div *ngFor="let book of searchResults" (click)="addItem(book)"
+             class="p-3 flex justify-between items-center hover:bg-emerald-50 cursor-pointer border-b border-white last:border-0 transition-all">
+          <div class="flex items-center gap-3">
+            <span class="bg-white px-2 py-0.5 rounded text-[8px] font-black text-blue-600 border border-slate-100">{{ book.level }}</span>
+            <span class="text-[11px] font-bold text-navy uppercase">{{ book.title }}</span>
+          </div>
+          <ion-icon name="add-circle" class="text-emerald-500 text-xl"></ion-icon>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden" *ngIf="items.length > 0">
+      <div class="p-4 bg-navy text-white flex justify-between items-center">
+        <h3 class="text-[10px] font-black uppercase tracking-widest">Resumen de la Orden</h3>
+        <span class="text-[9px] bg-white/20 px-2 py-1 rounded-lg font-bold">{{ items.length }} Items</span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left">
+          <thead>
+          <tr class="text-[8px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">
+            <th class="p-4">Material</th>
+            <th class="p-4 text-center">Cant.</th>
+            <th class="p-4 text-center">Costo Unit.</th>
+            <th class="p-4 text-right">Subtotal</th>
+            <th class="p-4"></th>
+          </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-50">
+          <tr *ngFor="let item of items; let i = index">
+            <td class="p-4">
+              <p class="text-[10px] font-black text-navy uppercase line-clamp-1">{{ item.title }}</p>
+            </td>
+            <td class="p-4">
+              <input type="number" [(ngModel)]="item.quantity" class="w-14 bg-slate-50 border-none rounded-lg p-2 text-center text-[10px] font-black focus:ring-1 focus:ring-blue-500">
+            </td>
+            <td class="p-4">
+              <div class="flex items-center justify-center">
+                <span class="text-slate-300 mr-1 text-[10px]">$</span>
+                <input type="number" [(ngModel)]="item.unit_cost" class="w-20 bg-slate-50 border-none rounded-lg p-2 text-center text-[10px] font-black text-emerald-600 focus:ring-1 focus:ring-emerald-500">
+              </div>
+            </td>
+            <td class="p-4 text-right text-[10px] font-black text-navy">
+              ${{ (item.quantity * item.unit_cost) | number:'1.2-2' }}
+            </td>
+            <td class="p-4 text-right">
+              <button (click)="removeItem(i)" class="text-red-400 hover:text-red-600 transition-colors">
+                <ion-icon name="trash-outline" class="text-lg"></ion-icon>
+              </button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="p-6 border-t border-slate-100 bg-slate-50/30">
+        <div class="flex flex-col md:flex-row justify-between items-end gap-4">
+          <div class="w-full md:w-1/2">
+            <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest ml-1">Observaciones internas</label>
+            <ion-textarea [(ngModel)]="notes" rows="2" placeholder="Notas sobre el envío, pagos, etc..." class="bg-white rounded-xl border border-slate-100 p-2 text-[11px] mt-1"></ion-textarea>
+          </div>
+          <div class="text-right">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Inversión Total</p>
+            <p class="text-2xl font-black text-navy">${{ calculateTotal() | number:'1.2-2' }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4 pt-4">
+      <button (click)="close()" class="flex-1 py-4 px-6 rounded-2xl border border-slate-200 text-slate-500 font-bold hover:bg-slate-100 transition-all">
+        Cancelar
+      </button>
+
+      <button
+        (click)="submitOrder()"
+        [disabled]="items.length === 0 || !supplierName || isSubmitting"
+        class="flex-[2] py-4 px-6 rounded-2xl bg-emerald-500 text-white font-black uppercase text-[11px] tracking-widest shadow-lg shadow-emerald-200 active:scale-95 transition-all disabled:opacity-30">
+        <span *ngIf="!isSubmitting">Emitir Orden de Compra</span>
+        <ion-spinner *ngIf="isSubmitting" name="crescent"></ion-spinner>
+      </button>
+    </div>
+
+  </div>
+</ion-content>
