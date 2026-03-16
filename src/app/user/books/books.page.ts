@@ -3,7 +3,7 @@ import { AdminBooks, Book } from 'src/app/admin/services/admin-books';
 import { Cart } from '../services/cart';
 import { ToastController } from '@ionic/angular';
 import { Observable } from 'rxjs';
-import {Router} from "@angular/router";
+import { Router } from '@angular/router';
 import {Auth} from "../../core/auth";
 
 @Component({
@@ -26,7 +26,8 @@ export class BooksPage implements OnInit {
     private bookService: AdminBooks,
     private cartService: Cart,
     private toastCtrl: ToastController,
-    private auth: Auth
+    private auth: Auth,
+    private router: Router
   ) {this.cart$ = this.cartService.cart$;}
 
   ngOnInit() {
@@ -98,6 +99,9 @@ export class BooksPage implements OnInit {
     }
   }
 
+  goToBook(id: number) {
+    this.router.navigate(['home/libro', id]);
+  }
   async presentErrorToast(message: string) {
     const toast = await this.toastCtrl.create({
       message,

@@ -1,0 +1,148 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="bg-white border-b border-gray-200">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" class="text-gray-600">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="text-sm font-bold text-gray-800">Detalles del Libro</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bg-white">
+
+  <div *ngIf="isLoading" class="p-6 space-y-6 animate-pulse">
+    <div class="h-64 bg-gray-200 rounded-xl w-full max-w-sm mx-auto"></div>
+    <div class="h-8 bg-gray-200 rounded w-3/4"></div>
+    <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+  </div>
+
+  <div *ngIf="!isLoading && book" class="max-w-6xl mx-auto p-4 md:p-8">
+
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 mb-12">
+
+      <div class="md:col-span-4 flex justify-center items-start">
+        <div class="relative w-full max-w-[280px] aspect-[2/3] bg-gray-50 rounded-lg shadow-sm border border-gray-100 flex items-center justify-center p-4">
+          <img [src]="book.image_url">
+          <div class="absolute inset-0 bg-gradient-to-tr from-black/5 to-transparent rounded-lg pointer-events-none"></div>
+        </div>
+      </div>
+
+      <div class="md:col-span-5 flex flex-col">
+        <div class="mb-3">
+          <span class="bg-teal-600 text-white text-[10px] font-bold uppercase tracking-wider py-1 px-3 rounded-sm">
+            {{ book.category || 'General' }}
+          </span>
+          <span *ngIf="book.level" class="ml-2 bg-gray-100 text-gray-600 text-[10px] font-bold uppercase tracking-wider py-1 px-3 rounded-sm">
+            Nivel: {{ book.level }}
+          </span>
+        </div>
+
+        <h2 class="text-gray-500 text-lg mb-1">{{ book.autor }}</h2>
+        <h1 class="text-3xl font-bold text-gray-900 leading-tight mb-4">{{ book.title }}</h1>
+
+        <div class="space-y-2 mb-6 text-sm text-gray-700">
+          <p><span class="font-semibold">Editorial:</span> {{ book.supplier }}</p>
+          <p class="flex items-center gap-2">
+            <ion-icon name="book-outline" class="text-yellow-500"></ion-icon>
+            Formato: {{ book.format || 'Físico' }}
+          </p>
+        </div>
+
+        <div class="flex items-center gap-6 mt-auto border-t border-gray-100 pt-4">
+          <button class="flex items-center gap-2 text-sm text-gray-600 hover:text-purple-700 transition-colors">
+            <ion-icon name="heart-outline" class="text-lg"></ion-icon> Agregar A Favoritos
+          </button>
+          <button class="flex items-center gap-2 text-sm text-gray-600 hover:text-purple-700 transition-colors">
+            <ion-icon name="share-social-outline" class="text-lg"></ion-icon> Compartir
+          </button>
+        </div>
+      </div>
+
+      <div class="md:col-span-3">
+        <div class="bg-white p-6 rounded-none border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.05)] flex flex-col">
+          <div class="flex justify-between items-start mb-2">
+            <p class="text-gray-800 text-sm">Precio Individual</p>
+            <p class="text-2xl font-bold text-gray-900">${{ book.price_unit }}</p>
+          </div>
+
+          <button (click)="addToCart(book, 'unit'); $event.stopPropagation()"
+                  [disabled]="book.total_stock! <= 0"
+                  class="w-full flex items-center justify-center gap-2 bg-[#181848] text-white py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-20 shadow-md">
+            <ion-icon name="cart-outline" class="text-xs"></ion-icon>
+            Comprar
+          </button>
+
+          <div class="flex justify-between items-start mb-2">
+            <p class="text-gray-800 text-sm">Precio paquete</p>
+            <p class="text-2xl font-bold text-gray-900">${{ book.price_package }}</p>
+          </div>
+
+          <button *ngIf="user?.customer_type === 'institutional' && book.price_package"
+                  (click)="addToCart(book, 'package'); $event.stopPropagation()"
+                  [disabled]="book.total_stock! < book.units_per_package"
+                  class="w-full flex items-center justify-center gap-1.5 bg-white text-navy border border-navy py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all active:scale-95">
+            <ion-icon name="apps-outline" class="text-xs"></ion-icon>
+            Paquetes en {{ book.units_per_package}} uds
+          </button>
+
+          <div class="bg-yellow-400 p-4 rounded-sm text-center mt-2">
+            <h4 class="font-bold text-gray-900">Envíos Gratis en compras a partir de $299</h4>
+            <p class="text-xs text-gray-800 mt-1">Recíbelo de 2 a 4 días.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-12 border-t border-gray-200 pt-8">
+
+      <div class="md:col-span-2">
+        <div class="flex justify-between items-center border-b-2 border-black pb-2 mb-4">
+          <h3 class="font-bold text-sm tracking-widest uppercase">Sinopsis</h3>
+        </div>
+        <p class="text-gray-700 text-sm leading-relaxed text-justify">
+          {{ book.description || 'No hay una sinopsis disponible para este material en este momento.' }}
+        </p>
+      </div>
+
+      <div class="md:col-span-1">
+        <div class="flex justify-between items-center border-b-2 border-black pb-2 mb-4">
+          <h3 class="font-bold text-sm tracking-widest uppercase">Características</h3>
+          <ion-icon name="chevron-up-outline"></ion-icon>
+        </div>
+
+        <ul class="space-y-4 text-sm text-gray-700">
+          <li class="flex items-start gap-3">
+            <div>
+              <span class="font-semibold block">Número de páginas:</span>
+              {{ book.pages || 'N/A' }} páginas
+            </div>
+          </li>
+          <li class="flex items-start gap-3">
+            <ion-icon name="calendar-outline" class="text-lg mt-0.5"></ion-icon>
+            <div>
+              <span class="font-semibold block">Año / Edición:</span>
+              {{ book.year || 'N/A' }} / Edición {{ book.edition || '1' }}
+            </div>
+          </li>
+          <li class="flex items-start gap-3">
+            <ion-icon name="barcode-outline" class="text-lg mt-0.5"></ion-icon>
+            <div>
+              <span class="font-semibold block">ISBN:</span>
+              {{ book.isbn }}
+            </div>
+          </li>
+          <li *ngIf="book.size" class="flex items-start gap-3">
+            <ion-icon name="resize-outline" class="text-lg mt-0.5"></ion-icon>
+            <div>
+              <span class="font-semibold block">Tamaño:</span>
+              {{ book.size }}
+            </div>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</ion-content>

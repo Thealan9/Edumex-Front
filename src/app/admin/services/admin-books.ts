@@ -67,6 +67,9 @@ export class AdminBooks {
     );
   }
 
+  getBookById(id: number) {
+    return this.http.get<any>(`${this.baseUrl}/${id}`);
+  }
   deleteBook(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/${id}`).pipe(
       tap(() => this._refresh.next())

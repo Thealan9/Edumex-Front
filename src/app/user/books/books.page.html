@@ -24,6 +24,7 @@
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-5">
 
       <div *ngFor="let book of books"
+           (click)="goToBook(book.id!)"
            class="group bg-white rounded-2xl p-3 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 flex flex-col border-none">
 
         <div class="relative aspect-[3/4] rounded-xl overflow-hidden bg-slate-100 shadow-inner">
@@ -58,7 +59,7 @@
           </div>
 
           <div class="mt-auto space-y-1.5">
-            <button (click)="addToCart(book, 'unit')"
+            <button (click)="addToCart(book, 'unit'); $event.stopPropagation()"
                     [disabled]="book.total_stock! <= 0"
                     class="w-full flex items-center justify-center gap-2 bg-[#181848] text-white py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-20 shadow-md">
               <ion-icon name="cart-outline" class="text-xs"></ion-icon>
@@ -66,16 +67,16 @@
             </button>
 
             <button *ngIf="user?.customer_type === 'institutional' && book.price_package"
-                    (click)="addToCart(book, 'package')"
+                    (click)="addToCart(book, 'package'); $event.stopPropagation()"
                     [disabled]="book.total_stock! < book.units_per_package"
                     class="w-full flex items-center justify-center gap-1.5 bg-white text-navy border border-navy py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all active:scale-95">
               <ion-icon name="apps-outline" class="text-xs"></ion-icon>
               Paquetes en {{ book.units_per_package}} uds
             </button>
 
-            <p class="text-[8px] text-center font-bold" [class.text-red-600]="book.total_stock! < 10" [class.text-gray]="book.total_stock! >= 10">
-              Stock: {{ book.total_stock }}
-            </p>
+<!--            <p class="text-[8px] text-center font-bold" [class.text-red-600]="book.total_stock! < 10" [class.text-gray]="book.total_stock! >= 10">-->
+<!--              Stock: {{ book.total_stock }}-->
+<!--            </p>-->
           </div>
         </div>
       </div>

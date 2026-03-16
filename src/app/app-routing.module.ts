@@ -44,6 +44,10 @@ const routes: Routes = [
         },
         loadChildren: () => import('./user/perfil/perfil.module').then( m => m.PerfilPageModule)
       },
+      {
+        path: 'libro/:id',
+        loadChildren: () => import('./user/book-detail/book-detail.module').then( m => m.BookDetailPageModule)
+      },
     ]
   },
 
