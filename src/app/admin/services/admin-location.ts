@@ -10,6 +10,7 @@ export interface Location {
   max_capacity: number;
   current_capacity: number;
   created_at?: string;
+  current_stock?: number;
 }
 @Injectable({
   providedIn: 'root',

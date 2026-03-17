@@ -29,6 +29,13 @@ export class WarehouseInventory {
   getPendingPurchases(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/warehouseman/pending-purchases`);
   }
+  getPendingOutputs():Observable<any>{
+    return this.http.get(`${environment.apiUrl}/warehouseman/pending-outputs`);
+  }
+
+  getLocationsByBook(id:number){
+    return this.http.get<any>(`${environment.apiUrl}/warehouseman/books-locations/${id}`);
+  }
 
   registerMovement(movement: any): Observable<any> {
     return this.http.post(`${this.API}/move`, movement).pipe(

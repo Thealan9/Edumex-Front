@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import {forkJoin, Subscription} from 'rxjs';
 import { ModalController, NavController } from '@ionic/angular';
 import { WarehouseInventory, InventoryMovement } from '../services/warehouse-inventory';
 import { MovementComponent } from './components/movement/movement.component';
@@ -15,6 +15,7 @@ export class HomePage implements OnInit, OnDestroy {
   recentMovements: any[] = [];
   private refreshSub!: Subscription;
   pendingOrders: any[] = [];
+  pendingOutputs: any[] = [];
 
   constructor(
     private warehouseService: WarehouseInventory,
@@ -26,7 +27,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadRecentMovements();
-    this.loadPendingOrders();
+    this.loadAllPending();
     this.refreshSub = this.warehouseService.refresh$.subscribe(() => {
       this.loadRecentMovements();
     });
@@ -45,12 +46,19 @@ export class HomePage implements OnInit, OnDestroy {
     });
   }
 
-  loadPendingOrders() {
+  loadAllPending() {
     this.warehouseService.getPendingPurchases().subscribe({
       next: (res) => {
         this.pendingOrders = res;
       },
-      error: (err) => console.error('Error cargando órdenes pendientes', err)
+      error: (err) => console.error('Error en compras:', err)
+    });
+
+    this.warehouseService.getPendingOutputs().subscribe({
+      next: (res) => {
+        this.pendingOutputs = res;
+      },
+      error: (err) => console.error('Error en salidas:', err)
     });
   }
 
@@ -82,17 +90,21 @@ export class HomePage implements OnInit, OnDestroy {
     });
   }
 
-  async receiveBookFromOrder(order: any, item: any) {
+  async receiveBookFromOrder(order: any, item: any, referenceType: 'purchase_order' | 'output_order' = 'purchase_order') {
+
+    const isOutput = referenceType === 'output_order';
+
     const modal = await this.modalCtrl.create({
       component: MovementComponent,
       componentProps: {
-        type: 'input',
+        type: isOutput ? 'output' : 'input',
         pendingOrderData: {
-          po_id: order.id,
-          po_number: order.po_number,
+          id: order.id,
+          order_number: isOutput ? order.order_number : order.po_number,
           book_id: item.book_id,
           book_title: item.book.title,
           quantity: item.quantity,
+          type: referenceType
         }
       },
       cssClass: 'movement-modal'
@@ -102,7 +114,7 @@ export class HomePage implements OnInit, OnDestroy {
 
     const { data } = await modal.onWillDismiss();
     if (data?.refresh) {
-      this.loadPendingOrders(); // Recargamos para ver si el libro ya desapareció de la lista
+      this.loadAllPending();
     }
   }
 }

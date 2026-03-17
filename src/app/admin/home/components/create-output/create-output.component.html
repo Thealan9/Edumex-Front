@@ -1,0 +1,102 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="modal-toolbar">
+    <ion-title class="modal-title">
+      Nueva Orden de <span class="text-orange-500">Salida</span>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()" class="close-btn">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bg-slate-50">
+  <div class="p-6 space-y-6">
+
+    <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="form-group">
+        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Motivo de Salida</label>
+        <div class="input-wrapper mt-2">
+          <ion-icon name="alert-circle-outline" class="input-icon text-orange-500"></ion-icon>
+          <ion-select [(ngModel)]="reason" placeholder="Seleccionar motivo" class="w-full text-xs font-bold">
+            <ion-select-option *ngFor="let r of reasons" [value]="r">{{r}}</ion-select-option>
+          </ion-select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Destino / Beneficiario</label>
+        <div class="input-wrapper mt-2">
+          <ion-icon name="location-outline" class="input-icon text-blue-500"></ion-icon>
+          <ion-input [(ngModel)]="destination" placeholder="Ej: Escuela Benito Juárez" class="custom-input"></ion-input>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+      <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Paso 1: Seleccionar Material a Retirar</label>
+      <div class="input-wrapper mt-2">
+        <ion-icon name="search-outline" class="input-icon text-slate-400"></ion-icon>
+        <ion-input placeholder="Buscar título o ISBN..." (ionInput)="searchBook($event)" class="custom-input"></ion-input>
+      </div>
+
+      <div *ngIf="searchResults.length > 0" class="mt-4 bg-slate-50 rounded-2xl overflow-hidden border border-slate-100">
+        <div *ngFor="let book of searchResults" (click)="addItem(book)"
+             class="p-3 flex justify-between items-center hover:bg-orange-50 cursor-pointer border-b border-white last:border-0 transition-all">
+          <div class="flex items-center gap-3">
+            <span class="bg-white px-2 py-0.5 rounded text-[8px] font-black text-orange-600 border border-slate-100">{{ book.level }}</span>
+            <span class="text-[11px] font-bold text-navy uppercase">{{ book.title }}</span>
+          </div>
+          <ion-icon name="remove-circle" class="text-orange-500 text-xl"></ion-icon>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden" *ngIf="items.length > 0">
+      <div class="p-4 bg-orange-600 text-white flex justify-between items-center">
+        <h3 class="text-[10px] font-black uppercase tracking-widest text-white">Material a egresar</h3>
+        <span class="text-[9px] bg-white/20 px-2 py-1 rounded-lg font-bold">{{ items.length }} Libros</span>
+      </div>
+
+      <div class="p-4 space-y-3">
+        <div *ngFor="let item of items; let i = index" class="flex items-center justify-between bg-slate-50 p-3 rounded-2xl border border-slate-100">
+          <div class="flex-1">
+            <p class="text-[10px] font-black text-navy uppercase">{{ item.title }}</p>
+          </div>
+
+          <div class="flex items-center gap-4">
+            <div class="flex items-center bg-white rounded-xl border border-slate-200 px-2">
+              <label class="text-[8px] font-black text-slate-400 uppercase mr-2">Cantidad</label>
+              <input type="number" [(ngModel)]="item.quantity" class="w-12 border-none p-2 text-center text-[11px] font-black text-navy focus:ring-0">
+            </div>
+
+            <button (click)="removeItem(i)" class="text-red-400 p-1">
+              <ion-icon name="close-circle" class="text-xl"></ion-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 border-t border-slate-100 bg-slate-50/30">
+        <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest ml-1">Justificación detallada</label>
+        <ion-textarea [(ngModel)]="notes" rows="2" placeholder="Explicar detalladamente el porqué de la salida..." class="bg-white rounded-xl border border-slate-100 p-2 text-[11px] mt-1"></ion-textarea>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4 pt-4">
+      <button (click)="close()" class="flex-1 py-4 px-6 rounded-2xl border border-slate-200 text-slate-500 font-bold">
+        Cancelar
+      </button>
+
+      <button
+        (click)="submitOrder()"
+        [disabled]="items.length === 0 || !reason || isSubmitting"
+        class="flex-[2] py-4 px-6 rounded-2xl bg-orange-500 text-white font-black uppercase text-[11px] tracking-widest shadow-lg shadow-orange-200 active:scale-95 transition-all disabled:opacity-30">
+        <span *ngIf="!isSubmitting">Autorizar Orden de Salida</span>
+        <ion-spinner *ngIf="isSubmitting" name="crescent"></ion-spinner>
+      </button>
+    </div>
+
+  </div>
+</ion-content>

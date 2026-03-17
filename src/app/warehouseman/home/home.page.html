@@ -40,7 +40,7 @@
 
           <div class="space-y-2">
             <div *ngFor="let item of order.items"
-                 (click)="receiveBookFromOrder(order, item)"
+                 (click)="receiveBookFromOrder(order, item,'purchase_order')"
                  class="flex justify-between items-center bg-slate-50 p-3 rounded-2xl border border-dashed border-slate-200 hover:border-blue-500 hover:bg-blue-50 cursor-pointer transition-all group">
 
               <div class="flex flex-col">
@@ -51,6 +51,36 @@
               <div class="bg-white p-2 rounded-xl shadow-sm group-hover:bg-blue-600 group-hover:text-white transition-colors">
                 <ion-icon name="chevron-forward-outline"></ion-icon>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mb-8" *ngIf="pendingOutputs.length > 0">
+      <div class="flex items-center gap-2 mb-4 ml-2">
+        <div class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></div>
+        <h3 class="text-navy font-black text-[10px] uppercase tracking-[0.2em]">Salidas por Surtir</h3>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div *ngFor="let out of pendingOutputs"
+             class="bg-white rounded-3xl p-5 border-2 border-orange-100 shadow-md transition-all group">
+
+          <div class="flex justify-between items-start mb-3">
+        <span class="text-[9px] font-black text-orange-600 bg-orange-50 px-2 py-1 rounded-lg uppercase">
+          {{ out.order_number }}
+        </span>
+            <span class="text-[8px] font-bold text-slate-400 uppercase">{{ out.reason }}</span>
+          </div>
+
+          <h4 class="text-xs font-black text-navy uppercase truncate mb-3">Destino: {{ out.destination }}</h4>
+
+          <div class="space-y-2">
+            <div *ngFor="let item of out.items"
+                 (click)="receiveBookFromOrder(out, item, 'output_order')"
+                 class="flex justify-between items-center bg-slate-50 p-3 rounded-2xl border border-dashed border-slate-200 hover:border-orange-500 hover:bg-orange-50 cursor-pointer transition-all">
+              <span class="text-[10px] font-black text-navy uppercase">{{ item.book.title }}</span>
+              <span class="font-black text-orange-600 text-xs">x{{ item.quantity }}</span>
             </div>
           </div>
         </div>

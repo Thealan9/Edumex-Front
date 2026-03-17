@@ -48,13 +48,19 @@ export class MovementComponent  implements OnInit {
 
   private checkPendingOrder() {
     if (this.pendingOrderData) {
+      const isOutputOrder = this.pendingOrderData.type === 'output_order';
+
       this.form.patchValue({
         book_id: this.pendingOrderData.book_id,
         temp_quantity: this.pendingOrderData.quantity,
-        description: `Ingreso por Orden #${this.pendingOrderData.po_number}`,
-        reference_id: this.pendingOrderData.po_id,
-        reference_type: 'purchase_order'
+        type: isOutputOrder ? 'output' : 'input',
+        description: isOutputOrder
+          ? `Salida por Orden #${this.pendingOrderData.order_number}`
+          : `Ingreso por Orden #${this.pendingOrderData.order_number}`,
+        reference_id: this.pendingOrderData.id,
+        reference_type: isOutputOrder ? 'output_order' : 'purchase_order'
       });
+
       this.form.get('book_id')?.disable();
     }
   }
@@ -74,7 +80,6 @@ export class MovementComponent  implements OnInit {
     return target - currentTotal;
   }
 
-  // Agrega un pallet a la lista local
   addDistribution() {
     const locId = this.form.get('temp_location_id')?.value;
     const qty = this.form.get('temp_quantity')?.value;
@@ -84,14 +89,25 @@ export class MovementComponent  implements OnInit {
     const loc = this.locations.find(l => l.id === locId);
     if (!loc) return;
 
-    const available = (loc.max_capacity || 0) - (loc.current_capacity || 0);
-    if (qty > available) {
-      this.showAlert(`En el pallet ${loc.code} solo caben ${available} unidades.`, 'warning');
-      return;
+    if (this.type === 'output' || this.pendingOrderData?.type === 'output_order') {
+      const stockDisponible = loc.current_stock || 0;
+      if (qty > stockDisponible) {
+        this.showAlert(`No puedes sacar ${qty} unidades. En este pallet solo hay ${stockDisponible}.`, 'warning');
+        return;
+      }
+    }
+
+    if (this.type === 'input') {
+      const available = (loc.max_capacity || 0) - (loc.current_capacity || 0);
+      if (qty > available) {
+        this.showAlert(`En el pallet ${loc.code} solo caben ${available} unidades.`, 'warning');
+        return;
+      }
     }
 
     if (this.pendingOrderData && qty > this.remainingQuantity) {
-      this.showAlert(`Solo faltan ${this.remainingQuantity} unidades por ubicar.`, 'warning');
+      const msg = this.type === 'input' ? 'ubicar' : 'retirar';
+      this.showAlert(`Solo faltan ${this.remainingQuantity} unidades por ${msg}.`, 'warning');
       return;
     }
 
@@ -101,8 +117,6 @@ export class MovementComponent  implements OnInit {
       quantity: qty
     });
 
-    // --- EL CAMBIO ESTÁ AQUÍ ---
-    // Si ya llegamos a cero, reseteamos a 1 para no romper la validación de Validators.min(1)
     this.form.patchValue({
       temp_location_id: null,
       temp_quantity: this.remainingQuantity > 0 ? this.remainingQuantity : 1
@@ -112,7 +126,6 @@ export class MovementComponent  implements OnInit {
   removeDistribution(index: number) {
     this.distributions.splice(index, 1);
 
-    // --- EL CAMBIO ESTÁ AQUÍ ---
     this.form.patchValue({
       temp_quantity: this.remainingQuantity > 0 ? this.remainingQuantity : 1
     });
@@ -125,11 +138,18 @@ export class MovementComponent  implements OnInit {
       error: (err) => console.error('Error libros:', err)
     });
 
-    // Se recarga para siempre tener la capacidad REAL actualizada
-    this.adminLocations.getLocations().subscribe({
-      next: (res) => this.locations = res.data,
-      error: (err) => console.error('Error cargando ubicaciones:', err)
-    });
+    if (this.type === 'output' || this.pendingOrderData?.type === 'output_order') {
+      const bookId = this.pendingOrderData ? this.pendingOrderData.book_id : this.form.get('book_id')?.value;
+
+      if (bookId) {
+        this.warehouseService.getLocationsByBook(bookId).subscribe({
+          next: (res) => this.locations = res.data,
+          error: (err) => console.error('Error cargando ubicaciones con stock', err)
+        });
+      }
+    } else {
+      this.adminLocations.getLocations().subscribe(res => this.locations = res.data);
+    }
   }
 
   submit() {
@@ -144,14 +164,13 @@ export class MovementComponent  implements OnInit {
     this.isSubmitting = true;
     const rawData = this.form.getRawValue();
 
-    // Construimos el objeto final para Laravel
     const payload = {
       book_id: rawData.book_id,
       type: rawData.type,
       description: rawData.description,
       reference_id: rawData.reference_id,
       reference_type: rawData.reference_type,
-      distributions: this.distributions // Mandamos el arreglo completo
+      distributions: this.distributions
     };
 
     this.warehouseService.registerMovement(payload)

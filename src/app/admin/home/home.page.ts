@@ -8,6 +8,7 @@ import {
 import { AlertComponent } from 'src/app/components/alert/alert.component';
 import { forkJoin, Subject, takeUntil } from 'rxjs';
 import {CreateOrderComponent} from "./components/create-order/create-order.component";
+import {CreateOutputComponent} from "./components/create-output/create-output.component";
 
 @Component({
   selector: 'app-home',
@@ -44,6 +45,17 @@ export class HomePage implements OnInit{
     const { data } = await modal.onWillDismiss();
 
   }
+
+  async openCreateOutputModal() {
+    const modal = await this.modalCtrl.create({
+      component: CreateOutputComponent,
+      cssClass: 'create-order-modal'
+    });
+
+    await modal.present();
+    const { data } = await modal.onWillDismiss();
+  }
+
 
   ionViewWillLeave() {
     this.destroy$.next();

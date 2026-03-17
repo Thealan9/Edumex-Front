@@ -10,6 +10,7 @@ import { HomePage } from './home.page';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AlertComponent } from 'src/app/components/alert/alert.component';
 import {CreateOrderComponent} from "./components/create-order/create-order.component";
+import {CreateOutputComponent} from "./components/create-output/create-output.component";
 
 @NgModule({
   imports: [
@@ -21,6 +22,6 @@ import {CreateOrderComponent} from "./components/create-order/create-order.compo
     MatSnackBarModule,
 
   ],
-  declarations: [HomePage,AlertComponent,CreateOrderComponent],
+  declarations: [HomePage,AlertComponent,CreateOrderComponent,CreateOutputComponent],
 })
 export class HomePageModule {}
