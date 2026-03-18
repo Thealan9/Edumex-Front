@@ -30,6 +30,8 @@ export class NavbarUserComponent implements OnInit {
   selectedAddressId: number | null = null;
   showNewAddressForm: boolean = false;
 
+  isAddressCollapsed = false;
+
   addressForm = {
     recipient_name: '',
     recipient_phone: '',
@@ -62,6 +64,7 @@ export class NavbarUserComponent implements OnInit {
 
   ngOnInit() {
     this.loadAddresses();
+    this.cartService.loadDiscountRules();
   }
   isOrderReady() {
     if (this.showNewAddressForm) {
@@ -84,11 +87,28 @@ export class NavbarUserComponent implements OnInit {
     });
   }
 
-  deleteAddress(id: number) {
-    this.http.delete(`${environment.apiUrl}/user/addresses/${id}`).subscribe(() => {
-      this.loadAddresses();
-    });
+  updateQuantity(item: any, delta: number) {
+    const newQty = item.quantity + delta;
+    if (newQty > 0) {
+      this.cartService.updateQuantity(item.book.id, newQty, item.buy_type);
+    } else {
+      this.removeItem(item);
+    }
   }
+
+  removeItem(item: any) {
+    this.cartService.removeFromCart(item.book.id, item.buy_type);
+  }
+  get shippingCost(): number {
+    return this.cartService.shippingCost;
+  }
+  get finalTotal(): number {
+    return this.cartService.finalTotal;
+  }
+  get totalSavings(): number {
+    return this.cartService.totalSavings;
+  }
+
   async openCart() {
     await this.menuCtrl.enable(true, 'cart-menu');
     await this.menuCtrl.open('cart-menu');

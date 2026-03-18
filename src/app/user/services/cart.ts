@@ -4,10 +4,18 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Book } from 'src/app/admin/services/admin-books';
 import { tap } from 'rxjs/operators';
+
 export interface CartItem {
   book: Book;
   quantity: number;
   buy_type: 'unit' | 'package';
+}
+
+export interface VolumeDiscount {
+  min_quantity: number;
+  max_quantity: number | null;
+  discount_percentage: number;
+  is_institutional: boolean;
 }
 @Injectable({
   providedIn: 'root',
@@ -16,25 +24,100 @@ export class Cart {
   private items: CartItem[] = [];
   private _cart = new BehaviorSubject<CartItem[]>([]);
   cart$ = this._cart.asObservable();
+  public discountRules: VolumeDiscount[] = [];
+  constructor(private http: HttpClient) {
+    this.loadCart();
+    this.loadDiscountRules();
+  }
 
-  constructor(private http: HttpClient) {}
+  private loadCart() {
+    const saved = localStorage.getItem('edumex_cart');
+    if (saved) {
+      this.items = JSON.parse(saved);
+      this._cart.next([...this.items]);
+    }
+  }
+  public loadDiscountRules() {
+
+    this.http.get<any>(`${environment.apiUrl}/user/discounts`).subscribe({
+      next: (res) => {
+        this.discountRules = res.data || res;
+      },
+      error: (err) => {
+        console.error('No se pudieron cargar las reglas de descuento', err);
+      }
+    });
+  }
 
   addToCart(book: Book, buy_type: 'unit' | 'package' = 'unit') {
-    const exists = this.items.find(i =>
-      i.book.id === book.id && i.buy_type === buy_type
-    );
-
-    if (exists) {
-      exists.quantity += 1;
+    const index = this.items.findIndex(i => i.book.id === book.id && i.buy_type === buy_type);
+    if (index > -1) {
+      this.items[index].quantity += 1;
     } else {
-      this.items.push({
-        book,
-        quantity: 1,
-        buy_type
-      });
+      this.items.push({ book, quantity: 1, buy_type });
     }
+    this.notify();
+  }
 
-    this._cart.next([...this.items]);
+  updateQuantity(bookId: number, quantity: number, buyType: 'unit' | 'package') {
+    const index = this.items.findIndex(i => i.book.id === bookId && i.buy_type === buyType);
+    if (index > -1) {
+      if (quantity <= 0) {
+        this.removeFromCart(bookId, buyType);
+      } else {
+        this.items[index].quantity = quantity;
+        this.notify();
+      }
+    }
+  }
+
+  removeFromCart(bookId: number, buyType: 'unit' | 'package') {
+    this.items = this.items.filter(i => !(i.book.id === bookId && i.buy_type === buyType));
+    this.notify();
+  }
+
+  get subtotal(): number {
+    return this.items.reduce((acc, item) => {
+      const price = item.buy_type === 'package'
+        ? (Number(item.book.price_package) || 0)
+        : (Number(item.book.price_unit) || 0);
+      return acc + (price * item.quantity);
+    }, 0);
+  }
+
+  get totalSavings(): number {
+    let savings = 0;
+    this.items.forEach(item => {
+      if (item.buy_type === 'unit') {
+        const rule = this.discountRules.find(r =>
+          item.quantity >= r.min_quantity &&
+          (r.max_quantity === null || item.quantity <= r.max_quantity)
+        );
+
+        if (rule) {
+          const itemPrice = Number(item.book.price_unit) || 0;
+          const itemSubtotal = itemPrice * item.quantity;
+          savings += itemSubtotal * (rule.discount_percentage / 100);
+        }
+      }
+    });
+    return savings;
+  }
+
+  get amountAfterDiscount(): number {
+    return this.subtotal - this.totalSavings;
+  }
+
+  get shippingCost(): number {
+    const baseParaEnvio = this.subtotal;
+
+    if (baseParaEnvio === 0) return 0;
+
+    return baseParaEnvio >= 299 ? 0 : 129;
+  }
+
+  get finalTotal(): number {
+    return this.amountAfterDiscount + this.shippingCost;
   }
 
   checkout(addressId: number | null, addressData: any = null): Observable<any> {
@@ -54,16 +137,12 @@ export class Cart {
 
   clearCart() {
     this.items = [];
+    localStorage.removeItem('edumex_cart');
     this._cart.next([]);
   }
 
-  get total() {
-    return this.items.reduce((acc, item) => {
-      const price = item.buy_type === 'package'
-        ? (item.book.price_package ?? 0)
-        : (item.book.price_unit ?? 0);
-
-      return acc + (price * item.quantity);
-    }, 0);
+  private notify() {
+    this._cart.next([...this.items]);
+    localStorage.setItem('edumex_cart', JSON.stringify(this.items));
   }
 }

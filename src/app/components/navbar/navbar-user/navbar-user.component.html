@@ -24,7 +24,7 @@
           <span class="cart-badge" *ngIf="((cartItemsCount$ | async) ?? 0) > 0">
             {{ cartItemsCount$ | async }}
           </span>
-          <ion-label> Mi carrito</ion-label>
+          <ion-label> Carrito</ion-label>
         </ion-item>
       </ion-list>
     </ion-content>
@@ -102,8 +102,8 @@
 
 <ion-menu side="end" menuId="cart-menu" contentId="main-content" type="overlay">
   <ion-header class="ion-no-border">
-    <ion-toolbar class="--background: #701188; color: white;">
-      <ion-title class="text-sm font-black uppercase tracking-widest">Mi Bolsa</ion-title>
+    <ion-toolbar class="--background: #181848; color: white;">
+      <ion-title class="text-xs font-black uppercase tracking-widest">Carrito</ion-title>
       <ion-buttons slot="end">
         <ion-button (click)="closeCart()"><ion-icon name="close-outline"></ion-icon></ion-button>
       </ion-buttons>
@@ -111,34 +111,74 @@
   </ion-header>
 
   <ion-content class="bg-slate-50">
-    <div class="p-4">
-      <div class="flex items-center gap-2 mb-4">
-        <span class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold">1</span>
-        <h3 class="text-slate-800 font-bold text-sm">Resumen de productos</h3>
+    <!-- ESTADO VACÍO -->
+    <div *ngIf="((cartItemsCount$ | async) ?? 0) === 0" class="flex flex-col items-center justify-center h-full p-8 text-center">
+      <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+        <ion-icon name="bag-handle-outline" class="text-4xl text-slate-300"></ion-icon>
       </div>
-      <ion-list class="bg-transparent" *ngIf="(cartItems$ | async) as items">
-        <div *ngFor="let item of items" class="bg-white rounded-2xl p-3 mb-2 shadow-sm border border-slate-100 flex gap-3">
-          <div class="w-10 h-14 bg-slate-50 rounded-lg flex items-center justify-center text-[8px] font-black border border-slate-100">{{ item.book.level }}</div>
-          <div class="flex-1 min-w-0">
-            <p class="text-[11px] font-bold text-slate-800 truncate">{{ item.book.title }}</p>
-            <p class="text-[9px] text-slate-400 font-medium">{{ item.quantity }} {{ item.buy_type === 'package' ? 'Paquete(s)' : 'Unidad(es)' }}</p>
-            <p class="text-xs font-black text-blue-600">${{ (item.buy_type === 'package' ? item.book.price_package : item.book.price_unit) * item.quantity }}</p>
-          </div>
-        </div>
-      </ion-list>
+      <h3 class="text-slate-800 font-bold">Tu carrito está Vacío</h3>
+      <p class="text-slate-400 text-xs mt-2">Parece que aún no has agregado tesoros a tu colección.</p>
     </div>
 
-    <div class="p-4 pt-0">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-2">
-          <span class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold">2</span>
-          <h3 class="text-slate-800 font-bold text-sm">Información de Entrega</h3>
+    <div *ngIf="((cartItemsCount$ | async) ?? 0) > 0">
+      <div class="p-4">
+
+        <div *ngFor="let item of (cartItems$ | async)" class="bg-white rounded-2xl p-3 mb-2 shadow-sm border border-slate-100 flex gap-3 items-center">
+          <div class="w-10 h-14 bg-slate-50 rounded-lg flex items-center justify-center text-[8px] font-black border border-slate-100 text-blue-900">{{ item.book.level }}</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[11px] font-bold text-slate-800 truncate mb-1">{{ item.book.title }}</p>
+            <div class="flex items-center gap-2">
+              <div class="flex items-center bg-slate-100 rounded-lg p-1">
+                <button (click)="updateQuantity(item, -1)" class="w-5 h-5 flex items-center justify-center text-slate-600"><ion-icon name="remove"></ion-icon></button>
+                <span class="px-2 text-[10px] font-black">{{ item.quantity }}</span>
+                <button (click)="updateQuantity(item, 1)" class="w-5 h-5 flex items-center justify-center text-slate-600"><ion-icon name="add"></ion-icon></button>
+              </div>
+              <span class="text-[9px] text-slate-400 font-bold uppercase">{{ item.buy_type === 'package' ? 'Paquete' : 'Unidad' }}</span>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="text-xs font-black text-slate-900">${{ (item.buy_type === 'package' ? item.book.price_package : item.book.price_unit) * item.quantity }}</p>
+            <button (click)="removeItem(item)" class="text-red-400 mt-1"><ion-icon name="trash-outline"></ion-icon></button>
+          </div>
         </div>
-        <button (click)="showNewAddressForm = !showNewAddressForm"
-                class="text-blue-600 text-[10px] font-black uppercase tracking-tighter">
-          {{ showNewAddressForm ? 'Ver guardadas' : '+ Nueva' }}
-        </button>
       </div>
+
+      <div class="px-4 mb-4" *ngIf="cartService.shippingCost > 0">
+        <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
+          <div class="flex justify-between items-center mb-1">
+            <p class="text-[9px] font-black text-blue-800 uppercase tracking-tighter">
+              Te faltan ${{ (299 - cartService.amountAfterDiscount) | number:'1.2-2' }} para envío GRATIS
+            </p>
+            <ion-icon name="gift-outline" class="text-blue-600 text-xs animate-bounce"></ion-icon>
+          </div>
+
+          <div class="w-full bg-blue-200 h-1.5 rounded-full overflow-hidden shadow-inner">
+            <div class="bg-blue-600 h-full transition-all duration-700 ease-out"
+                 [style.width.%]="(cartService.amountAfterDiscount / 299) * 100">
+            </div>
+          </div>
+
+          <p class="text-[7px] text-blue-400 font-bold uppercase mt-1 text-right italic">
+            Válido en compras mayores a $299.00
+          </p>
+        </div>
+      </div>
+
+      <div class="p-4 pt-0">
+        <div class="flex items-center justify-between mb-2 bg-slate-100 p-2 rounded-xl cursor-pointer" (click)="isAddressCollapsed = !isAddressCollapsed">
+          <div class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-slate-800 text-white flex items-center justify-center text-[9px] font-bold">2</span>
+            <h3 class="text-slate-800 font-bold text-sm">Entrega</h3>
+          </div>
+          <ion-icon [name]="isAddressCollapsed ? 'chevron-down-outline' : 'chevron-up-outline'"></ion-icon>
+        </div>
+
+        <div [hidden]="isAddressCollapsed">
+          <div class="flex justify-end mb-2">
+            <button (click)="showNewAddressForm = !showNewAddressForm" class="text-blue-600 text-[9px] font-black uppercase">
+              {{ showNewAddressForm ? 'Usar Guardada' : '+ Nueva Dirección' }}
+            </button>
+          </div>
 
       <div *ngIf="!showNewAddressForm" class="space-y-3">
         <div *ngIf="savedAddresses.length === 0" class="bg-blue-50 border border-blue-100 p-6 rounded-3xl text-center">
@@ -204,14 +244,39 @@
           </ion-item>
         </div>
       </div>
+        </div>
+      </div>
     </div>
   </ion-content>
 
-  <ion-footer class="ion-no-border p-6 bg-white border-t border-slate-100">
-    <div class="flex justify-between items-center mb-4">
-      <span class="text-slate-400 font-bold text-xs uppercase">Total</span>
-      <span class="text-2xl font-black text-slate-900">${{ cartService.total }}</span>
+  <ion-footer class="ion-no-border p-6 bg-white border-t border-slate-100" *ngIf="((cartItemsCount$ | async) ?? 0) > 0">
+    <div class="space-y-1 mb-4 p-2 bg-slate-50 rounded-2xl">
+
+      <div class="flex justify-between text-[10px] font-bold text-slate-400 uppercase">
+        <span>Productos</span>
+        <span>${{ cartService.subtotal | number:'1.2-2' }}</span>
+      </div>
+
+      <div *ngIf="cartService.totalSavings > 0" class="flex justify-between text-[10px] font-bold text-emerald-600 uppercase">
+        <span>Tu Ahorro</span>
+        <span>- ${{ cartService.totalSavings | number:'1.2-2' }}</span>
+      </div>
+
+      <div class="flex justify-between text-[10px] font-bold uppercase"
+           [class.text-emerald-600]="cartService.shippingCost === 0"
+           [class.text-slate-400]="cartService.shippingCost > 0">
+        <span>Envío</span>
+        <span>{{ cartService.shippingCost === 0 ? '¡GRATIS!' : ('$' + cartService.shippingCost) }}</span>
+      </div>
+
+      <div class="flex justify-between items-center pt-2 border-t border-slate-200 mt-2">
+        <span class="text-slate-900 font-black text-xs uppercase">Total a pagar</span>
+        <span class="text-xl font-black text-blue-600">${{ cartService.finalTotal | number:'1.2-2' }}</span>
+      </div>
     </div>
-    <button (click)="checkout()" [disabled]="!isOrderReady()" class="submit-modal-btn">Confirmar y Pagar</button>
+
+    <button (click)="checkout()" [disabled]="!isOrderReady()" class="submit-modal-btn w-full">
+      Confirmar y Pagar
+    </button>
   </ion-footer>
 </ion-menu>
