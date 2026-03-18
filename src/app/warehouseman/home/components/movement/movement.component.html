@@ -29,9 +29,15 @@
           <div class="col-span-12 md:col-span-7">
             <label class="form-label !text-[9px]">Pallet / Estante</label>
             <div class="input-wrapper bg-white">
-              <ion-select formControlName="temp_location_id" placeholder="Seleccionar ubicación con stock">
+              <ion-select formControlName="temp_location_id" placeholder="Seleccionar ubicación">
                 <ion-select-option *ngFor="let loc of locations" [value]="loc.id">
-                  {{ loc.code }} — DISP: {{ loc.current_stock }} uds.
+                  {{ loc.code }}
+                  <ng-container *ngIf="type === 'output' || pendingOrderData?.type === 'output_order'">
+                    — STOCK: {{ loc.current_stock || 0 }} uds.
+                  </ng-container>
+                  <ng-container *ngIf="type === 'input' && pendingOrderData?.type !== 'output_order'">
+                    — LIBRE: {{ (loc.max_capacity || 0) - (loc.current_capacity || 0) }} uds.
+                  </ng-container>
                 </ion-select-option>
               </ion-select>
             </div>
@@ -45,8 +51,12 @@
           </div>
 
           <div class="col-span-4 md:col-span-2">
-            <button type="button" (click)="addDistribution()" class="w-full h-[46px] bg-navy text-white rounded-xl flex items-center justify-center hover:bg-blue-600 transition-colors">
-              <ion-icon name="add" class="text-2xl"></ion-icon>
+            <label class="form-label !text-transparent md:block hidden">_</label>
+            <button
+              type="button"
+              (click)="addDistribution()"
+              class="w-full h-[48px] submit-modal-btn !shadow-lg rounded-xl flex items-center justify-center shadow-md active:scale-95 transition-all opacity-100 !visible">
+              <ion-icon name="add" class="text-2xl text-slate-500 font-bold"></ion-icon>
             </button>
           </div>
         </div>
@@ -65,7 +75,7 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Observaciones</label>
+          <label class="form-label">Detalles</label>
           <div class="input-wrapper !items-start py-3">
             <ion-textarea formControlName="description" rows="2" class="text-sm"></ion-textarea>
           </div>

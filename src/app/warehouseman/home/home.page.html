@@ -20,6 +20,48 @@
 
 <ion-content class="bg-slate-50">
   <div class="p-6">
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+      <div (click)="openMovementModal('input')"
+           class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:border-emerald-500 transition-all cursor-pointer group">
+        <div class="flex items-center gap-4">
+          <div class="bg-emerald-500 text-white p-4 rounded-xl shadow-lg shadow-emerald-200 group-hover:scale-110 transition-transform">
+            <ion-icon name="add-outline" class="text-2xl font-bold"></ion-icon>
+          </div>
+          <div>
+            <h3 class="text-navy font-black text-sm uppercase tracking-widest">Entrada</h3>
+            <p class="text-slate-400 text-[10px] font-bold">Ingreso de mercancía</p>
+          </div>
+        </div>
+      </div>
+
+      <div (click)="openMovementModal('output')"
+           class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:border-orange-500 transition-all cursor-pointer group">
+        <div class="flex items-center gap-4">
+          <div class="bg-orange-500 text-white p-4 rounded-xl shadow-lg shadow-orange-200 group-hover:scale-110 transition-transform">
+            <ion-icon name="remove-outline" class="text-2xl font-bold"></ion-icon>
+          </div>
+          <div>
+            <h3 class="text-navy font-black text-sm uppercase tracking-widest">Salida</h3>
+            <p class="text-slate-400 text-[10px] font-bold">Egreso / Despacho</p>
+          </div>
+        </div>
+      </div>
+
+      <div [routerLink]="['/warehouseman/orders']"
+           class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:border-blue-500 transition-all cursor-pointer group">
+        <div class="flex items-center gap-4">
+          <div class="bg-blue-500 text-white p-4 rounded-xl shadow-lg shadow-blue-200 group-hover:scale-110 transition-transform">
+            <ion-icon name="receipt-outline" class="text-2xl font-bold"></ion-icon>
+          </div>
+          <div>
+            <h3 class="text-navy font-black text-sm uppercase tracking-widest">Órdenes</h3>
+            <p class="text-slate-400 text-[10px] font-bold">Pedidos por surtir</p>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="mb-8" *ngIf="pendingOrders.length > 0">
       <div class="flex items-center gap-2 mb-4 ml-2">
         <div class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div>
@@ -30,13 +72,11 @@
         <div *ngFor="let order of pendingOrders" class="bg-white rounded-3xl p-5 border-2 border-blue-100 shadow-md transition-all">
 
           <div class="flex justify-between items-start mb-3">
-    <span class="text-[9px] font-black text-blue-600 bg-blue-50 px-2 py-1 rounded-lg uppercase">
-      {{ order.po_number }}
-    </span>
+          <span class="text-[9px] font-black text-blue-600 bg-blue-50 px-2 py-1 rounded-lg uppercase">
+            {{ order.po_number }}
+          </span>
             <span class="text-[8px] font-bold text-slate-400 uppercase italic">{{ order.created_at | date:'dd MMM' }}</span>
           </div>
-
-          <h4 class="text-xs font-black text-navy uppercase truncate mb-3">{{ order.supplier_name }}</h4>
 
           <div class="space-y-2">
             <div *ngFor="let item of order.items"
@@ -82,47 +122,6 @@
               <span class="text-[10px] font-black text-navy uppercase">{{ item.book.title }}</span>
               <span class="font-black text-orange-600 text-xs">x{{ item.quantity }}</span>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-
-      <div (click)="openMovementModal('input')"
-           class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:border-emerald-500 transition-all cursor-pointer group">
-        <div class="flex items-center gap-4">
-          <div class="bg-emerald-500 text-white p-4 rounded-xl shadow-lg shadow-emerald-200 group-hover:scale-110 transition-transform">
-            <ion-icon name="add-outline" class="text-2xl font-bold"></ion-icon>
-          </div>
-          <div>
-            <h3 class="text-navy font-black text-sm uppercase tracking-widest">Entrada</h3>
-            <p class="text-slate-400 text-[10px] font-bold">Ingreso de mercancía</p>
-          </div>
-        </div>
-      </div>
-
-      <div (click)="openMovementModal('output')"
-           class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:border-orange-500 transition-all cursor-pointer group">
-        <div class="flex items-center gap-4">
-          <div class="bg-orange-500 text-white p-4 rounded-xl shadow-lg shadow-orange-200 group-hover:scale-110 transition-transform">
-            <ion-icon name="remove-outline" class="text-2xl font-bold"></ion-icon>
-          </div>
-          <div>
-            <h3 class="text-navy font-black text-sm uppercase tracking-widest">Salida</h3>
-            <p class="text-slate-400 text-[10px] font-bold">Egreso / Despacho</p>
-          </div>
-        </div>
-      </div>
-
-      <div [routerLink]="['/warehouseman/orders']"
-           class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:border-blue-500 transition-all cursor-pointer group">
-        <div class="flex items-center gap-4">
-          <div class="bg-blue-500 text-white p-4 rounded-xl shadow-lg shadow-blue-200 group-hover:scale-110 transition-transform">
-            <ion-icon name="receipt-outline" class="text-2xl font-bold"></ion-icon>
-          </div>
-          <div>
-            <h3 class="text-navy font-black text-sm uppercase tracking-widest">Órdenes</h3>
-            <p class="text-slate-400 text-[10px] font-bold">Pedidos por surtir</p>
           </div>
         </div>
       </div>

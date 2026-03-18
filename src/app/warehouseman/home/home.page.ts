@@ -5,6 +5,7 @@ import { WarehouseInventory, InventoryMovement } from '../services/warehouse-inv
 import { MovementComponent } from './components/movement/movement.component';
 import { Auth } from 'src/app/core/auth';
 import {Router} from "@angular/router";
+import {CreateMovementComponent} from "./components/create-movement/create-movement.component";
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
@@ -64,7 +65,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   async openMovementModal(type: 'input' | 'output') {
     const modal = await this.modalCtrl.create({
-      component: MovementComponent,
+      component: CreateMovementComponent,
       componentProps: { type },
       cssClass: 'movement-modal'
     });
