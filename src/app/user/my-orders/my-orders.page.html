@@ -10,7 +10,9 @@
           <ion-icon name="cube-outline" class="text-xl"></ion-icon>
         </div>
         <div>
-          <p class="text-[10px] text-slate-400 font-bold">Llegó el {{ order.shipped_at | date:'dd MMM yyyy' }}</p>          <div class="flex items-center gap-1.5 mt-1">
+          <p *ngIf="order.shipped_at"
+            class="text-[10px] text-slate-400 font-bold">Llegó el {{ order.shipped_at | date:'dd MMM yyyy' }}</p>
+          <div class="flex items-center gap-1.5 mt-1">
             <div [class]="order.status === 'delivered' ? 'bg-emerald-500' : 'bg-edumex-gold'" class="w-1.5 h-1.5 rounded-full animate-pulse"></div>
             <p class="text-[10px] font-black uppercase"
                [ngClass]="order.status === 'delivered' ? 'text-emerald-600' : 'text-edumex-gold'">
