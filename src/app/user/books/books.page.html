@@ -118,33 +118,21 @@
                 </p>
               </div>
 
-              <div class="bg-slate-50 rounded-2xl p-3 mb-4 flex justify-between items-center border border-slate-100">
+              <div class="bg-slate-50 rounded-2xl p-3 mb-4 flex items-center border border-slate-100"
+                   [class.justify-between]="user?.customer_type === 'institutional' && book.price_package"
+                   [class.justify-center]="user?.customer_type !== 'institutional' || !book.price_package">
                 <div>
-                  <p class="text-[7px] font-black text-slate-400 uppercase tracking-widest">Unit.</p>
-                  <p class="text-sm font-black text-emerald-600">${{ book.price_unit }}</p>
+                  <p *ngIf="user?.customer_type === 'institutional' && book.price_unit"
+                    class="text-[7px] font-black text-slate-400 uppercase tracking-widest">Unit.</p>
+                  <p class="text-sm font-black text-emerald-600">${{ book.price_unit }} MXN</p>
                 </div>
-                <div class="text-right" *ngIf="book.price_package">
-                  <p class="text-[7px] font-black text-slate-400 uppercase tracking-widest">Pack</p>
-                  <p class="text-[11px] font-black text-navy">${{ book.price_package }}</p>
+                <div class="text-right" *ngIf="user?.customer_type === 'institutional' && book.price_package">
+                  <p class="text-[7px] font-black text-slate-400 uppercase tracking-widest">Paquete</p>
+                  <p class="text-[11px] font-black text-navy">${{ book.price_package }} MXN</p>
                 </div>
               </div>
 
-              <div class="mt-auto space-y-2">
-                <button (click)="addToCart(book, 'unit'); $event.stopPropagation()"
-                        [disabled]="book.total_stock! <= 0"
-                        class="w-full flex items-center justify-center gap-2 bg-[#181848] text-white py-3.5 rounded-xl text-[9px] font-black uppercase tracking-[0.15em] shadow-lg shadow-blue-900/20 active:scale-95 transition-all disabled:opacity-30">
-                  <ion-icon name="cart-outline" class="text-xs"></ion-icon>
-                  Comprar
-                </button>
 
-                <button *ngIf="user?.customer_type === 'institutional' && book.price_package"
-                        (click)="addToCart(book, 'package'); $event.stopPropagation()"
-                        [disabled]="book.total_stock! < book.units_per_package"
-                        class="w-full flex items-center justify-center gap-2 bg-white text-navy border-2 border-navy/10 py-3 rounded-xl text-[9px] font-black uppercase tracking-tighter hover:bg-navy hover:text-white transition-all">
-                  <ion-icon name="apps-outline" class="text-xs"></ion-icon>
-                  Paquete ({{ book.units_per_package }} uds)
-                </button>
-              </div>
             </div>
           </div>
 
