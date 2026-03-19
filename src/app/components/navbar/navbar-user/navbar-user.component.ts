@@ -20,6 +20,7 @@ import { environment } from 'src/environments/environment';
   imports: [IonicModule, RouterModule, CommonModule,FormsModule]
 })
 export class NavbarUserComponent implements OnInit {
+  user: any = null;
   isMobile$: Observable<boolean>;
   isCollapsed = false;
 
@@ -63,8 +64,17 @@ export class NavbarUserComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loadAddresses();
-    this.cartService.loadDiscountRules();
+    this.auth.user$.subscribe(user => {
+      this.user = user;
+
+      if (this.user) {
+        this.loadAddresses();
+        this.cartService.loadDiscountRules();
+      } else {
+        this.savedAddresses = [];
+        this.selectedAddressId = null;
+      }
+    });
   }
   isOrderReady() {
     if (this.showNewAddressForm) {
@@ -130,6 +140,11 @@ export class NavbarUserComponent implements OnInit {
   }
 
   async checkout() {
+    if (!this.user) {
+      this.closeCart();
+      this.router.navigate(['/login']);
+      return;
+    }
     if (!this.isOrderReady()) return;
 
     const addressId = this.showNewAddressForm ? null : this.selectedAddressId;
@@ -168,11 +183,13 @@ export class NavbarUserComponent implements OnInit {
     this.auth.logoutApi().subscribe({
       next: async () => {
         await this.auth.logout();
-        this.router.navigateByUrl('/login', {replaceUrl: true});
+        this.auth.clearUser();
+        this.router.navigateByUrl('/home', {replaceUrl: true});
       },
       error: async () => {
         await this.auth.logout();
-        this.router.navigateByUrl('/login', {replaceUrl: true});
+        this.auth.clearUser();
+        this.router.navigateByUrl('/home', {replaceUrl: true});
       },
     });
   }

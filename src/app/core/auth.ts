@@ -23,6 +23,13 @@ export class Auth {
   private async init() {
     await this.storage.create();
     this._ready.next(true);
+    const token = await this.storage.get(this.TOKEN_KEY);
+    if (token) {
+      this.loadUserFromApi().catch(err => {
+        console.warn('Sesión expirada o token inválido al arrancar');
+        this.clearUser();
+      });
+    }
   }
 
   private storageReady$(): Observable<boolean> {
@@ -84,17 +91,16 @@ export class Auth {
     return null;
   }
 
-  loadUserFromApi(): Promise<any | null> {
-    return this.yo()
-      .toPromise()
-      .then((user) => {
-        this._user.next(user);
-        return user;
-      })
-      .catch(() => {
-        this._user.next(null);
-        return null;
-      });
+  async loadUserFromApi(): Promise<any | null> {
+    try {
+      const user = await firstValueFrom(this.yo().pipe(take(1)));
+      this._user.next(user);
+      return user;
+    } catch (error) {
+      this._user.next(null);
+      await this.logout();
+      return null;
+    }
   }
 
   setUser(user: any) {

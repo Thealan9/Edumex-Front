@@ -66,12 +66,21 @@
           </a>
         </nav>
 
+        <!-- En navbar-user.component.html -->
         <div class="navbar-actions">
           <ion-menu-button menu="user-mobile-menu" class="lg:hidden text-white"></ion-menu-button>
-          <div id="profile-trigger-nav" class="profile-trigger-horizontal">
+
+          <!-- CASO: USUARIO LOGUEADO -->
+          <div *ngIf="user" id="profile-trigger-nav" class="profile-trigger-horizontal">
             <div class="profile-avatar-small"><ion-icon name="person"></ion-icon></div>
             <span class="profile-text hidden md:inline">Mi Cuenta</span>
           </div>
+
+          <!-- CASO: INVITADO -->
+          <button *ngIf="!user" routerLink="/login" class="login-btn-navbar">
+            <ion-icon name="log-in-outline"></ion-icon>
+            <span>Entrar</span>
+          </button>
         </div>
       </div>
     </ion-toolbar>
@@ -81,7 +90,7 @@
     <router-outlet></router-outlet>
   </ion-content>
 
-  <ion-popover trigger="profile-trigger-nav" triggerAction="click" [dismissOnSelect]="true" class="profile-popover">
+  <ion-popover *ngIf="user" trigger="profile-trigger-nav" triggerAction="click" [dismissOnSelect]="true" class="profile-popover">
     <ng-template>
       <ion-content>
         <ion-list lines="none" class="popover-list">
