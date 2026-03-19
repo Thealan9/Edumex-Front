@@ -13,10 +13,16 @@ import {Auth} from "../../core/auth";
   standalone: false
 })
 export class BooksPage implements OnInit {
-  categories = ['Todos', 'General English', 'Grammar & Vocabulary', 'Exam Preparation', 'Business English','Readers','Teacher Resources'];
-  selectedCategory = 'Todos';
-  searchText = '';
+  categories = ['General English', 'Grammar & Vocabulary', 'Exam Preparation', 'Business English', 'Readers', 'Teacher Resources'];
 
+  filters = {
+    searchText: '',
+    category: 'Todos',
+    onlyStock: true,
+    maxPrice: 2000
+  };
+
+  maxPriceLimit = 2000;
   allBooks: Book[] = [];
   books: Book[] = [];
   loading: boolean = false;
@@ -53,26 +59,34 @@ export class BooksPage implements OnInit {
 
   applyFilters() {
     this.books = this.allBooks.filter(book => {
+      const textMatch = book.title.toLowerCase().includes(this.filters.searchText.toLowerCase());
 
-      const title = book.title ? book.title.toLowerCase() : '';
-      const search = this.searchText ? this.searchText.toLowerCase().trim() : '';
+      const categoryMatch = this.filters.category === 'Todos' || book.category === this.filters.category;
 
-      const categoryMatch = this.selectedCategory === 'Todos' ||
-        book.category === this.selectedCategory;
+      const stockMatch = !this.filters.onlyStock || (book.total_stock! > 0);
 
-      const textMatch = title.includes(search);
+      const priceMatch = Number(book.price_unit) <= this.filters.maxPrice;
 
-      return categoryMatch && textMatch;
+      return textMatch && categoryMatch && stockMatch && priceMatch;
     });
   }
+  resetFilters() {
+    this.filters = {
+      searchText: '',
+      category: 'Todos',
+      onlyStock: false,
+      maxPrice: this.maxPriceLimit
+    };
+    this.applyFilters();
+  }
 
-  filterByCategory(category: string) {
-    this.selectedCategory = category;
+  onPriceChange(event: any) {
+    this.filters.maxPrice = event.detail.value;
     this.applyFilters();
   }
 
   onSearch(event: any) {
-    this.searchText = event.target.value || '';
+    this.filters.searchText = event.detail.value || '';
     this.applyFilters();
   }
 
