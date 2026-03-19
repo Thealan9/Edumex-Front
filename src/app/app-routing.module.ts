@@ -9,7 +9,7 @@ import {NavbarUserComponent} from "./components/navbar/navbar-user/navbar-user.c
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'login',
+    redirectTo: 'home',
     pathMatch: 'full'
   },
   {
@@ -20,8 +20,6 @@ const routes: Routes = [
   {
   path: 'home',
     component: NavbarUserComponent,
-  canMatch: [AuthGuard,RoleGuard],
-  data: { roles: ['user'] },
     children: [
       {
         path: '',
@@ -35,10 +33,14 @@ const routes: Routes = [
       },
       {
         path: 'pedidos',
+        canMatch: [AuthGuard,RoleGuard],
+        data: { roles: ['user'] },
         loadChildren: () => import('./user/my-orders/my-orders.module').then( m => m.MyOrdersPageModule)
       },
       {
         path: 'perfil',
+        canMatch: [AuthGuard,RoleGuard],
+        data: { roles: ['user'] },
         resolve: {
           user: UserResolver
         },

@@ -17,31 +17,19 @@ export class RoleGuard implements CanMatch {
   canMatch(route: Route): Observable<boolean | UrlTree> {
     const allowedRoles = route.data?.['roles'] as string[];
 
+    if (!allowedRoles) return of(true);
+
     return from(this.auth.getUser()).pipe(
       map(user => {
-        if (!user) {
-          return this.router.createUrlTree(['/login']);
+        if (!user) return this.router.createUrlTree(['/login']);
+
+        if (!allowedRoles.includes(user.role)) {
+          if(user.role === 'admin') return this.router.createUrlTree(['/admin']);
+          if(user.role === 'warehouseman') return this.router.createUrlTree(['/warehouseman']);
+          return this.router.createUrlTree(['/home']);
         }
-
-        if (!allowedRoles?.includes(user.role)) {
-          // return this.router.createUrlTree(
-            // user.role === 'admin' ? ['/admin'] : ['/home']
-            if(user.role === 'admin'){
-              return this.router.createUrlTree(['/admin']);
-            } else if(user.role === 'user'){
-              return this.router.createUrlTree(['/home']);
-            } else if(user.role === 'warehouseman'){
-              return this.router.createUrlTree(['/warehouseman']);
-            }
-            // else {
-             // return this.router.createUrlTree(['/login']);
-            //}
-
-          //);
-        }
-
         return true;
       })
     );
-}
+  }
 }
