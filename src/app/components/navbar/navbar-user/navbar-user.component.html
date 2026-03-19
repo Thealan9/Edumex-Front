@@ -24,7 +24,7 @@
           <span class="cart-badge" *ngIf="((cartItemsCount$ | async) ?? 0) > 0">
             {{ cartItemsCount$ | async }}
           </span>
-          <ion-label> Carrito</ion-label>
+          <ion-icon name="bag-handle-outline"></ion-icon>
         </ion-item>
       </ion-list>
     </ion-content>
@@ -62,7 +62,7 @@
                 {{ cartItemsCount$ | async }}
               </span>
             </div>
-            Mi carrito
+            Mi Bolsa
           </a>
         </nav>
 
@@ -78,8 +78,7 @@
 
           <!-- CASO: INVITADO -->
           <button *ngIf="!user" routerLink="/login" class="login-btn-navbar">
-            <ion-icon name="log-in-outline"></ion-icon>
-            <span>Entrar</span>
+            <span>Iniciar sesión</span>
           </button>
         </div>
       </div>
@@ -112,7 +111,10 @@
 <ion-menu side="end" menuId="cart-menu" contentId="main-content" type="overlay">
   <ion-header class="ion-no-border">
     <ion-toolbar class="--background: #181848; color: white;">
-      <ion-title class="text-xs font-black uppercase tracking-widest">Carrito</ion-title>
+      <ion-title class="text-xs font-black uppercase tracking-widest">
+        <ion-icon name="bag-handle-outline"></ion-icon>
+        MI BOLSA
+      </ion-title>
       <ion-buttons slot="end">
         <ion-button (click)="closeCart()"><ion-icon name="close-outline"></ion-icon></ion-button>
       </ion-buttons>
@@ -125,7 +127,7 @@
       <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-4">
         <ion-icon name="bag-handle-outline" class="text-4xl text-slate-300"></ion-icon>
       </div>
-      <h3 class="text-slate-800 font-bold">Tu carrito está Vacío</h3>
+      <h3 class="text-slate-800 font-bold">Tu bolsa está Vacío</h3>
       <p class="text-slate-400 text-xs mt-2">Parece que aún no has agregado tesoros a tu colección.</p>
     </div>
 
@@ -173,7 +175,7 @@
         </div>
       </div>
 
-      <div class="p-4 pt-0">
+      <div class="p-4 pt-0" *ngIf="user">
         <div class="flex items-center justify-between mb-2 bg-slate-100 p-2 rounded-xl cursor-pointer" (click)="isAddressCollapsed = !isAddressCollapsed">
           <div class="flex items-center gap-2">
             <span class="w-5 h-5 rounded-full bg-slate-800 text-white flex items-center justify-center text-[9px] font-bold">2</span>
@@ -266,7 +268,7 @@
         <span>${{ cartService.subtotal | number:'1.2-2' }}</span>
       </div>
 
-      <div *ngIf="cartService.totalSavings > 0" class="flex justify-between text-[10px] font-bold text-emerald-600 uppercase">
+      <div *ngIf="cartService.totalSavings > 0 && user" class="flex justify-between text-[10px] font-bold text-emerald-600 uppercase">
         <span>Tu Ahorro</span>
         <span>- ${{ cartService.totalSavings | number:'1.2-2' }}</span>
       </div>

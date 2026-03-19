@@ -38,7 +38,7 @@ export class BooksPage implements OnInit {
 
   ngOnInit() {
     this.loadCatalog();
-    this.auth.yo().subscribe(u => this.user = u);
+    this.auth.user$.subscribe(u => this.user = u);
   }
   loadCatalog(event?: any) {
     this.loading = true;

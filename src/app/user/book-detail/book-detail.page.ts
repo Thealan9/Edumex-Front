@@ -27,7 +27,7 @@ export class BookDetailPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.auth.yo().subscribe(u => this.user = u);
+    this.auth.user$.subscribe(u => this.user = u);
     const bookId = this.route.snapshot.paramMap.get('id');
     if (bookId) {
       this.loadBook(Number(bookId));

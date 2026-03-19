@@ -18,9 +18,7 @@ export class HomePage implements OnInit{
   ) {this.cart$ = this.cartService.cart$;}
 
 ngOnInit() {
-  this.auth.yo().subscribe(user => {
-    this.auth.setUser(user);
-  });
+
 }
 
 
