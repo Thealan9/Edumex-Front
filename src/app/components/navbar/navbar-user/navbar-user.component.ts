@@ -73,6 +73,7 @@ export class NavbarUserComponent implements OnInit {
       } else {
         this.savedAddresses = [];
         this.selectedAddressId = null;
+        this.cartService.discountRules = [];
       }
     });
   }
