@@ -76,6 +76,9 @@ export class AdminBooks {
     );
   }
 
+  getLocationsByBook(id:number){
+    return this.http.get<any>(`${environment.apiUrl}/admin/books-locations/${id}`);
+  }
   uploadImage(id: number, file: File): Observable<any> {
     const formData = new FormData();
     formData.append('image', file);

@@ -22,7 +22,6 @@ export class LocationPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadLocations();
-    // Refresco automático tras crear/editar
     this.refreshSub = this.adminLocations.refresh$.subscribe(() => {
       this.loadLocations();
     });

@@ -105,7 +105,8 @@ export class HomePage implements OnInit, OnDestroy {
           book_id: item.book_id,
           book_title: item.book.title,
           quantity: item.quantity,
-          type: referenceType
+          type: referenceType,
+          location_id: item.location_id,
         }
       },
       cssClass: 'movement-modal'

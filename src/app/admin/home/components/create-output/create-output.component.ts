@@ -8,6 +8,9 @@ interface OutputItem {
   book_id: number;
   title: string;
   quantity: number;
+  location_id: number;
+  location_code: string;
+  max_available: number;
 }
 
 @Component({
@@ -18,7 +21,6 @@ interface OutputItem {
 })
 export class CreateOutputComponent implements OnInit {
   reason: string = '';
-  destination: string = '';
   notes: string = '';
   items: OutputItem[] = [];
 
@@ -29,17 +31,20 @@ export class CreateOutputComponent implements OnInit {
   // Lista de motivos predefinidos
   reasons = [
     'Donación',
-    'Merma / Dañado',
+    'Daño',
     'Ajuste de Inventario',
-    'Traslado a Sucursal',
-    'Muestra Editorial',
     'Otro'
   ];
+
+  selectedBook: Book | null = null;
+  availableLocations: any[] = [];
+  tempQty: number = 1;
+  tempLocationId: number | null = null;
 
   constructor(
     private modalCtrl: ModalController,
     private bookService: AdminBooks,
-    private adminService: Output
+    private adminService: Output,
   ) {}
 
   ngOnInit() {
@@ -53,15 +58,16 @@ export class CreateOutputComponent implements OnInit {
       : [];
   }
 
-  addItem(book: Book) {
-    if (!this.items.find(i => i.book_id === book.id)) {
-      this.items.push({
-        book_id: book.id!,
-        title: book.title,
-        quantity: 1
-      });
-    }
+  async addItem(book: Book) {
+    this.selectedBook = book;
     this.searchResults = [];
+
+    this.bookService.getLocationsByBook(book.id!).subscribe(res => {
+      this.availableLocations = res.data;
+      if(this.availableLocations.length === 0) {
+        //  alerta: "Este libro no tiene stock en ninguna ubicación"
+      }
+    });
   }
 
   removeItem(index: number) {
@@ -74,7 +80,6 @@ export class CreateOutputComponent implements OnInit {
 
     const orderData = {
       reason: this.reason,
-      destination: this.destination,
       notes: this.notes,
       items: this.items
     };
@@ -86,6 +91,47 @@ export class CreateOutputComponent implements OnInit {
         error: (err) => console.error(err)
       });
   }
+
+  confirmAddLocation() {
+    // 1. Aseguramos que el ID sea tratado como número
+    const selectedLocId = Number(this.tempLocationId);
+
+    if (!this.selectedBook || !selectedLocId || this.tempQty <= 0) {
+      console.warn('Faltan datos:', { book: this.selectedBook, locId: selectedLocId, qty: this.tempQty });
+      return;
+    }
+
+    // 2. Buscamos la ubicación comparando con Number
+    const loc = this.availableLocations.find(l => Number(l.id) === selectedLocId);
+
+    if (!loc) {
+      console.error('No se encontró la ubicación con ID:', selectedLocId);
+      return;
+    }
+
+    if (this.tempQty > loc.current_stock) {
+      alert(`Stock insuficiente en esta ubicación. Disponible: ${loc.current_stock}`);
+      return;
+    }
+
+    // 3. Agregamos el item
+    this.items.push({
+      book_id: this.selectedBook.id!,
+      title: this.selectedBook.title,
+      quantity: this.tempQty,
+      location_id: loc.id,
+      location_code: loc.code,
+      max_available: loc.current_stock
+    });
+
+    console.log('Item agregado con éxito:', this.items);
+
+    this.selectedBook = null;
+    this.tempLocationId = null;
+    this.tempQty = 1;
+    this.availableLocations = [];
+  }
+
 
   close() {
     this.modalCtrl.dismiss();

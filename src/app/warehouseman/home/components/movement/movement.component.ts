@@ -50,9 +50,11 @@ export class MovementComponent  implements OnInit {
     if (this.pendingOrderData) {
       const isOutputOrder = this.pendingOrderData.type === 'output_order';
 
+      const suggestedLocationId = this.pendingOrderData.location_id || null;
       this.form.patchValue({
         book_id: this.pendingOrderData.book_id,
         temp_quantity: this.pendingOrderData.quantity,
+        temp_location_id: suggestedLocationId,
         type: isOutputOrder ? 'output' : 'input',
         description: isOutputOrder
           ? `Salida por Orden #${this.pendingOrderData.order_number}`
@@ -62,6 +64,7 @@ export class MovementComponent  implements OnInit {
       });
 
       this.form.get('book_id')?.disable();
+      if (suggestedLocationId) this.form.get('temp_location_id')?.disable();
     }
   }
 
@@ -133,20 +136,14 @@ export class MovementComponent  implements OnInit {
 
 
   loadData() {
-    this.adminBooks.getBooks().subscribe({
-      next: (res) => this.books = res.data,
-      error: (err) => console.error('Error libros:', err)
-    });
+    this.adminBooks.getBooks().subscribe(res => this.books = res.data);
 
-    if (this.type === 'output' || this.pendingOrderData?.type === 'output_order') {
-      const bookId = this.pendingOrderData ? this.pendingOrderData.book_id : this.form.get('book_id')?.value;
+    const bookId = this.pendingOrderData?.book_id || this.form.get('book_id')?.value;
 
-      if (bookId) {
-        this.warehouseService.getLocationsByBook(bookId).subscribe({
-          next: (res) => this.locations = res.data,
-          error: (err) => console.error('Error cargando ubicaciones con stock', err)
-        });
-      }
+    if (bookId && (this.type === 'output' || this.pendingOrderData?.type === 'output_order')) {
+      this.warehouseService.getLocationsByBook(bookId).subscribe(res => {
+        this.locations = res.data;
+      });
     } else {
       this.adminLocations.getLocations().subscribe(res => this.locations = res.data);
     }
