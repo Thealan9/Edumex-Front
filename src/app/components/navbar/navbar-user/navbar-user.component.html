@@ -21,10 +21,7 @@
         </ion-item>
         <ion-item (click)="openCart()" class="cart-link" style="cursor:pointer" class="sidebar-item mb-2">
           <ion-icon name="bag-handle-outline"></ion-icon>
-          <span class="cart-badge" *ngIf="((cartItemsCount$ | async) ?? 0) > 0">
-            {{ cartItemsCount$ | async }}
-          </span>
-          <ion-icon name="bag-handle-outline"></ion-icon>
+         Mi bolsa
         </ion-item>
       </ion-list>
     </ion-content>
@@ -35,7 +32,7 @@
       <div class="navbar-container">
 
         <div class="flex items-center gap-2">
-
+          <ion-menu-button menu="user-mobile-menu" class="mobile-menu-btn lg:hidden"></ion-menu-button>
 
           <div class="brand-box-horizontal" routerLink="/home">
             <div class="sidebar-logo-wrap">
@@ -66,11 +63,8 @@
           </a>
         </nav>
 
-        <!-- En navbar-user.component.html -->
         <div class="navbar-actions">
-          <ion-menu-button menu="user-mobile-menu" class="lg:hidden text-white"></ion-menu-button>
 
-          <!-- CASO: USUARIO LOGUEADO -->
           <div *ngIf="user" id="profile-trigger-nav" class="profile-trigger-horizontal">
             <div class="profile-avatar-small"><ion-icon name="person"></ion-icon></div>
             <span class="profile-text hidden md:inline">Mi Cuenta</span>

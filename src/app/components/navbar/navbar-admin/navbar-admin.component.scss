@@ -328,9 +328,9 @@ ion-menu {
   }
 }
 
-@media (min-width: 1024px) {
+@media (max-width: 1023px) {
   #main-content {
-    --offset-top: 0px !important;
+    //--offset-top: 0px !important;
     padding-top: 0 !important;
   }
 }

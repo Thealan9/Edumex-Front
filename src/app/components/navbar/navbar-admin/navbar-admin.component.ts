@@ -24,7 +24,7 @@ export class NavbarAdminComponent {
     private breakpointObserver: BreakpointObserver
   ) {
     this.isMobile$ = this.breakpointObserver
-      .observe(['(max-width: 1023px)'])
+      .observe(['(max-width: 1023.98px)'])
       .pipe(map(result => result.matches));
   }
 

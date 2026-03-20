@@ -217,7 +217,7 @@ $light: #F0F4F8;
 }
 
 // Media Query para pantallas pequeñas
-@media (max-width: 1023px) {
+@media (max-width: 1024px) {
   .navbar-superior {
     height: 65px;
   }
@@ -298,7 +298,7 @@ $gold: #F0A818;
 }
 
 // Responsivo: Ocultar navegación en móvil
-@media (max-width: 1023px) {
+@media (max-width: 1024px) {
   .nav-links-horizontal {
     display: none !important;
   }
