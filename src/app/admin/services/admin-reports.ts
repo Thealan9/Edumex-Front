@@ -13,6 +13,17 @@ export interface InventoryReportItem {
   stock_final: number;
   alerta: boolean;
 }
+
+export interface FinancialReportItem {
+  titulo: string;
+  isbn: string;
+  unidades_sueltas: number;
+  paquetes_vendidos: number;
+  subtotal: number;
+  descuentos: number;
+  total_neto: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -25,7 +36,13 @@ export class AdminReports {
     const params = new HttpParams()
       .set('month', month.toString())
       .set('year', year.toString());
-
     return this.http.get<any>(`${this.API}/inventory`, { params });
+  }
+
+  getFinancialReport(month: number, year: number): Observable<{success: boolean, periodo: string, data: FinancialReportItem[], totales: any}> {
+    const params = new HttpParams()
+      .set('month', month.toString())
+      .set('year', year.toString());
+    return this.http.get<any>(`${this.API}/financial`, { params });
   }
 }
