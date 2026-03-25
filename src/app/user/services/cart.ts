@@ -120,10 +120,12 @@ export class Cart {
     return this.amountAfterDiscount + this.shippingCost;
   }
 
-  checkout(addressId: number | null, addressData: any = null): Observable<any> {
+  checkout(addressId: number | null, addressData: any = null,paymentMethod: string, paymentId: string): Observable<any> {
     const payload = {
       address_id: addressId,
       address_data: addressData,
+      payment_method: paymentMethod,
+      payment_id: paymentId,
       items: this.items.map(i => ({
         id: i.book.id,
         quantity: i.quantity,

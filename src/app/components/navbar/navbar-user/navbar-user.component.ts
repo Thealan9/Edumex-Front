@@ -12,6 +12,9 @@ import {FormsModule} from "@angular/forms";
 import {HttpClient} from "@angular/common/http";
 import { environment } from 'src/environments/environment';
 
+declare var Stripe: any;
+declare var paypal: any;
+
 @Component({
   selector: 'app-navbar-user',
   templateUrl: './navbar-user.component.html',
@@ -47,6 +50,12 @@ export class NavbarUserComponent implements OnInit {
     references: '',
     is_default: false
   };
+
+  paymentMethod: 'stripe' | 'paypal' | null = null;
+  isProcessing = false;
+  stripeInstance: any;
+  cardElement: any;
+
   constructor(
     private modalCtrl: ModalController,
     private auth: Auth,
@@ -120,6 +129,101 @@ export class NavbarUserComponent implements OnInit {
     return this.cartService.totalSavings;
   }
 
+  async initStripe() {
+    this.paymentMethod = 'stripe';
+
+    setTimeout(() => {
+      const el = document.getElementById('card-element');
+      console.log('¿Existe el elemento?:', !!el);
+
+      if (!el) return;
+
+      if (typeof Stripe === 'undefined') {
+        return;
+      }
+
+      if (!this.stripeInstance) {
+        this.stripeInstance = Stripe('pk_test_51TEvhyAr3NQ3whjmDWmVbfNOf5KMFhvDOP9q4bAvEddoFASLF0EJEWV2ImqAh45RdPfCvVz54ftSm4DaYbn4A34D00dFNZa5A3');
+      }
+
+      const elements = this.stripeInstance.elements();
+
+      if (this.cardElement) {
+        this.cardElement.destroy();
+      }
+
+      this.cardElement = elements.create('card', {
+        style: {
+          base: {
+            fontSize: '16px',
+            color: '#1e293b',
+          }
+        }
+      });
+
+      this.cardElement.mount('#card-element');
+    }, 200);
+  }
+
+  initPayPal() {
+    const container = document.getElementById('paypal-button-container');
+    if (container) {
+      container.innerHTML = '';
+    }
+
+    paypal.Buttons({
+      createOrder: (data: any, actions: any) => {
+        return actions.order.create({
+          purchase_units: [{
+            amount: { value: this.finalTotal.toFixed(2).toString() } // Asegura 2 decimales
+          }]
+        });
+      },
+      onApprove: async (data: any, actions: any) => {
+        this.isProcessing = true;
+        const order = await actions.order.capture();
+        this.processFinalCheckout('paypal', order.id);
+      },
+      onError: (err: any) => {
+        this.showAlert('Hubo un error con PayPal', 'warning');
+        this.isProcessing = false;
+      }
+    }).render('#paypal-button-container');
+  }
+  async processStripePayment() {
+    if (this.isProcessing) return;
+    this.isProcessing = true;
+
+    const { token, error } = await this.stripeInstance.createToken(this.cardElement);
+
+    if (error) {
+      this.showAlert(error.message, 'warning');
+      this.isProcessing = false;
+      return;
+    }
+
+    this.processFinalCheckout('tarjeta', token.id);
+  }
+
+  processFinalCheckout(method: 'tarjeta' | 'paypal', referenceId: string) {
+    const addressId = this.showNewAddressForm ? null : this.selectedAddressId;
+    const addressData = this.showNewAddressForm ? this.addressForm : null;
+
+    this.cartService.checkout(addressId, addressData, method, referenceId).subscribe({
+      next: async (res) => {
+        this.isProcessing = false;
+        await this.closeCart();
+        this.resetAddressForm();
+        this.showAlert('¡Pago y Pedido confirmados!', 'success');
+        this.router.navigate(['/home/pedidos']);
+      },
+      error: (err) => {
+        this.isProcessing = false;
+        this.showAlert(err.error?.message || 'Error al procesar el pago en el servidor', 'warning');
+      }
+    });
+  }
+
   async openCart() {
     await this.menuCtrl.enable(true, 'cart-menu');
     await this.menuCtrl.open('cart-menu');
@@ -129,41 +233,6 @@ export class NavbarUserComponent implements OnInit {
     await this.menuCtrl.close('cart-menu');
   }
 
-  toggleCollapse() {
-    this.isCollapsed = !this.isCollapsed;
-  }
-
-  isFormValid() {
-    return this.addressForm.recipient_name &&
-      this.addressForm.recipient_phone &&
-      this.addressForm.postal_code &&
-      this.addressForm.street;
-  }
-
-  async checkout() {
-    if (!this.user) {
-      this.closeCart();
-      this.router.navigate(['/login']);
-      return;
-    }
-    if (!this.isOrderReady()) return;
-
-    const addressId = this.showNewAddressForm ? null : this.selectedAddressId;
-    const addressData = this.showNewAddressForm ? this.addressForm : null;
-
-    this.cartService.checkout(addressId, addressData).subscribe({
-      next: async (res) => {
-        await this.closeCart();
-        this.resetAddressForm();
-        window.location.reload();
-        this.showAlert('¡Pedido realizado con éxito!', 'success');
-        this.loadAddresses();
-      },
-      error: (err) => {
-        this.showAlert(err.error?.message || 'Error al procesar la compra', 'warning');
-      }
-    });
-  }
   resetAddressForm() {
     this.addressForm = {
       recipient_name: '',

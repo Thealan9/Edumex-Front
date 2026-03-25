@@ -314,3 +314,16 @@ ion-menu {
     box-shadow: -10px 0 30px rgba(0,0,0,0.1);
   }
 }
+
+#card-element {
+  width: 100%;
+  min-height: 40px; // Importante: Stripe necesita altura mínima
+  padding: 10px;
+  background-color: white;
+}
+
+// Estilo para cuando el campo tiene el foco
+.StripeElement--focus {
+  border-color: #3b82f6; // Azul de tu tema
+  box-shadow: 0 1px 3px 0 #cfd7df;
+}

@@ -254,34 +254,74 @@
     </div>
   </ion-content>
 
-  <ion-footer class="ion-no-border p-6 bg-white border-t border-slate-100" *ngIf="((cartItemsCount$ | async) ?? 0) > 0">
-    <div class="space-y-1 mb-4 p-2 bg-slate-50 rounded-2xl">
+  <ion-footer class="ion-no-border p-4 bg-white border-t border-slate-100" *ngIf="((cartItemsCount$ | async) ?? 0) > 0">
 
+    <div class="space-y-1 mb-4 p-3 bg-slate-50 rounded-2xl shadow-inner">
       <div class="flex justify-between text-[10px] font-bold text-slate-400 uppercase">
         <span>Productos</span>
         <span>${{ cartService.subtotal | number:'1.2-2' }}</span>
       </div>
-
       <div *ngIf="cartService.totalSavings > 0 && user" class="flex justify-between text-[10px] font-bold text-emerald-600 uppercase">
         <span>Tu Ahorro</span>
         <span>- ${{ cartService.totalSavings | number:'1.2-2' }}</span>
       </div>
-
       <div class="flex justify-between text-[10px] font-bold uppercase"
            [class.text-emerald-600]="cartService.shippingCost === 0"
            [class.text-slate-400]="cartService.shippingCost > 0">
         <span>Envío</span>
         <span>{{ cartService.shippingCost === 0 ? '¡GRATIS!' : ('$' + cartService.shippingCost) }}</span>
       </div>
-
       <div class="flex justify-between items-center pt-2 border-t border-slate-200 mt-2">
         <span class="text-slate-900 font-black text-xs uppercase">Total a pagar</span>
         <span class="text-xl font-black text-blue-600">${{ cartService.finalTotal | number:'1.2-2' }}</span>
       </div>
     </div>
 
-    <button (click)="checkout()" [disabled]="!isOrderReady()" class="submit-modal-btn w-full">
-      Confirmar y Pagar
+    <div *ngIf="isOrderReady() && user" class="animate__animated animate__fadeIn">
+      <p class="text-[10px] font-black text-slate-400 uppercase mb-3 tracking-widest text-center">Selecciona tu método de pago</p>
+
+      <div class="grid grid-cols-2 gap-3 mb-4">
+        <button (click)="paymentMethod = 'stripe'; initStripe()"
+                [class.border-blue-600]="paymentMethod === 'stripe'"
+                [class.bg-blue-50]="paymentMethod === 'stripe'"
+                class="border-2 p-3 rounded-2xl flex flex-col items-center gap-2 transition-all hover:bg-slate-50">
+          <ion-icon name="card-outline" class="text-2xl text-slate-700"></ion-icon>
+          <span class="text-[10px] font-black uppercase">Tarjeta</span>
+        </button>
+
+        <button (click)="paymentMethod = 'paypal'; initPayPal()"
+                [class.border-blue-600]="paymentMethod === 'paypal'"
+                [class.bg-blue-50]="paymentMethod === 'paypal'"
+                class="border-2 p-3 rounded-2xl flex flex-col items-center gap-2 transition-all hover:bg-slate-50">
+          <ion-icon name="logo-paypal" class="text-2xl text-blue-700"></ion-icon>
+          <span class="text-[10px] font-black uppercase">PayPal</span>
+        </button>
+      </div>
+
+      <div [hidden]="paymentMethod !== 'stripe'" class="space-y-3 p-3 bg-slate-50 rounded-2xl border border-slate-200">
+        <div id="card-element" class="p-2 bg-white rounded-lg border border-slate-300">
+        </div>
+        <button (click)="processStripePayment()"
+                [disabled]="isProcessing"
+                class="submit-modal-btn w-full !bg-slate-900 shadow-lg">
+          <ion-spinner name="crescent" *ngIf="isProcessing"></ion-spinner>
+          <span *ngIf="!isProcessing">PAGAR CON TARJETA</span>
+        </button>
+      </div>
+
+      <div [hidden]="paymentMethod !== 'paypal'" class="mt-2">
+        <div id="paypal-button-container"></div>
+      </div>
+    </div>
+
+    <button *ngIf="!isOrderReady()"
+            class="submit-modal-btn w-full opacity-50 grayscale cursor-not-allowed">
+      Completa la dirección para pagar
     </button>
+
+    <p *ngIf="!user" (click)="closeCart()" routerLink="/login" class="text-center text-[10px] font-bold text-blue-600 uppercase mt-4 cursor-pointer">
+      Inicia sesión para finalizar tu compra
+    </p>
+
   </ion-footer>
 </ion-menu>
