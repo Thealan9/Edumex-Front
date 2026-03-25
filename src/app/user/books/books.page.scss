@@ -1,46 +1,66 @@
-// Contenedor del buscador centrado
-.search-container {
-  display: flex;
-  justify-content: center;
-  width: 100%;
+// Variables de estilo de la imagen
+$editorial-brown: #4a3f35;
+$editorial-bg: #fcfaf7;
+$filter-bg: #f4f1ea;
+
+.font-serif {
+  font-family: 'Georgia', 'Times New Roman', serif;
 }
 
-.custom-search {
+// Buscador personalizado para el panel lateral
+.custom-search-aside {
   --background: #ffffff;
-  --border-radius: 1.5rem;
-  --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  --border-radius: 4px;
+  --box-shadow: none;
+  --placeholder-color: #94a3b8;
+  --placeholder-font-size: 11px;
+  --color: #1e293b;
   padding: 0;
-  max-width: 600px; // Limita el ancho para que se vea mejor centrado
-}
+  border: 1px solid #e2ddd2;
+  height: 38px;
+  font-size: 11px;
 
-// Estilos para categorías
-.cat-active {
-  background: #facc15 !important; // Amarillo Dorado (Gold)
-  color: #181848 !important;      // Texto Navy para contraste
-  shadow: 0 4px 10px rgba(250, 204, 21, 0.3);
-  transform: translateX(5px);
-  border-radius: 1.5rem !important;
-}
-
-.cat-inactive {
-  color: #64748b !important;
-  border-radius: 1.5rem !important;
-
-  &:hover {
-    background: #f1f5f9 !important;
-    color: #181848 !important;
+  .searchbar-input {
+    font-size: 11px !important;
+    padding-left: 35px !important;
   }
 }
 
-.sticky {
-  position: sticky;
-  top: 1.5rem;
-  z-index: 10;
+.price-range {
+  --bar-background: #e2ddd2;
+  --bar-background-active: #4a3f35;
+  --knob-background: #4a3f35;
+  --pin-background: #4a3f35;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
-.price-range {
-  --bar-background: #f1f5f9;
-  --bar-background-active: #181848;
-  --knob-background: #181848;
-  --pin-background: #181848;
+// Scroll personalizado para autores
+.custom-scroll {
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #d1cbc1;
+    border-radius: 10px;
+  }
+}
+
+// Clases de texto activo
+.text-blue-700 {
+  color: #2563eb !important;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+// Efecto de la card estilo lista
+.group {
+  &:hover {
+    .shadow-md {
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    }
+  }
 }

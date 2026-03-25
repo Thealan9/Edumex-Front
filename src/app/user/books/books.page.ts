@@ -14,10 +14,14 @@ import {Auth} from "../../core/auth";
 })
 export class BooksPage implements OnInit {
   categories = ['General English', 'Grammar & Vocabulary', 'Exam Preparation', 'Business English', 'Readers', 'Teacher Resources'];
+  authors: string[] = [];
+  levels: string[] = [];
 
   filters = {
     searchText: '',
     category: 'Todos',
+    author: 'Todos',
+    level: 'Todos',
     onlyStock: true,
     maxPrice: 2000
   };
@@ -45,6 +49,8 @@ export class BooksPage implements OnInit {
     this.bookService.getBooks().subscribe({
       next: (res) => {
         this.allBooks = res.data;
+        this.authors = [...new Set(this.allBooks.map(b => b.autor).filter(a => a))].sort();
+        this.levels = [...new Set(this.allBooks.map(b => b.level).filter(l => l))].sort();
         this.applyFilters();
         this.loading = false;
         if (event) event.target.complete();
@@ -59,22 +65,24 @@ export class BooksPage implements OnInit {
 
   applyFilters() {
     this.books = this.allBooks.filter(book => {
-      const textMatch = book.title.toLowerCase().includes(this.filters.searchText.toLowerCase());
-
+      const textMatch = book.title.toLowerCase().includes(this.filters.searchText.toLowerCase()) ||
+        book.autor?.toLowerCase().includes(this.filters.searchText.toLowerCase());
       const categoryMatch = this.filters.category === 'Todos' || book.category === this.filters.category;
-
+      const authorMatch = this.filters.author === 'Todos' || book.autor === this.filters.author;
+      const levelMatch = this.filters.level === 'Todos' || book.level === this.filters.level;
       const stockMatch = !this.filters.onlyStock || (book.total_stock! > 0);
-
       const priceMatch = Number(book.price_unit) <= this.filters.maxPrice;
 
-      return textMatch && categoryMatch && stockMatch && priceMatch;
+      return textMatch && categoryMatch && authorMatch && levelMatch && stockMatch && priceMatch;
     });
   }
   resetFilters() {
     this.filters = {
       searchText: '',
       category: 'Todos',
-      onlyStock: false,
+      author: 'Todos',
+      level: 'Todos',
+      onlyStock: true,
       maxPrice: this.maxPriceLimit
     };
     this.applyFilters();
