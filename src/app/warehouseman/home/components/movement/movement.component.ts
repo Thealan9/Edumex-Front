@@ -167,7 +167,8 @@ export class MovementComponent  implements OnInit {
       description: rawData.description,
       reference_id: rawData.reference_id,
       reference_type: rawData.reference_type,
-      distributions: this.distributions
+      distributions: this.distributions,
+      item_id: this.pendingOrderData.item_id
     };
 
     this.warehouseService.registerMovement(payload)
