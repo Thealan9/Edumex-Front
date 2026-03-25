@@ -40,7 +40,16 @@ export class CreateEditComponent  implements OnInit {
       this.form.patchValue(this.data);
       this.form.get('password')?.clearValidators();
       this.form.get('password')?.updateValueAndValidity();
+
+      this.form.get('role')?.disable();
+      this.form.get('customer_type')?.disable();
     }
+
+    this.form.get('role')?.valueChanges.subscribe(role => {
+      if (role !== 'user') {
+        this.form.get('customer_type')?.setValue('individual');
+      }
+    });
   }
 
   submit() {

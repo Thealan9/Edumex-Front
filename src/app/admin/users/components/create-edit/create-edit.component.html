@@ -59,21 +59,22 @@
           Rol y Tipo de Cliente
         </h3>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="grid grid-cols-1 gap-5" [ngClass]="{'md:grid-cols-2': form.get('role')?.value === 'user'}">
           <div class="form-group">
             <label class="form-label">Rol en el Sistema</label>
-            <div class="input-wrapper">
+            <div class="input-wrapper" [class.opacity-60]="isEdit">
               <ion-select formControlName="role" interface="popover" class="custom-select">
                 <ion-select-option value="admin">Administrador</ion-select-option>
                 <ion-select-option value="warehouseman">Bodeguero</ion-select-option>
-                <ion-select-option value="user">Cliente Final</ion-select-option>
+                <ion-select-option value="user">Cliente</ion-select-option>
               </ion-select>
             </div>
+            <p *ngIf="isEdit" class="text-[9px] text-slate-400 mt-1 ml-1">* El rol no puede ser modificado</p>
           </div>
 
-          <div class="form-group">
+          <div class="form-group" *ngIf="form.get('role')?.value === 'user'">
             <label class="form-label">Tipo de Cliente</label>
-            <div class="input-wrapper">
+            <div class="input-wrapper" [class.opacity-60]="isEdit">
               <ion-select formControlName="customer_type" interface="popover" class="custom-select">
                 <ion-select-option value="individual">Persona Natural</ion-select-option>
                 <ion-select-option value="institutional">Institución / Colegio</ion-select-option>
@@ -82,7 +83,8 @@
           </div>
         </div>
 
-        <div class="form-group" *ngIf="form.get('customer_type')?.value === 'institutional'">
+        <div class="form-group animate__animated animate__fadeIn"
+             *ngIf="form.get('role')?.value === 'user' && form.get('customer_type')?.value === 'institutional'">
           <label class="form-label">Identificación Fiscal (RUC/DNI/NIT)</label>
           <div class="input-wrapper bg-blue-50/30">
             <ion-icon name="card-outline" class="input-icon"></ion-icon>

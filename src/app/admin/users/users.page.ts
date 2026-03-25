@@ -7,6 +7,7 @@ import { ModalController } from '@ionic/angular';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { EditComponent } from './components/edit/edit.component';
 import { CreateComponent } from './components/create/create.component';
+import {CreateEditComponent} from "./components/create-edit/create-edit.component";
 
 @Component({
   selector: 'app-users',
@@ -103,7 +104,7 @@ export class UsersPage implements OnInit {
 
   async openCreate() {
       const modal = await this.modalCtrl.create({
-        component: CreateComponent,
+        component: CreateEditComponent,
       });
 
       modal.onDidDismiss().then((res) => {
@@ -112,11 +113,11 @@ export class UsersPage implements OnInit {
       await modal.present();
     }
 
-   async openEdit(id: number) {
+   async openEdit(user : User) {
         const modal = await this.modalCtrl.create({
-          component: EditComponent,
+          component: CreateEditComponent,
           componentProps: {
-            userId:id
+            data: user
           },
         });
         modal.onDidDismiss().then((res) => {
