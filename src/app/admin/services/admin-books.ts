@@ -9,7 +9,6 @@ export interface Book {
   title: string;
   isbn: string;
   level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
-  cost: number;
   price_unit: number;
   units_per_package: number;
   price_package?: number;
