@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AdminBooks, Book } from '../services/admin-books';
-import { Subscription } from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
 import {AlertController, LoadingController, ModalController} from '@ionic/angular';
 import {CreateEditComponent} from "./components/create-edit/create-edit.component";
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-books',
@@ -14,8 +15,9 @@ export class BooksPage implements OnInit, OnDestroy {
   books: Book[] = [];
   searchTerm: string = '';
   loading: boolean = false;
+  private searchSubject = new Subject<string>();
   private refreshSub!: Subscription;
-
+  private searchSub!: Subscription;
   constructor(
     private bookService: AdminBooks,
     private alertCtrl: AlertController,
@@ -25,6 +27,15 @@ export class BooksPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadBooks();
+
+    this.searchSub = this.searchSubject.pipe(
+      debounceTime(200),
+      distinctUntilChanged()
+    ).subscribe(value => {
+      this.searchTerm = value;
+      this.loadBooks();
+    });
+
     this.refreshSub = this.bookService.refresh$.subscribe(() => {
       this.loadBooks();
     });
@@ -32,6 +43,7 @@ export class BooksPage implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.refreshSub) this.refreshSub.unsubscribe();
+    if (this.searchSub) this.searchSub.unsubscribe();
   }
 
   async loadBooks(event?: any) {
@@ -104,8 +116,8 @@ export class BooksPage implements OnInit, OnDestroy {
 
 
   onSearch(event: any) {
-    this.searchTerm = event.detail.value;
-    this.loadBooks();
+    const value = event.detail.value || '';
+    this.searchSubject.next(value);
   }
 
   toggleStatus(book: Book) {
