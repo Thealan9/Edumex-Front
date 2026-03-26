@@ -30,7 +30,7 @@
             <label class="form-label !text-[9px]">Pallet / Estante</label>
             <div class="input-wrapper bg-white">
               <ion-select formControlName="temp_location_id" placeholder="Seleccionar ubicación">
-                <ion-select-option *ngFor="let loc of locations" [value]="loc.id">
+                <ion-select-option *ngFor="let loc of availableLocations" [value]="loc.id">
                   {{ loc.code }}
                   <ng-container *ngIf="type === 'output' || pendingOrderData?.type === 'output_order'">
                     — STOCK: {{ loc.current_stock || 0 }} uds.
@@ -87,9 +87,9 @@
 
         <button
           (click)="submit()"
-          [disabled]="form.invalid || isSubmitting || distributions.length === 0 || (pendingOrderData && remainingQuantity !== 0)"
+          [disabled]="isSubmitting || distributions.length === 0 || !isFormReadyToSubmit"
           class="submit-modal-btn group flex-[2] !shadow-lg btn-approve disabled:opacity-50">
-          <span *ngIf="!isSubmitting">Procesar Ingreso</span>
+          <span *ngIf="!isSubmitting">Procesar {{ type === 'input' ? 'Ingreso' : 'Salida' }}</span>
           <ion-spinner *ngIf="isSubmitting" name="crescent"></ion-spinner>
         </button>
       </div>

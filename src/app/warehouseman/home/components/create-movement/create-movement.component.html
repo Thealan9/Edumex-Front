@@ -36,7 +36,7 @@
             <label class="form-label !text-[9px]">Pallet / Estante</label>
             <div class="input-wrapper bg-white">
               <ion-select formControlName="temp_location_id" placeholder="Seleccionar ubicación">
-                <ion-select-option *ngFor="let loc of locations" [value]="loc.id">
+                <ion-select-option *ngFor="let loc of availableLocations" [value]="loc.id">
                   {{ loc.code }}
                   <ng-container *ngIf="type === 'output'"> — STOCK: {{ loc.current_stock || 0 }}</ng-container>
                   <ng-container *ngIf="type === 'input'"> — LIBRE: {{ (loc.max_capacity || 0) - (loc.current_capacity || 0) }}</ng-container>
@@ -61,14 +61,15 @@
           </div>
         </div>
 
-        <!-- Lista de Distribución -->
         <div *ngIf="distributions.length > 0" class="space-y-2">
           <label class="form-label">Distribución actual</label>
-          <div *ngFor="let dist of distributions; let i = index" class="flex justify-between items-center p-3 bg-white border border-slate-100 rounded-xl shadow-sm">
+          <div *ngFor="let dist of distributions; let i = index" class="flex justify-between items-center p-3 bg-white border border-slate-100 rounded-xl shadow-sm animate__animated animate__fadeIn">
             <span class="text-[10px] font-black text-navy uppercase">Pallet: {{ dist.location_code }}</span>
             <div class="flex items-center gap-4">
-              <span class="text-sm font-black text-blue-600">{{ dist.quantity }} uds.</span>
-              <button type="button" (click)="removeDistribution(i)" class="text-red-400">
+              <span class="text-sm font-black" [class]="type === 'input' ? 'text-emerald-600' : 'text-orange-600'">
+                {{ dist.quantity }} uds.
+              </span>
+              <button type="button" (click)="removeDistribution(i)" class="text-red-400 hover:text-red-600 transition-colors">
                 <ion-icon name="trash-outline" class="text-lg"></ion-icon>
               </button>
             </div>
@@ -90,10 +91,11 @@
         </button>
 
         <button (click)="submit()"
-                [disabled]="form.invalid || isSubmitting || distributions.length === 0"
-                [class]="type === 'input' ? 'bg-emerald-500' : 'bg-orange-500'"
+                [disabled]="isSubmitting || !isFormReadyToSubmit"
                 class="submit-modal-btn group flex-[2] !shadow-lg btn-approve disabled:opacity-50">
-          <span *ngIf="!isSubmitting">Confirmar {{ type === 'input' ? 'Ingreso' : 'Salida' }}</span>
+          <span *ngIf="!isSubmitting" class="flex items-center justify-center gap-2">
+            Confirmar {{ type === 'input' ? 'Ingreso' : 'Salida' }}
+          </span>
           <ion-spinner *ngIf="isSubmitting" name="crescent"></ion-spinner>
         </button>
       </div>

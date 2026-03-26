@@ -109,7 +109,7 @@
       <button
         (click)="submitOrder()"
         [disabled]="items.length === 0 || !supplierName || isSubmitting"
-        class="flex-[2] py-4 px-6 rounded-2xl bg-emerald-500 text-white font-black uppercase text-[11px] tracking-widest shadow-lg shadow-emerald-200 active:scale-95 transition-all disabled:opacity-30">
+        class="submit-modal-btn group flex-[2] !shadow-lg disabled:opacity-50">
         <span *ngIf="!isSubmitting">Emitir Orden de Compra</span>
         <ion-spinner *ngIf="isSubmitting" name="crescent"></ion-spinner>
       </button>

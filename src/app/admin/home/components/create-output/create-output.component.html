@@ -14,108 +14,114 @@
 <ion-content class="bg-slate-50">
   <div class="p-6 space-y-6">
 
-    <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
       <div class="form-group">
         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Motivo de Salida</label>
-        <div class="input-wrapper mt-2">
+        <div class="input-wrapper mt-2 w-full">
           <ion-icon name="alert-circle-outline" class="input-icon text-orange-500"></ion-icon>
-          <ion-select [(ngModel)]="reason" placeholder="Seleccionar motivo" class="w-full text-xs font-bold">
+          <ion-select [(ngModel)]="reason" placeholder="Seleccionar motivo de la lista..."
+                      interface="popover" class="w-full text-xs font-bold custom-select">
             <ion-select-option *ngFor="let r of reasons" [value]="r">{{r}}</ion-select-option>
           </ion-select>
         </div>
       </div>
-
     </div>
 
     <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
       <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Paso 1: Seleccionar Material a Retirar</label>
       <div class="input-wrapper mt-2">
         <ion-icon name="search-outline" class="input-icon text-slate-400"></ion-icon>
-        <ion-input placeholder="Buscar título o ISBN..." (ionInput)="searchBook($event)" class="custom-input"></ion-input>
+        <ion-input placeholder="Buscar por título o ISBN..." (ionInput)="searchBook($event)" class="custom-input"></ion-input>
       </div>
 
-      <div *ngIf="searchResults.length > 0" class="mt-4 bg-slate-50 rounded-2xl overflow-hidden border border-slate-100">
+      <div *ngIf="searchResults.length > 0" class="mt-4 bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 animate__animated animate__fadeIn">
         <div *ngFor="let book of searchResults" (click)="addItem(book)"
-             class="p-3 flex justify-between items-center hover:bg-orange-50 cursor-pointer border-b border-white last:border-0 transition-all">
+             class="p-3 flex justify-between items-center hover:bg-orange-50 cursor-pointer border-b border-white last:border-0">
           <div class="flex items-center gap-3">
             <span class="bg-white px-2 py-0.5 rounded text-[8px] font-black text-orange-600 border border-slate-100">{{ book.level }}</span>
             <span class="text-[11px] font-bold text-navy uppercase">{{ book.title }}</span>
           </div>
-          <ion-icon name="remove-circle" class="text-orange-500 text-xl"></ion-icon>
+          <ion-icon name="add-circle-outline" class="text-orange-500 text-xl"></ion-icon>
         </div>
       </div>
 
-      <div *ngIf="selectedBook" class="mt-4 p-4 bg-orange-50 rounded-2xl border border-orange-100">
-        <p class="text-[10px] font-bold text-orange-700 uppercase mb-3">Configurar salida para: {{ selectedBook.title }}</p>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="text-[9px] font-bold text-slate-500 uppercase">Ubicación / Pallet</label>
-            <select [(ngModel)]="tempLocationId" class="w-full mt-1 p-2 rounded-lg border border-orange-200 text-xs font-bold bg-white">
-              <option [ngValue]="null">Seleccionar...</option>
-              <option *ngFor="let loc of availableLocations" [value]="loc.id">
-                {{ loc.code }} (Stock: {{ loc.current_stock }})
-              </option>
-            </select>
-          </div>
-          <div>
-            <label class="text-[9px] font-bold text-slate-500 uppercase">Cantidad</label>
-            <input type="number" [(ngModel)]="tempQty" class="w-full mt-1 p-2 rounded-lg border border-orange-200 text-xs font-bold bg-white">
-          </div>
+      <div *ngIf="selectedBook" class="mt-4 p-4 bg-orange-50 rounded-2xl border border-orange-100 animate__animated animate__slideInDown">
+        <div class="flex justify-between items-start mb-3">
+          <p class="text-[10px] font-black text-orange-700 uppercase">Configurar salida: {{ selectedBook.title }}</p>
+          <ion-icon name="close" (click)="selectedBook = null" class="text-orange-400"></ion-icon>
         </div>
 
-        <div class="flex gap-2 mt-3">
-          <button (click)="selectedBook = null" class="flex-1 text-[10px] font-bold text-slate-500 uppercase">Cancelar</button>
-          <button (click)="confirmAddLocation()" class="flex-1 bg-orange-500 text-white p-2 rounded-xl text-[10px] font-bold uppercase">Agregar</button>
+        <div class="grid grid-cols-12 gap-3 items-end">
+          <div class="col-span-7">
+            <label class="text-[9px] font-bold text-slate-500 uppercase ml-1">Ubicación / Pallet</label>
+            <div class="input-wrapper bg-white mt-1">
+              <ion-select [(ngModel)]="tempLocationId" placeholder="Seleccionar..." interface="popover" class="text-xs font-bold">
+                <ion-select-option *ngFor="let loc of filteredLocations" [value]="loc.id">
+                  {{ loc.code }} (Stock: {{ loc.current_stock }})
+                </ion-select-option>
+              </ion-select>
+            </div>
+          </div>
+          <div class="col-span-3">
+            <label class="text-[9px] font-bold text-slate-500 uppercase ml-1">Cant.</label>
+            <div class="input-wrapper bg-white mt-1">
+              <ion-input type="number" [(ngModel)]="tempQty" class="text-center font-black text-xs"></ion-input>
+            </div>
+          </div>
+          <div class="col-span-2">
+            <button (click)="confirmAddLocation()"
+                    [disabled]="!tempLocationId || tempQty <= 0"
+                    class="w-full h-[48px] submit-modal-btn !shadow-lg rounded-xl shadow-md active:scale-95 transition-all flex items-center justify-center">
+              <ion-icon name="checkmark" class="text-xl"></ion-icon>
+            </button>
+          </div>
         </div>
       </div>
-
-
-
     </div>
 
     <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden" *ngIf="items.length > 0">
-      <div class="p-4 bg-orange-600 text-white flex justify-between items-center">
-        <h3 class="text-[10px] font-black uppercase tracking-widest text-white">Material a egresar</h3>
-        <span class="text-[9px] bg-white/20 px-2 py-1 rounded-lg font-bold">{{ items.length }} Libros</span>
+      <div class="p-4 bg-[#181848] text-white flex justify-between items-center">
+        <h3 class="text-[10px] font-black uppercase tracking-widest text-white">Lista de Material a Egresar</h3>
+        <span class="text-[9px] bg-white/20 px-3 py-1 rounded-full font-bold">{{ items.length }} Items</span>
       </div>
 
-      <div class="p-4 space-y-3">
-        <div *ngFor="let item of items; let i = index" class="flex items-center justify-between bg-slate-50 p-3 rounded-2xl border border-slate-100">
+      <div class="p-4 space-y-2">
+        <div *ngFor="let item of items; let i = index" class="flex items-center justify-between bg-slate-50 p-3 rounded-2xl border border-slate-100 animate__animated animate__fadeIn">
           <div class="flex-1">
-            <p class="text-[10px] font-black text-navy uppercase">{{ item.title }}</p>
-            <p class="text-[9px] font-bold text-orange-600">UBICACIÓN: {{ item.location_code }}</p>
+            <p class="text-[10px] font-black text-navy uppercase leading-tight">{{ item.title }}</p>
+            <p class="text-[9px] font-bold text-orange-600 mt-0.5">PALLET: {{ item.location_code }}</p>
           </div>
 
-          <div class="flex items-center gap-4">
-            <div class="flex items-center bg-white rounded-xl border border-slate-200 px-2">
-              <label class="text-[8px] font-black text-slate-400 uppercase mr-2">Cantidad</label>
-              <p class="w-12 border-none p-2 text-center text-[11px] font-black text-navy focus:ring-0"> {{item.quantity}}</p>
+          <div class="flex items-center gap-3">
+            <div class="bg-white px-3 py-1.5 rounded-xl border border-slate-200">
+              <span class="text-[11px] font-black text-navy">x{{ item.quantity }}</span>
             </div>
-
-            <button (click)="removeItem(i)" class="text-red-400 p-1">
-              <ion-icon name="close-circle" class="text-xl"></ion-icon>
+            <button (click)="removeItem(i)" class="text-red-500 p-1">
+              <ion-icon name="trash-outline" class="text-lg"></ion-icon>
             </button>
           </div>
         </div>
       </div>
 
-      <div class="p-6 border-t border-slate-100 bg-slate-50/30">
-        <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest ml-1">Justificación detallada</label>
-        <ion-textarea [(ngModel)]="notes" rows="2" placeholder="Explicar detalladamente el porqué de la salida..." class="bg-white rounded-xl border border-slate-100 p-2 text-[11px] mt-1"></ion-textarea>
+      <div class="p-5 border-t border-slate-100 bg-slate-50/50">
+        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Observaciones / Justificación</label>
+        <ion-textarea [(ngModel)]="notes" rows="2"
+                      placeholder="Escriba aquí los detalles adicionales de la salida..."
+                      class="bg-white rounded-2xl border border-slate-200 p-3 text-[11px] mt-2 shadow-inner">
+        </ion-textarea>
       </div>
     </div>
 
     <div class="flex items-center gap-4 pt-4">
-      <button (click)="close()" class="flex-1 py-4 px-6 rounded-2xl border border-slate-200 text-slate-500 font-bold">
+      <button (click)="close()" class="flex-1 py-4 text-slate-500 font-bold uppercase text-[10px] tracking-widest">
         Cancelar
       </button>
 
       <button
         (click)="submitOrder()"
         [disabled]="items.length === 0 || !reason || isSubmitting"
-        class="flex-[2] py-4 px-6 rounded-2xl bg-orange-500 text-white font-black uppercase text-[11px] tracking-widest shadow-lg shadow-orange-200 active:scale-95 transition-all disabled:opacity-30">
-        <span *ngIf="!isSubmitting">Autorizar Orden de Salida</span>
+        class="submit-modal-btn group flex-[2] !shadow-lg btn-approve disabled:opacity-50">
+        <span *ngIf="!isSubmitting">Autorizar Salida</span>
         <ion-spinner *ngIf="isSubmitting" name="crescent"></ion-spinner>
       </button>
     </div>

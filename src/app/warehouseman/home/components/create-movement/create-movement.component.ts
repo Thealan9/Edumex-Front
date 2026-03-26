@@ -40,13 +40,27 @@ export class CreateMovementComponent  implements OnInit {
     this.loadInitialData();
 
     this.form.get('book_id')?.valueChanges.subscribe(bookId => {
+      this.distributions = [];
       if (bookId) this.loadLocations(bookId);
     });
   }
 
+  get availableLocations(): Location[] {
+    return this.locations.filter(loc =>
+      !this.distributions.some(dist => dist.location_id === loc.id)
+    );
+  }
+
+  get isFormReadyToSubmit(): boolean {
+    const raw = this.form.getRawValue();
+    const hasBook = !!raw.book_id;
+    const hasDescription = !!raw.description && raw.description.length >= 5;
+
+    return hasBook && hasDescription && this.distributions.length > 0;
+  }
+
   loadInitialData() {
     this.adminBooks.getBooks().subscribe(res => this.books = res.data);
-
     if (this.type === 'input') {
       this.adminLocations.getLocations().subscribe(res => this.locations = res.data);
     }
@@ -75,7 +89,6 @@ export class CreateMovementComponent  implements OnInit {
     const loc = this.locations.find(l => l.id === locId);
     if (!loc) return;
 
-    // Validación Stock (Salida)
     if (this.type === 'output') {
       const stockAvailable = loc.current_stock || 0;
       if (qty > stockAvailable) {
@@ -87,7 +100,7 @@ export class CreateMovementComponent  implements OnInit {
     if (this.type === 'input') {
       const freeSpace = (loc.max_capacity || 0) - (loc.current_capacity || 0);
       if (qty > freeSpace) {
-        this.showAlert(`Espacio insuficiente. Libre: ${freeSpace}`, 'warning');
+        this.showAlert(`Espacio insuficiente en ${loc.code}. Libre: ${freeSpace}`, 'warning');
         return;
       }
     }
@@ -99,20 +112,25 @@ export class CreateMovementComponent  implements OnInit {
     });
 
     this.form.patchValue({ temp_location_id: null, temp_quantity: 1 });
+    this.form.markAsDirty();
+    this.form.updateValueAndValidity();
   }
 
   removeDistribution(index: number) {
     this.distributions.splice(index, 1);
+    this.form.updateValueAndValidity();
   }
 
   submit() {
-    if (this.form.invalid || this.distributions.length === 0) return;
+    if (!this.isFormReadyToSubmit || this.isSubmitting) return;
 
     this.isSubmitting = true;
+    const rawData = this.form.getRawValue();
+
     const payload = {
-      book_id: this.form.value.book_id,
+      book_id: rawData.book_id,
       type: this.type,
-      description: this.form.value.description,
+      description: rawData.description,
       distributions: this.distributions
     };
 
@@ -123,7 +141,10 @@ export class CreateMovementComponent  implements OnInit {
           this.showAlert(res.message, 'success');
           this.close(true);
         },
-        error: (err) => this.showAlert(err.error?.message || 'Error', 'warning')
+        error: (err) => {
+          this.isSubmitting = false;
+          this.showAlert(err.error?.message || 'Error al registrar movimiento', 'warning');
+        }
       });
   }
 

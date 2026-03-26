@@ -100,7 +100,7 @@ export class MovementComponent  implements OnInit {
       }
     }
 
-    if (this.type === 'input') {
+    if (this.type === 'input' && (this.pendingOrderData?.type !== 'output_order')) {
       const available = (loc.max_capacity || 0) - (loc.current_capacity || 0);
       if (qty > available) {
         this.showAlert(`En el pallet ${loc.code} solo caben ${available} unidades.`, 'warning');
@@ -109,8 +109,7 @@ export class MovementComponent  implements OnInit {
     }
 
     if (this.pendingOrderData && qty > this.remainingQuantity) {
-      const msg = this.type === 'input' ? 'ubicar' : 'retirar';
-      this.showAlert(`Solo faltan ${this.remainingQuantity} unidades por ${msg}.`, 'warning');
+      this.showAlert(`Solo faltan ${this.remainingQuantity} unidades por procesar.`, 'warning');
       return;
     }
 
@@ -122,8 +121,24 @@ export class MovementComponent  implements OnInit {
 
     this.form.patchValue({
       temp_location_id: null,
-      temp_quantity: this.remainingQuantity > 0 ? this.remainingQuantity : 1
+      temp_quantity: this.remainingQuantity > 0 ? this.remainingQuantity : 0
     });
+
+    this.form.markAsDirty();
+    this.form.updateValueAndValidity();
+  }
+  get isFormReadyToSubmit(): boolean {
+    const raw = this.form.getRawValue();
+
+    const hasBook = !!raw.book_id;
+    const hasDescription = !!raw.description && raw.description.length >= 5;
+    const basicInfoOk = hasBook && hasDescription;
+
+    if (this.pendingOrderData) {
+      return basicInfoOk && this.remainingQuantity === 0;
+    }
+
+    return basicInfoOk && this.distributions.length > 0;
   }
 
   removeDistribution(index: number) {
@@ -148,11 +163,15 @@ export class MovementComponent  implements OnInit {
       this.adminLocations.getLocations().subscribe(res => this.locations = res.data);
     }
   }
+  get availableLocations(): Location[] {
+    return this.locations.filter(loc =>
+      !this.distributions.some(dist => dist.location_id === loc.id)
+    );
+  }
 
   submit() {
-    if (this.form.invalid || this.distributions.length === 0) return;
+    if (!this.isFormReadyToSubmit || this.isSubmitting) return;
 
-    // Si es una orden, obligar a que el total coincida
     if (this.pendingOrderData && this.remainingQuantity !== 0) {
       this.showAlert(`Debes acomodar el total de ${this.pendingOrderData.quantity} unidades antes de confirmar.`, 'warning');
       return;
