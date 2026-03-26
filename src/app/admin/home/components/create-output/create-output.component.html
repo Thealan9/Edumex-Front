@@ -27,11 +27,25 @@
       </div>
     </div>
 
+    <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
+      <div class="form-group">
+        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Asignar Bodeguero</label>
+        <div class="input-wrapper mt-2 border-orange-200">
+          <ion-icon name="person-outline" class="input-icon text-orange-500"></ion-icon>
+          <ion-select [(ngModel)]="warehousemanId" placeholder="Seleccionar encargado" class="w-full text-xs font-bold">
+            <ion-select-option *ngFor="let w of warehousemen" [value]="w.id">
+              {{ w.name }}
+            </ion-select-option>
+          </ion-select>
+        </div>
+      </div>
+    </div>
+
     <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
-      <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Paso 1: Seleccionar Material a Retirar</label>
+      <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Seleccionar Material a Retirar</label>
       <div class="input-wrapper mt-2">
         <ion-icon name="search-outline" class="input-icon text-slate-400"></ion-icon>
-        <ion-input placeholder="Buscar por título o ISBN..." (ionInput)="searchBook($event)" class="custom-input"></ion-input>
+        <ion-input placeholder="Buscar por título..." (ionInput)="searchBook($event)" class="custom-input"></ion-input>
       </div>
 
       <div *ngIf="searchResults.length > 0" class="mt-4 bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 animate__animated animate__fadeIn">

@@ -3,6 +3,7 @@ import { ModalController } from '@ionic/angular';
 import { AdminBooks, Book } from 'src/app/admin/services/admin-books';
 import { PurchaseOrder } from 'src/app/admin/services/purchase-order';
 import { finalize } from 'rxjs';
+import {AdminUsers} from "../../../services/admin-users";
 interface OrderItem {
   book_id: number;
   title: string;
@@ -16,6 +17,9 @@ interface OrderItem {
   standalone: false
 })
 export class CreateOrderComponent  implements OnInit {
+  warehousemanId: number | null = null;
+  warehousemen: any[] = [];
+
   supplierName: string = '';
   notes: string = '';
   items: OrderItem[] = [];
@@ -27,11 +31,13 @@ export class CreateOrderComponent  implements OnInit {
   constructor(
     private modalCtrl: ModalController,
     private bookService: AdminBooks,
-    private poService: PurchaseOrder
+    private poService: PurchaseOrder,
+    private userService: AdminUsers
   ) {}
 
   ngOnInit() {
     this.bookService.getBooks().subscribe(res => this.allBooks = res.data);
+    this.userService.loadWarehousemen().subscribe(user => this.warehousemen = user);
   }
 
   searchBook(event: any) {
@@ -62,11 +68,15 @@ export class CreateOrderComponent  implements OnInit {
   }
 
   submitOrder() {
-    if (!this.supplierName || this.items.length === 0) return;
+    if (!this.supplierName || this.items.length === 0 || !this.warehousemanId) {
+      alert('Por favor complete todos los campos y asigne un bodeguero.');
+      return;
+    }
     this.isSubmitting = true;
 
     const orderData = {
       supplier_name: this.supplierName,
+      warehouseman_id: this.warehousemanId,
       notes: this.notes,
       items: this.items
     };

@@ -17,9 +17,12 @@ export class AdminUsers {
   constructor(private http: HttpClient) {}
 
   getUsers(){
-    return this.http.get<User[]>(`${this.API}/admin/users`)
+    return this.http.get<User[]>(`${this.API}/admin/users`);
   }
 
+  loadWarehousemen() {
+    return this.http.get<any>(`${this.API}/admin/warehousemen-list`);
+  }
   getUser(id: number) {
     return this.http.get<User>(`${this.API}/admin/users/${id}`);
   }

@@ -3,6 +3,7 @@ import { ModalController } from '@ionic/angular';
 import { AdminBooks, Book } from 'src/app/admin/services/admin-books';
 import { Output } from 'src/app/admin/services/output';
 import { finalize } from 'rxjs';
+import {AdminUsers} from "../../../services/admin-users";
 
 interface OutputItem {
   book_id: number;
@@ -20,6 +21,9 @@ interface OutputItem {
   standalone: false
 })
 export class CreateOutputComponent implements OnInit {
+  warehousemanId: number | null = null;
+  warehousemen: any[] = [];
+
   reason: string = '';
   notes: string = '';
   items: OutputItem[] = [];
@@ -45,10 +49,12 @@ export class CreateOutputComponent implements OnInit {
     private modalCtrl: ModalController,
     private bookService: AdminBooks,
     private adminService: Output,
+    private userService: AdminUsers
   ) {}
 
   ngOnInit() {
     this.bookService.getBooks().subscribe(res => this.allBooks = res.data);
+    this.userService.loadWarehousemen().subscribe(user => this.warehousemen = user);
   }
 
   searchBook(event: any) {
@@ -85,10 +91,14 @@ export class CreateOutputComponent implements OnInit {
   }
 
   submitOrder() {
-    if (!this.reason || this.items.length === 0) return;
+    if (!this.reason || this.items.length === 0 || !this.warehousemanId){
+      alert('Por favor complete todos los campos y asigne un bodeguero.');
+      return;
+    }
     this.isSubmitting = true;
 
     const orderData = {
+      warehouseman_id: this.warehousemanId,
       reason: this.reason,
       notes: this.notes,
       items: this.items
