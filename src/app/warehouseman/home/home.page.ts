@@ -18,6 +18,14 @@ export class HomePage implements OnInit, OnDestroy {
   pendingOrders: any[] = [];
   pendingOutputs: any[] = [];
 
+  allMovements: any[] = [];
+  displayMovements: any[] = [];
+
+  showOnlyMine = true;
+  currentPage = 1;
+  lastPage = 1;
+  currentUser: any;
+
   constructor(
     private warehouseService: WarehouseInventory,
     private modalCtrl: ModalController,
@@ -27,10 +35,14 @@ export class HomePage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.loadRecentMovements();
-    this.loadAllPending();
+    this.auth.getUser().then(user => {
+      this.currentUser = user;
+      this.loadRecentMovements();
+      this.loadAllPending();
+    });
     this.refreshSub = this.warehouseService.refresh$.subscribe(() => {
       this.loadRecentMovements();
+      this.loadAllPending();
     });
   }
 
@@ -38,14 +50,38 @@ export class HomePage implements OnInit, OnDestroy {
     if (this.refreshSub) this.refreshSub.unsubscribe();
   }
 
-  loadRecentMovements() {
-    this.warehouseService.getMyMovements().subscribe({
+  loadRecentMovements(page: number = 1) {
+    const userIdParam = this.showOnlyMine ? this.currentUser?.id : undefined;
+
+    this.warehouseService.getMyMovements(page, userIdParam).subscribe({
       next: (res) => {
-        this.recentMovements = res.data.slice(0, 5);
+        this.displayMovements = res.data;
+
+        this.currentPage = res.current_page;
+        this.lastPage = res.last_page;
       },
       error: (err) => console.error('Error cargando movimientos', err)
     });
   }
+  toggleFilter() {
+    this.currentPage = 1;
+    this.loadRecentMovements(1);
+  }
+
+  applyLocalFilter() {
+    if (this.showOnlyMine) {
+      const userId = this.auth.currentUserValue?.id;
+      this.displayMovements = this.allMovements.filter(m => m.user_id === userId);
+    } else {
+      this.displayMovements = this.allMovements;
+    }
+  }
+
+  changePage(next: boolean) {
+    const targetPage = next ? this.currentPage + 1 : this.currentPage - 1;
+    this.loadRecentMovements(targetPage);
+  }
+
 
   loadAllPending() {
     this.warehouseService.getPendingPurchases().subscribe({

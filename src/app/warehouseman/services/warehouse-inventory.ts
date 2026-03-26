@@ -43,7 +43,11 @@ export class WarehouseInventory {
     );
   }
 
-  getMyMovements(): Observable<any> {
-    return this.http.get(`${this.API}/history`);
+  getMyMovements(page: number = 1, userId?: number): Observable<any> {
+    let url = `${this.API}/history?page=${page}`;
+    if (userId) {
+      url += `&user_id=${userId}`;
+    }
+    return this.http.get(url);
   }
 }
