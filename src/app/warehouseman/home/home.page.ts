@@ -118,10 +118,12 @@ export class HomePage implements OnInit, OnDestroy {
     this.auth.logoutApi().subscribe({
       next: async () => {
         await this.auth.logout();
+        this.auth.clearUser();
         this.router.navigateByUrl('/login', { replaceUrl: true });
       },
       error: async () => {
         await this.auth.logout();
+        this.auth.clearUser();
         this.router.navigateByUrl('/login', { replaceUrl: true });
       }
     });
