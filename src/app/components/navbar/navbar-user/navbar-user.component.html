@@ -106,8 +106,7 @@
   <ion-header class="ion-no-border">
     <ion-toolbar class="--background: #181848; color: white;">
       <ion-title class="text-xs font-black uppercase tracking-widest">
-        <ion-icon name="bag-handle-outline"></ion-icon>
-        MI BOLSA
+        <ion-icon name="bag-handle-outline" class="text-2xl pl-3"></ion-icon>
       </ion-title>
       <ion-buttons slot="end">
         <ion-button (click)="closeCart()"><ion-icon name="close-outline"></ion-icon></ion-button>
@@ -129,7 +128,6 @@
       <div class="p-4">
 
         <div *ngFor="let item of (cartItems$ | async)" class="bg-white rounded-2xl p-3 mb-2 shadow-sm border border-slate-100 flex gap-3 items-center">
-          <div class="w-10 h-14 bg-slate-50 rounded-lg flex items-center justify-center text-[8px] font-black border border-slate-100 text-blue-900">{{ item.book.level }}</div>
           <div class="flex-1 min-w-0">
             <p class="text-[11px] font-bold text-slate-800 truncate mb-1">{{ item.book.title }}</p>
             <div class="flex items-center gap-2">
