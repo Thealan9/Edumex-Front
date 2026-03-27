@@ -90,18 +90,13 @@
                   <span class="text-[10px] font-black text-navy uppercase group-hover:text-blue-600">{{ item.book.title }}</span>
                   <span *ngIf="item.status === 'completed'" class="bg-emerald-100 text-emerald-600 text-[7px] px-1.5 py-0.5 rounded-full font-black uppercase">Procesado</span>
                 </div>
-                <span class="text-[8px] text-slate-400 font-bold uppercase">
-                    {{ item.status === 'completed' ? 'Recibido correctamente' : 'Pendiente: ' + item.quantity + ' unidades' }}
-                </span>
               </div>
 
-              <div class="bg-white p-2 rounded-xl shadow-sm transition-colors"
-                   [class.bg-emerald-500]="item.status === 'completed'"
-                   [class.text-white]="item.status === 'completed'"
-                   [class.group-hover:bg-blue-600]="item.status !== 'completed'"
-                   [class.group-hover:text-white]="item.status !== 'completed'">
-                <ion-icon [name]="item.status === 'completed' ? 'checkmark-circle' : 'chevron-forward-outline'"></ion-icon>
-              </div>
+              <span class="font-black text-xs"
+                    [class.text-emerald-600]="item.status === 'completed'"
+                    [class.text-blue-600]="item.status !== 'completed'">
+                {{ item.status === 'completed' ? 'COMPLETADO' : 'x' + item.quantity }}
+              </span>
             </div>
           </div>
         </div>
@@ -124,8 +119,6 @@
             <span class="text-[8px] font-bold text-slate-400 uppercase">{{ out.reason }}</span>
           </div>
 
-          <h4 class="text-xs font-black text-navy uppercase truncate mb-3">Destino: {{ out.destination }}</h4>
-
           <div class="space-y-2">
             <div *ngFor="let item of out.items"
                  (click)="item.status !== 'completed' && receiveBookFromOrder(out, item, 'output_order')"
@@ -138,9 +131,11 @@
                 <ion-icon *ngIf="item.status === 'completed'" name="checkmark-done-circle" class="text-emerald-500 text-sm"></ion-icon>
               </div>
 
-              <span class="font-black text-xs" [class.text-emerald-600]="item.status === 'completed'" [class.text-orange-600]="item.status !== 'completed'">
-                {{ item.status === 'completed' ? 'SURTIDO' : 'x' + item.quantity }}
-              </span>
+              <span class="font-black text-xs"
+                    [class.text-emerald-600]="item.status === 'completed'"
+                    [class.text-orange-600]="item.status !== 'completed'">
+            {{ item.status === 'completed' ? 'COMPLETADO' : 'x' + item.quantity }}
+          </span>
             </div>
           </div>
         </div>
