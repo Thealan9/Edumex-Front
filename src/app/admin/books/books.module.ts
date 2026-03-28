@@ -8,6 +8,7 @@ import { BooksPageRoutingModule } from './books-routing.module';
 
 import { BooksPage } from './books.page';
 import { CreateEditComponent } from './components/create-edit/create-edit.component';
+import {CreateEditEbooksComponent} from "./components/create-edit-ebooks/create-edit-ebooks.component";
 
 @NgModule({
   imports: [
@@ -17,6 +18,6 @@ import { CreateEditComponent } from './components/create-edit/create-edit.compon
     BooksPageRoutingModule,
     ReactiveFormsModule
   ],
-  declarations: [BooksPage,CreateEditComponent]
+  declarations: [BooksPage,CreateEditComponent,CreateEditEbooksComponent]
 })
 export class BooksPageModule {}

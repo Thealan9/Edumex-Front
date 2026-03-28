@@ -4,6 +4,7 @@ import {Subject, Subscription} from 'rxjs';
 import {AlertController, LoadingController, ModalController} from '@ionic/angular';
 import {CreateEditComponent} from "./components/create-edit/create-edit.component";
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import {CreateEditEbooksComponent} from "./components/create-edit-ebooks/create-edit-ebooks.component";
 
 @Component({
   selector: 'app-books',
@@ -12,7 +13,12 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
   standalone: false
 })
 export class BooksPage implements OnInit, OnDestroy {
-  books: Book[] = [];
+  books: any[] = [];
+  viewMode: 'physical' | 'ebook' = 'physical';
+
+  currentPage: number = 1;
+  lastPage: number = 1;
+
   searchTerm: string = '';
   loading: boolean = false;
   private searchSubject = new Subject<string>();
@@ -46,11 +52,20 @@ export class BooksPage implements OnInit, OnDestroy {
     if (this.searchSub) this.searchSub.unsubscribe();
   }
 
-  async loadBooks(event?: any) {
+  async loadBooks(event?: any, page: number = 1) {
     this.loading = true;
-    this.bookService.getBooks(this.searchTerm).subscribe({
+    this.books = [];
+    this.currentPage = page;
+
+    const request = this.viewMode === 'physical'
+      ? this.bookService.getBooks(this.searchTerm,page)
+      : this.bookService.getEbooks(this.searchTerm,page);
+
+    request.subscribe({
       next: (res) => {
         this.books = res.data;
+        this.currentPage = res.current_page;
+        this.lastPage = res.last_page;
         this.loading = false;
         if (event) event.target.complete();
       },
@@ -67,6 +82,10 @@ export class BooksPage implements OnInit, OnDestroy {
     });
   }
 
+  changePage(next: boolean) {
+    const targetPage = next ? this.currentPage + 1 : this.currentPage - 1;
+    this.loadBooks(null, targetPage);
+  }
   async openCreateEdit(book?: Book) {
     const modal = await this.modalCtrl.create({
       component: CreateEditComponent,
@@ -80,6 +99,16 @@ export class BooksPage implements OnInit, OnDestroy {
     if (data?.refresh) {
       this.loadBooks();
     }
+  }
+  async openEbookModal(ebook?: any) {
+    const modal = await this.modalCtrl.create({
+      component: CreateEditEbooksComponent,
+      componentProps: { data: ebook },
+      cssClass: 'large-modal'
+    });
+    await modal.present();
+    const { data } = await modal.onWillDismiss();
+    if (data?.refresh) this.loadBooks();
   }
 
   triggerFileInput(id: number) {
@@ -117,19 +146,19 @@ export class BooksPage implements OnInit, OnDestroy {
 
   onSearch(event: any) {
     const value = event.detail.value || '';
+    this.currentPage = 1;
     this.searchSubject.next(value);
   }
 
-  toggleStatus(book: Book) {
-    const newStatus = !book.active;
+  toggleStatus(item: any) {
+    const newStatus = !item.active;
+    const request = this.viewMode === 'physical'
+      ? this.bookService.updateBook(item.id, { active: newStatus })
+      : this.bookService.toggleEbookStatus(item.id);
 
-    this.bookService.updateBook(book.id!, { active: newStatus }).subscribe({
-      next: () => {
-        book.active = newStatus;
-      },
-      error: () => {
-        this.loadBooks();
-      }
+    request.subscribe({
+      next: () => item.active = newStatus,
+      error: () => this.loadBooks()
     });
   }
 }

@@ -27,6 +27,23 @@ export interface Book {
   category: string;
 }
 
+export interface Ebook {
+  id?: number;
+  title: string;
+  isbn: string;
+  level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+  price: number;
+  autor: string;
+  active: boolean;
+  pages: number;
+  year: number;
+  edition: number;
+  supplier: string;
+  category: string;
+  description?: string;
+  image_url?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -48,8 +65,8 @@ export class AdminBooks {
 
   constructor(private http: HttpClient, private auth: Auth,) {}
 
-  getBooks(search?: string): Observable<{success: boolean, data: Book[]}> {
-    let params = new HttpParams();
+  getBooks(search?: string,page: number = 1): Observable<{success: boolean, data: Book[]}> {
+    let params = new HttpParams().set('page', page.toString());
     if (search) params = params.set('search', search);
     return this.http.get<{success: boolean, data: Book[]}>(this.baseUrl, { params });
   }
@@ -85,6 +102,32 @@ export class AdminBooks {
     return this.http.post(`${environment.apiUrl}/admin/books/${id}/image`, formData).pipe(
       tap(() => this._refresh.next())
     );
+  }
+
+
+  // Ebooks CRUD
+  getEbooks(search?: string, page: number = 1): Observable<any> {
+    let params = new HttpParams().set('page', page.toString());
+    if (search) params = params.set('search', search);
+    return this.http.get<any>(`${environment.apiUrl}/admin/ebooks`, { params });
+  }
+
+  storeEbook(formData: FormData): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/admin/ebooks`, formData).pipe(
+      tap(() => this._refresh.next())
+    );
+  }
+
+  updateEbook(id: number, formData: FormData): Observable<any> {
+    // Usamos POST con _method=PUT para poder enviar archivos (FormData) en Laravel
+    formData.append('_method', 'PUT');
+    return this.http.post(`${environment.apiUrl}/admin/ebooks/${id}`, formData).pipe(
+      tap(() => this._refresh.next())
+    );
+  }
+
+  toggleEbookStatus(id: number): Observable<any> {
+    return this.http.patch(`${environment.apiUrl}/admin/ebooks/${id}/status`, {});
   }
 
 }

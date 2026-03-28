@@ -34,7 +34,7 @@ export class CreateEditComponent implements OnInit {
     active: [false],
     pages: [1, [Validators.required, Validators.min(1)]],
     year: [new Date().getFullYear(), [Validators.required]],
-    edition: [1, [Validators.required]],
+    edition: [1, [Validators.required,Validators.min(1)]],
     format: ['Tapa Blanda', [Validators.required]],
     size: ['', [Validators.required]],
     category:['', [Validators.required]],
