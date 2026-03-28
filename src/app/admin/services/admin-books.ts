@@ -25,6 +25,7 @@ export interface Book {
   image_url?: string;
   image_path?: string;
   category: string;
+  type?: string;
 }
 
 export interface Ebook {
@@ -83,8 +84,9 @@ export class AdminBooks {
     );
   }
 
-  getBookById(id: number) {
-    return this.http.get<any>(`${this.baseUrl}/${id}`);
+  getBookById(id: number, type: string = 'physical'): Observable<any> {
+    const params = new HttpParams().set('type', type);
+    return this.http.get<any>(`${this.baseUrl}/${id}`, { params });
   }
   deleteBook(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/${id}`).pipe(
@@ -119,7 +121,6 @@ export class AdminBooks {
   }
 
   updateEbook(id: number, formData: FormData): Observable<any> {
-    // Usamos POST con _method=PUT para poder enviar archivos (FormData) en Laravel
     formData.append('_method', 'PUT');
     return this.http.post(`${environment.apiUrl}/admin/ebooks/${id}`, formData).pipe(
       tap(() => this._refresh.next())

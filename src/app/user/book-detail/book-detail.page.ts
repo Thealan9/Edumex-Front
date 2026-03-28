@@ -29,17 +29,27 @@ export class BookDetailPage implements OnInit {
   ngOnInit() {
     this.auth.user$.subscribe(u => this.user = u);
     const bookId = this.route.snapshot.paramMap.get('id');
+    const type = this.route.snapshot.queryParamMap.get('type') || 'physical';
+
     if (bookId) {
-      this.loadBook(Number(bookId));
+      this.loadBook(Number(bookId), type);
     }
   }
 
-  loadBook(id: number) {
+  loadBook(id: number, type: string) {
     this.isLoading = true;
-    this.bookService.getBookById(id).subscribe({
+    this.bookService.getBookById(id, type).subscribe({
       next: (res) => {
         this.book = res.data;
-        this.book.total_stock = Number(res.total_stock);
+        this.book.type = type;
+
+        if (type === 'ebook') {
+          this.book.price_unit = this.book.price;
+          this.book.total_stock = 999;
+        } else {
+          this.book.total_stock = Number(res.total_stock);
+        }
+
         this.isLoading = false;
       },
       error: (err) => {

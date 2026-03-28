@@ -22,13 +22,14 @@ export class BooksPage implements OnInit {
     category: 'Todos',
     author: 'Todos',
     level: 'Todos',
+    type: 'Todos',
     onlyStock: true,
     maxPrice: 2000
   };
 
   maxPriceLimit = 2000;
-  allBooks: Book[] = [];
-  books: Book[] = [];
+  allBooks: any[] = [];
+  books: any[] = [];
   loading: boolean = false;
   cart$: Observable<any[]>;
   user: any;
@@ -41,24 +42,22 @@ export class BooksPage implements OnInit {
   ) {this.cart$ = this.cartService.cart$;}
 
   ngOnInit() {
-    this.loadCatalog();
     this.auth.user$.subscribe(u => this.user = u);
+    this.loadCatalog();
   }
+
   loadCatalog(event?: any) {
     this.loading = true;
     this.bookService.getBooks().subscribe({
       next: (res) => {
         this.allBooks = res.data;
-        this.authors = [...new Set(this.allBooks.map(b => b.autor).filter(a => a))].sort();
-        this.levels = [...new Set(this.allBooks.map(b => b.level).filter(l => l))].sort();
         this.applyFilters();
         this.loading = false;
         if (event) event.target.complete();
       },
-      error: (err) => {
+      error: () => {
         this.loading = false;
         if (event) event.target.complete();
-        console.error('Error al cargar catálogo', err);
       }
     });
   }
@@ -68,12 +67,12 @@ export class BooksPage implements OnInit {
       const textMatch = book.title.toLowerCase().includes(this.filters.searchText.toLowerCase()) ||
         book.autor?.toLowerCase().includes(this.filters.searchText.toLowerCase());
       const categoryMatch = this.filters.category === 'Todos' || book.category === this.filters.category;
-      const authorMatch = this.filters.author === 'Todos' || book.autor === this.filters.author;
       const levelMatch = this.filters.level === 'Todos' || book.level === this.filters.level;
-      const stockMatch = !this.filters.onlyStock || (book.total_stock! > 0);
+      const typeMatch = this.filters.type === 'Todos' || book.type === this.filters.type;
+      const stockMatch = !this.filters.onlyStock || (book.type === 'ebook' || book.total_stock > 0);
       const priceMatch = Number(book.price_unit) <= this.filters.maxPrice;
 
-      return textMatch && categoryMatch && authorMatch && levelMatch && stockMatch && priceMatch;
+      return textMatch && categoryMatch && levelMatch && typeMatch && stockMatch && priceMatch;
     });
   }
   resetFilters() {
@@ -82,6 +81,7 @@ export class BooksPage implements OnInit {
       category: 'Todos',
       author: 'Todos',
       level: 'Todos',
+      type: 'Todos',
       onlyStock: true,
       maxPrice: this.maxPriceLimit
     };
@@ -98,31 +98,11 @@ export class BooksPage implements OnInit {
     this.applyFilters();
   }
 
-  async addToCart(book: Book,type: 'unit' | 'package') {
-    if (book.total_stock && book.total_stock > 0) {
-      this.cartService.addToCart(book, type);
 
-      // const toast = await this.toastCtrl.create({
-      //   message: `${book.title} añadido al carrito`,
-      //   duration: 1500,
-      //   position: 'bottom',
-      //   color: 'success',
-      //   buttons: [
-      //     {
-      //       text: 'Ver',
-      //       handler: () => {
-      //       }
-      //     }
-      //   ]
-      // });
-      // await toast.present();
-    } else {
-      this.presentErrorToast('Lo sentimos, este libro no tiene stock disponible.');
-    }
-  }
-
-  goToBook(id: number) {
-    this.router.navigate(['home/libro', id]);
+  goToBook(book: any) {
+    this.router.navigate(['home/libro', book.id], {
+      queryParams: { type: book.type }
+    });
   }
   async presentErrorToast(message: string) {
     const toast = await this.toastCtrl.create({

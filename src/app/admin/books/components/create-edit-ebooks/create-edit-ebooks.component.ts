@@ -31,7 +31,8 @@ export class CreateEditEbooksComponent implements OnInit {
     category: ['General English', [Validators.required]],
     supplier: ['', [Validators.required]],
     description: ['', [Validators.maxLength(1000),Validators.required]],
-    active: [false]
+    active: [false],
+    platform: ['Amazon Kindle', [Validators.required]],
   });
 
   constructor(

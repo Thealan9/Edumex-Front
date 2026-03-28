@@ -50,7 +50,12 @@ export class Cart {
   }
 
   addToCart(book: Book, buy_type: 'unit' | 'package' = 'unit') {
-    const index = this.items.findIndex(i => i.book.id === book.id && i.buy_type === buy_type);
+    const index = this.items.findIndex(i =>
+      i.book.id === book.id &&
+      i.buy_type === buy_type &&
+      i.book.type === book.type
+    );
+
     if (index > -1) {
       this.items[index].quantity += 1;
     } else {
@@ -59,11 +64,16 @@ export class Cart {
     this.notify();
   }
 
-  updateQuantity(bookId: number, quantity: number, buyType: 'unit' | 'package') {
-    const index = this.items.findIndex(i => i.book.id === bookId && i.buy_type === buyType);
+  updateQuantity(bookId: number, quantity: number, buyType: 'unit' | 'package', type: string) {
+    const index = this.items.findIndex(i =>
+      i.book.id === bookId &&
+      i.buy_type === buyType &&
+      i.book.type === type
+    );
+
     if (index > -1) {
       if (quantity <= 0) {
-        this.removeFromCart(bookId, buyType);
+        this.removeFromCart(bookId, buyType, type);
       } else {
         this.items[index].quantity = quantity;
         this.notify();
@@ -71,16 +81,20 @@ export class Cart {
     }
   }
 
-  removeFromCart(bookId: number, buyType: 'unit' | 'package') {
-    this.items = this.items.filter(i => !(i.book.id === bookId && i.buy_type === buyType));
+  removeFromCart(bookId: number, buyType: 'unit' | 'package', type: string) {
+    this.items = this.items.filter(i =>
+      !(i.book.id === bookId && i.buy_type === buyType && i.book.type === type)
+    );
     this.notify();
   }
 
   get subtotal(): number {
     return this.items.reduce((acc, item) => {
-      const price = item.buy_type === 'package'
-        ? (Number(item.book.price_package) || 0)
-        : (Number(item.book.price_unit) || 0);
+      const book = item.book as any;
+      const price = item.book.type === 'ebook'
+        ? (Number(book.price) || 0)
+        : (item.buy_type === 'package' ? (Number(book.price_package) || 0) : (Number(book.price_unit) || 0));
+
       return acc + (price * item.quantity);
     }, 0);
   }
@@ -120,7 +134,7 @@ export class Cart {
     return this.amountAfterDiscount + this.shippingCost;
   }
 
-  checkout(addressId: number | null, addressData: any = null,paymentMethod: string, paymentId: string): Observable<any> {
+  checkout(addressId: number | null, addressData: any = null, paymentMethod: string, paymentId: string): Observable<any> {
     const payload = {
       address_id: addressId,
       address_data: addressData,
@@ -129,7 +143,8 @@ export class Cart {
       items: this.items.map(i => ({
         id: i.book.id,
         quantity: i.quantity,
-        buy_type: i.buy_type
+        buy_type: i.buy_type,
+        type: i.book.type
       }))
     };
     return this.http.post(`${environment.apiUrl}/user/orders`, payload).pipe(
@@ -146,5 +161,9 @@ export class Cart {
   private notify() {
     this._cart.next([...this.items]);
     localStorage.setItem('edumex_cart', JSON.stringify(this.items));
+  }
+
+  hasPhysicalItems(): boolean {
+    return this._cart.getValue().some(item => item.book.type === 'physical');
   }
 }

@@ -120,6 +120,18 @@
         </div>
 
         <div class="form-group">
+          <label class="form-label">Plataforma de Canje</label>
+          <div class="input-wrapper">
+            <ion-icon name="globe-outline" class="input-icon"></ion-icon>
+            <ion-select formControlName="platform" interface="popover" class="custom-select">
+              <ion-select-option value="Amazon Kindle">Amazon Kindle</ion-select-option>
+              <ion-select-option value="Google Play Libros">Google Play Libros</ion-select-option>
+              <ion-select-option value="Apple Books">Apple Books</ion-select-option>
+            </ion-select>
+          </div>
+        </div>
+
+        <div class="form-group">
           <label class="form-label">Descripción / Sinopsis</label>
           <div class="input-wrapper !items-start py-3">
             <ion-textarea formControlName="description" rows="3" placeholder="Descripción para el cliente..."></ion-textarea>

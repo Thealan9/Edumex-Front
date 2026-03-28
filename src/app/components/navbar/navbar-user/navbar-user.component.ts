@@ -110,14 +110,14 @@ export class NavbarUserComponent implements OnInit {
   updateQuantity(item: any, delta: number) {
     const newQty = item.quantity + delta;
     if (newQty > 0) {
-      this.cartService.updateQuantity(item.book.id, newQty, item.buy_type);
+      this.cartService.updateQuantity(item.book.id, newQty, item.buy_type, item.book.type);
     } else {
       this.removeItem(item);
     }
   }
 
   removeItem(item: any) {
-    this.cartService.removeFromCart(item.book.id, item.buy_type);
+    this.cartService.removeFromCart(item.book.id, item.buy_type, item.book.type);
   }
   get shippingCost(): number {
     return this.cartService.shippingCost;
