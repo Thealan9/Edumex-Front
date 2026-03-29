@@ -316,8 +316,13 @@
 
     <button *ngIf="!isOrderReady()"
             class="submit-modal-btn w-full opacity-50 grayscale cursor-not-allowed">
-      Completa la dirección para pagar
+      {{ cartService.hasPhysicalItems() ? 'Completa la dirección para pagar' : 'Cargando...' }}
     </button>
+
+    <div *ngIf="cartService.hasPhysicalItems()" class="flex justify-between text-[10px] font-bold uppercase"
+         [class.text-emerald-600]="cartService.shippingCost === 0"
+         [class.text-slate-400]="cartService.shippingCost > 0">
+    </div>
 
     <p *ngIf="!user" (click)="closeCart()" routerLink="/login" class="text-center text-[10px] font-bold text-blue-600 uppercase mt-4 cursor-pointer">
       Inicia sesión para finalizar tu compra

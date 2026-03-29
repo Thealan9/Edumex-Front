@@ -123,6 +123,7 @@ export class Cart {
   }
 
   get shippingCost(): number {
+    if (!this.hasPhysicalItems()) return 0;
     const baseParaEnvio = this.subtotal;
 
     if (baseParaEnvio === 0) return 0;

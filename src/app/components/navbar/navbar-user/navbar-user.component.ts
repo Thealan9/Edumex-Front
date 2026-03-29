@@ -87,6 +87,9 @@ export class NavbarUserComponent implements OnInit {
     });
   }
   isOrderReady() {
+    if (!this.cartService.hasPhysicalItems()) {
+      return true;
+    }
     if (this.showNewAddressForm) {
       return this.addressForm.recipient_name &&
         this.addressForm.street &&
@@ -206,8 +209,9 @@ export class NavbarUserComponent implements OnInit {
   }
 
   processFinalCheckout(method: 'tarjeta' | 'paypal', referenceId: string) {
-    const addressId = this.showNewAddressForm ? null : this.selectedAddressId;
-    const addressData = this.showNewAddressForm ? this.addressForm : null;
+    const hasPhysical = this.cartService.hasPhysicalItems();
+    const addressId = hasPhysical ? (this.showNewAddressForm ? null : this.selectedAddressId) : null;
+    const addressData = hasPhysical ? (this.showNewAddressForm ? this.addressForm : null) : null;
 
     this.cartService.checkout(addressId, addressData, method, referenceId).subscribe({
       next: async (res) => {
@@ -219,7 +223,7 @@ export class NavbarUserComponent implements OnInit {
       },
       error: (err) => {
         this.isProcessing = false;
-        this.showAlert(err.error?.message || 'Error al procesar el pago en el servidor', 'warning');
+        this.showAlert(err.error?.message || 'Error al procesar el pago', 'warning');
       }
     });
   }
