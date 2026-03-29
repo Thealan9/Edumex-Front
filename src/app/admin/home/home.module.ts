@@ -11,7 +11,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AlertComponent } from 'src/app/components/alert/alert.component';
 import {CreateOrderComponent} from "./components/create-order/create-order.component";
 import {CreateOutputComponent} from "./components/create-output/create-output.component";
-
+import { BaseChartDirective } from 'ng2-charts';
 @NgModule({
   imports: [
     CommonModule,
@@ -20,7 +20,7 @@ import {CreateOutputComponent} from "./components/create-output/create-output.co
     HomePageRoutingModule,
     ReactiveFormsModule,
     MatSnackBarModule,
-
+    BaseChartDirective
   ],
   declarations: [HomePage,AlertComponent,CreateOrderComponent,CreateOutputComponent],
 })
