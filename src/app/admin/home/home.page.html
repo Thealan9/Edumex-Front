@@ -44,9 +44,22 @@
       </div>
 
       <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
-        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Libros Vendidos</p>
-        <h2 class="text-xl font-black text-navy mt-1">{{ data.stats.books_count_today }}</h2>
-        <p class="text-[7px] text-blue-500 font-bold mt-1 uppercase">Unidades físicas hoy</p>
+
+        <div class="flex items-center justify-between mt-1">
+          <div class="flex-1">
+            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Libros Vendidos</p>
+            <h2 class="text-xl font-black text-navy">{{ data.stats.individual_books_today }}</h2>
+            <p class="text-[7px] text-blue-500 font-bold uppercase">Libros</p>
+          </div>
+
+          <div class="h-8 w-[1px] bg-slate-100 mx-2"></div>
+
+          <div class="flex-1 text-right">
+            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Paquetes Vendidos</p>
+            <h2 class="text-xl font-black text-navy">{{ data.stats.packages_today }}</h2>
+            <p class="text-[7px] text-amber-500 font-bold uppercase">Paquetes</p>
+          </div>
+        </div>
       </div>
 
       <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">

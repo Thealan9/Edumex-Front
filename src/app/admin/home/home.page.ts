@@ -13,7 +13,8 @@ interface DashboardData {
   stats: {
     today_sales: number;
     ebooks_count_today: number;
-    books_count_today: number;
+    individual_books_today: number;
+    packages_today: number;
     critical_stock_count: number;
     total_discounts_applied: number;
   };
