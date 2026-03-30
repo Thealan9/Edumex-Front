@@ -7,7 +7,11 @@
     </ion-header>
     <ion-content class="--background: #0f172a;">
       <ion-list lines="none" class="bg-slate-900 p-4">
-        <ion-item routerLink="/home" routerLinkActive="active-nav" (click)="closeCart()" class="sidebar-item mb-2">
+        <ion-item routerLink="/home"
+                  routerLinkActive="active-nav"
+                  [routerLinkActiveOptions]="{exact: true}"
+                  (click)="closeCart()"
+                  class="sidebar-item mb-2">
           <ion-icon slot="start" name="home-outline"></ion-icon>
           <ion-label>Inicio</ion-label>
         </ion-item>
