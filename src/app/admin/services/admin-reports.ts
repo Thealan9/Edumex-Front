@@ -4,6 +4,7 @@ import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
 
 export interface InventoryReportItem {
+  tipo: string;
   isbn: string;
   titulo: string;
   nivel: string;
@@ -17,11 +18,12 @@ export interface InventoryReportItem {
 export interface FinancialReportItem {
   titulo: string;
   isbn: string;
-  unidades_sueltas: number;
-  paquetes_vendidos: number;
+  unidades_fisicas: number;
+  unidades_digitales: number;
   subtotal: number;
   descuentos: number;
   total_neto: number;
+  ganancia_bruta_item: number;
 }
 
 @Injectable({

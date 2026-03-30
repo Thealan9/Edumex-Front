@@ -11,6 +11,7 @@
 }
 
 :root {
+  color-scheme: light only !important;
   --edumex-bg-main: #F0F4F8;
   --edumex-bg-toolbar: #ffffff;
   --edumex-text-title: #181848;
@@ -19,7 +20,15 @@
   --edumex-gold: #F0A818;
   --edumex-gray: #7890A8;
 }
-
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ion-background-color: #F0F4F8 !important;
+    --ion-text-color: #181848 !important;
+    --ion-toolbar-background: #ffffff !important;
+    --ion-item-background: #ffffff !important;
+    --ion-card-background: #ffffff !important;
+  }
+}
 /* Aplicación global al contenido sin scroll nativo */
 ion-content {
   --background: var(--edumex-bg-main);
