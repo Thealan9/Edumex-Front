@@ -93,27 +93,50 @@
 
     <div *ngIf="!loading && activeTab === 'financial'" class="space-y-6 animate__animated animate__fadeIn">
 
+      <div class="bg-slate-800 p-4 rounded-2xl shadow-md mb-6 flex justify-between items-center" *ngIf="totalesFinancieros && totalesFinancieros.saldo_pendiente_global > 0">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center">
+            <ion-icon name="wallet" class="text-amber-500 text-lg"></ion-icon>
+          </div>
+          <div>
+            <p class="text-[9px] font-black text-slate-300 uppercase tracking-widest">Saldo Histórico por Recuperar</p>
+            <p class="text-[10px] text-slate-400 font-bold mt-0.5">Inversión total acumulada menos ventas totales</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <h3 class="text-lg font-black text-white">${{ totalesFinancieros.saldo_pendiente_global | number:'1.2-2' }}</h3>
+        </div>
+      </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" *ngIf="totalesFinancieros">
-        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
-          <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Venta Total</p>
+
+        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm relative">
+          <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Ingresos Netos</p>
           <h2 class="text-xl font-black text-navy mt-1">${{ totalesFinancieros.ingresos_totales | number:'1.2-2' }}</h2>
+          <p class="text-[7px] text-red-400 font-bold uppercase mt-1">
+            Descuentos: -${{ totalesFinancieros.descuentos_totales | number:'1.2-2' }}
+          </p>
         </div>
+
         <div class="bg-white p-5 rounded-3xl border border-red-50 shadow-sm">
-          <p class="text-[8px] font-black text-red-500 uppercase tracking-widest">Inversión</p>
+          <p class="text-[8px] font-black text-red-500 uppercase tracking-widest">Inversión (Compras)</p>
           <h2 class="text-xl font-black text-red-600 mt-1">-${{ totalesFinancieros.inversion_compras | number:'1.2-2' }}</h2>
+          <p class="text-[7px] text-emerald-500 font-bold uppercase mt-1">
+            Recuperado: {{ totalesFinancieros.porcentaje_recuperacion | number:'1.1-1' }}%
+          </p>
         </div>
+
         <div class="bg-white p-5 rounded-3xl border border-amber-50 shadow-sm">
-          <p class="text-[8px] font-black text-amber-600 uppercase tracking-widest">Comisión Ebooks</p>
+          <p class="text-[8px] font-black text-amber-600 uppercase tracking-widest">Ingreso Ebooks</p>
           <h2 class="text-xl font-black text-amber-600 mt-1">${{ totalesFinancieros.ganancia_ebooks | number:'1.2-2' }}</h2>
         </div>
 
         <div [ngClass]="{
-               'bg-emerald-600 shadow-emerald-100': totalesFinancieros.utilidad_neta >= 0,
-               'bg-red-600 shadow-red-100': totalesFinancieros.utilidad_neta < 0
-             }"
+         'bg-emerald-600 shadow-emerald-100': totalesFinancieros.utilidad_neta >= 0,
+         'bg-red-600 shadow-red-100': totalesFinancieros.utilidad_neta < 0
+       }"
              class="p-5 rounded-3xl shadow-lg transition-all duration-500 relative overflow-hidden">
           <p class="text-[8px] font-black uppercase text-white/80">
-            {{ totalesFinancieros.utilidad_neta < 0 ? 'Pérdida Neta' : 'Utilidad Neta' }}
+            {{ totalesFinancieros.utilidad_neta < 0 ? 'Pérdida' : 'Ganancia' }}
           </p>
           <div class="flex items-center gap-2">
             <h2 class="text-xl font-black text-white mt-1">
@@ -122,7 +145,7 @@
             <ion-icon *ngIf="totalesFinancieros.utilidad_neta < 0" name="alert-circle" class="text-white text-lg mt-1"></ion-icon>
           </div>
           <p class="text-[7px] text-white/70 font-bold uppercase mt-1">
-            Rendimiento: {{ totalesFinancieros.porcentaje_rentabilidad | number:'1.1-1' }}%
+            Rentabilidad: {{ totalesFinancieros.porcentaje_rentabilidad | number:'1.1-1' }}%
           </p>
         </div>
       </div>

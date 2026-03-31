@@ -101,19 +101,15 @@ export class ReportsPage implements OnInit {
 
     doc.setFillColor(24, 24, 72);
     doc.rect(0, 0, pageWidth, 40, 'F');
-
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(22);
     doc.setFont('helvetica', 'bold');
     doc.text('EDUMEX', 14, 20);
-
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
     doc.text('SISTEMA DE CONTROL EDITORIAL Y LOGÍSTICO', 14, 28);
-
     doc.setFontSize(12);
     doc.text(this.periodo.toUpperCase(), pageWidth - 60, 25);
-
     doc.setTextColor(24, 24, 72);
     doc.setFontSize(14);
     const subTitle = this.activeTab === 'inventory' ? 'MOVIMIENTOS DE INVENTARIO' : 'RENDIMIENTO FINANCIERO';
@@ -127,27 +123,41 @@ export class ReportsPage implements OnInit {
         headStyles: { fillColor: [24, 24, 72] }
       });
     } else {
-      doc.setFontSize(9);
-      doc.text(`Ventas: $${this.totalesFinancieros.ingresos_totales}`, 14, 65);
-      doc.text(`Inversión: $${this.totalesFinancieros.inversion_compras}`, 70, 65);
-      doc.text(`Utilidad: $${this.totalesFinancieros.utilidad_neta}`, 130, 65);
+      // --- NUEVO: RESUMEN FINANCIERO EN EL PDF ---
+      doc.setFontSize(10);
+      doc.text(`Venta Bruta: $${this.totalesFinancieros.venta_bruta.toFixed(2)}`, 14, 65);
+      doc.setTextColor(220, 38, 38); // Rojo
+      doc.text(`Descuentos: -$${this.totalesFinancieros.descuentos_totales.toFixed(2)}`, 14, 72);
+      doc.setTextColor(24, 24, 72); // Navy
+      doc.text(`Ingresos Netos: $${this.totalesFinancieros.ingresos_totales.toFixed(2)}`, 14, 79);
+
+      doc.text(`Inversión del Mes: $${this.totalesFinancieros.inversion_compras.toFixed(2)}`, 100, 65);
+      doc.text(`Inversión Recuperada: ${this.totalesFinancieros.porcentaje_recuperacion.toFixed(1)}%`, 100, 72);
+
+      doc.setTextColor(16, 185, 129); // Verde
+      doc.setFont('helvetica', 'bold');
+      doc.text(`Ganancia mensual: $${this.totalesFinancieros.utilidad_neta.toFixed(2)}`, 100, 79);
+      doc.setFont('helvetica', 'normal');
 
       autoTable(doc, {
-        startY: 75,
-        head: [['PRODUCTO', 'FÍSICO', 'EBOOK', 'BRUTO', 'DESC.', 'NETO']],
-        body: this.financialData.map(i => [i.titulo, i.unidades_fisicas, i.unidades_digitales, i.subtotal, i.descuentos, i.total_neto]),
+        startY: 85,
+        head: [['PRODUCTO', 'VOL. (F/D)', 'VENTA NETA', 'UTILIDAD']],
+        body: this.financialData.map(i => [
+          i.titulo,
+          `${i.unidades_fisicas}F / ${i.unidades_digitales}E`,
+          `$${i.total_neto}`,
+          `$${i.ganancia_bruta_item}`
+        ]),
         headStyles: { fillColor: [48, 72, 120] }
       });
     }
 
     const finalY = (doc as any).lastAutoTable.finalY + 30;
     doc.setDrawColor(200);
-    doc.line(14, finalY, 70, finalY);
     doc.setTextColor(100);
     doc.setFontSize(8);
-    doc.text('FIRMA AUTORIZADA', 14, finalY + 5);
-    doc.text('Reporte generado por EDUMEX v2.0', pageWidth / 2, 285, { align: 'center' });
+    doc.text('Reporte EDUMEX', pageWidth / 2, 285, { align: 'center' });
 
-    doc.save(`EDUMEX_${this.activeTab}_${this.periodo}.pdf`);
+    doc.save(`EDUMEX_${this.activeTab}_${this.periodo.replace(' ', '_')}.pdf`);
   }
 }
