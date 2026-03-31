@@ -13,7 +13,7 @@
           <div class="feature-item">
             <a routerLink="/home">
               <ion-icon name="home-outline"></ion-icon>
-              <span> Inicio</span>
+              <span> Regresar al Inicio</span>
             </a>
           </div>
 <!--          <div class="feature-item">-->
@@ -50,7 +50,7 @@
               <input
                 type="email"
                 formControlName="email"
-                placeholder="ejemplo@eduamex.com"
+                placeholder="ejemplo@edumex.com"
                 (focus)="focusedField = 'email'"
                 (blur)="focusedField = ''">
             </div>
@@ -80,6 +80,9 @@
             <div class="loader" *ngIf="isSubmitting"></div>
           </button>
 
+          <p class="text-center text-sm text-slate-500 pt-4">
+            ¿No tienes cuenta? <a routerLink="/register" class="text-blue-600 font-bold">Registrate aquí</a>
+          </p>
         </form>
 
 
