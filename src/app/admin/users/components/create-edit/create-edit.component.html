@@ -25,22 +25,33 @@
           <div class="form-group">
             <label class="form-label">Nombre(s)</label>
             <div class="input-wrapper">
-              <ion-input type="text" formControlName="name" placeholder="Ej: Juan" class="custom-input"></ion-input>
+              <ion-input type="text" formControlName="name" class="custom-input"></ion-input>
             </div>
           </div>
           <div class="form-group">
             <label class="form-label">Apellido(s)</label>
             <div class="input-wrapper">
-              <ion-input type="text" formControlName="last_name" placeholder="Ej: Pérez" class="custom-input"></ion-input>
+              <ion-input type="text" formControlName="last_name" class="custom-input"></ion-input>
             </div>
           </div>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Correo Electrónico</label>
-          <div class="input-wrapper">
-            <ion-icon name="mail-outline" class="input-icon"></ion-icon>
-            <ion-input type="email" formControlName="email" placeholder="correo@ejemplo.com" class="custom-input"></ion-input>
+        <div class="grid gap-5" [ngClass]="form.get('role')?.value === 'user' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'">
+
+          <div class="form-group">
+            <label class="form-label">Correo Electrónico</label>
+            <div class="input-wrapper">
+              <ion-icon name="mail-outline" class="input-icon"></ion-icon>
+              <ion-input type="email" formControlName="email" placeholder="correo@edumex.com" class="custom-input"></ion-input>
+            </div>
+          </div>
+
+          <div class="form-group animate__animated animate__fadeIn" *ngIf="form.get('role')?.value === 'user'">
+            <label class="form-label">Teléfono de Contacto</label>
+            <div class="input-wrapper">
+              <ion-icon name="call-outline" class="input-icon"></ion-icon>
+              <ion-input type="tel" formControlName="phone" placeholder="7841184923" class="custom-input" maxlength="10"></ion-input>
+            </div>
           </div>
         </div>
 
@@ -56,7 +67,7 @@
       <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-5">
         <h3 class="text-slate-800 font-black text-[10px] uppercase tracking-widest ml-1 flex items-center gap-2">
           <ion-icon name="shield-checkmark-outline" class="text-blue-600 text-base"></ion-icon>
-          Rol y Tipo de Cliente
+          Rol y Clasificación
         </h3>
 
         <div class="grid grid-cols-1 gap-5" [ngClass]="{'md:grid-cols-2': form.get('role')?.value === 'user'}">
@@ -76,26 +87,56 @@
             <label class="form-label">Tipo de Cliente</label>
             <div class="input-wrapper" [class.opacity-60]="isEdit">
               <ion-select formControlName="customer_type" interface="popover" class="custom-select">
-                <ion-select-option value="individual">Persona Natural</ion-select-option>
+                <ion-select-option value="individual">Persona Física</ion-select-option>
                 <ion-select-option value="institutional">Institución / Colegio</ion-select-option>
               </ion-select>
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="form-group animate__animated animate__fadeIn"
-             *ngIf="form.get('role')?.value === 'user' && form.get('customer_type')?.value === 'institutional'">
-          <label class="form-label">Identificación Fiscal (RUC/DNI/NIT)</label>
-          <div class="input-wrapper bg-blue-50/30">
-            <ion-icon name="card-outline" class="input-icon"></ion-icon>
-            <ion-input type="text" formControlName="tax_id" placeholder="ID de la institución" class="custom-input"></ion-input>
+      <div class="bg-blue-50/30 rounded-2xl p-6 border border-blue-100 space-y-5 animate__animated animate__fadeIn"
+           *ngIf="form.get('role')?.value === 'user' && form.get('customer_type')?.value === 'institutional'">
+
+        <h3 class="text-blue-800 font-black text-[10px] uppercase tracking-widest ml-1 flex items-center gap-2">
+          <ion-icon name="business-outline" class="text-base"></ion-icon>
+          Información de la Institución
+        </h3>
+
+        <div class="form-group">
+          <label class="form-label">Nombre de la Institución / Razón Social</label>
+          <div class="input-wrapper bg-white">
+            <ion-input type="text" formControlName="institution_name" placeholder="Ejemplo: Colegio Americano de Papantla" class="custom-input"></ion-input>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div class="form-group">
+            <label class="form-label">ID Fiscal (RFC)</label>
+            <div class="input-wrapper bg-white">
+              <ion-icon name="card-outline" class="input-icon"></ion-icon>
+              <ion-input type="text" formControlName="tax_id" placeholder="ID legal" class="custom-input"></ion-input>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Código Postal</label>
+            <div class="input-wrapper bg-white">
+              <ion-icon name="map-outline" class="input-icon"></ion-icon>
+              <ion-input type="text" formControlName="postal_code" placeholder="93400" class="custom-input"></ion-input>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Dirección Fiscal Completa</label>
+          <div class="input-wrapper bg-white">
+            <ion-textarea formControlName="address" placeholder="Calle, número, colonia..." class="custom-input" rows="2"></ion-textarea>
           </div>
         </div>
       </div>
 
-      <button class="submit-modal-btn group" (click)="submit()" [disabled]="form.invalid || isSubmitting">
+      <button class="submit-modal-btn group disabled:opacity-50" (click)="submit()" [disabled]="form.invalid || isSubmitting">
         <span>{{ isEdit ? 'Actualizar Usuario' : 'Crear Usuario' }}</span>
-        <ion-icon *ngIf="!isSubmitting" name="person-add-outline" class="group-hover:scale-110 transition-transform"></ion-icon>
         <ion-spinner *ngIf="isSubmitting" name="crescent"></ion-spinner>
       </button>
 

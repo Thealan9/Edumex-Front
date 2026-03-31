@@ -5,8 +5,6 @@ import { Auth } from 'src/app/core/auth';
 import { AlertComponent } from 'src/app/components/alert/alert.component';
 import { ModalController } from '@ionic/angular';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { EditComponent } from './components/edit/edit.component';
-import { CreateComponent } from './components/create/create.component';
 import {CreateEditComponent} from "./components/create-edit/create-edit.component";
 
 @Component({
