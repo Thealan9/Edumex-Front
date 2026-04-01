@@ -72,14 +72,14 @@ export class AdminBooks {
     return this.http.get<{success: boolean, data: Book[]}>(this.baseUrl, { params });
   }
 
-  storeBook(book: Book): Observable<any> {
+  storeBook(book: FormData): Observable<any> {
     return this.http.post(this.baseUrl, book).pipe(
       tap(() => this._refresh.next())
     );
   }
 
-  updateBook(id: number, book: Partial<Book>): Observable<any> {
-    return this.http.put(`${this.baseUrl}/${id}`, book).pipe(
+  updateBook(id: number, formData: FormData): Observable<any> {
+    return this.http.put(`${this.baseUrl}/${id}`, formData).pipe(
       tap(() => this._refresh.next())
     );
   }
@@ -129,6 +129,9 @@ export class AdminBooks {
 
   toggleEbookStatus(id: number): Observable<any> {
     return this.http.patch(`${environment.apiUrl}/admin/ebooks/${id}/status`, {});
+  }
+  toggleBookStatus(id: number): Observable<any> {
+    return this.http.patch(`${environment.apiUrl}/admin/books/${id}/status`, {});
   }
 
 }

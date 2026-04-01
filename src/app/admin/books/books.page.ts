@@ -150,10 +150,13 @@ export class BooksPage implements OnInit, OnDestroy {
     this.searchSubject.next(value);
   }
 
+
+
+
   toggleStatus(item: any) {
     const newStatus = !item.active;
     const request = this.viewMode === 'physical'
-      ? this.bookService.updateBook(item.id, { active: newStatus })
+      ? this.bookService.toggleBookStatus(item.id)
       : this.bookService.toggleEbookStatus(item.id);
 
     request.subscribe({
