@@ -103,6 +103,7 @@ export class UsersPage implements OnInit {
   async openCreate() {
       const modal = await this.modalCtrl.create({
         component: CreateEditComponent,
+        cssClass: 'book-modal'
       });
 
       modal.onDidDismiss().then((res) => {
@@ -114,6 +115,7 @@ export class UsersPage implements OnInit {
    async openEdit(user : User) {
         const modal = await this.modalCtrl.create({
           component: CreateEditComponent,
+          cssClass: 'book-modal',
           componentProps: {
             data: user
           },

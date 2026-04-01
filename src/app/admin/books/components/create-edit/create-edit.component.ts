@@ -31,7 +31,7 @@ export class CreateEditComponent implements OnInit {
     price_unit: [0, [Validators.required, Validators.min(1)]],
     units_per_package: [0, [Validators.required, Validators.min(1)]],
     price_package: [0, [Validators.min(1),Validators.required]], // Venta paquete
-    stock_alert: [10, [Validators.required, Validators.min(1)]],
+    stock_alert: [50, [Validators.required, Validators.min(1)]],
     description: ['', [Validators.maxLength(1000),Validators.required]],
     autor: ['', [Validators.required]],
     active: [false],

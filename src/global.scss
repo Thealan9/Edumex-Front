@@ -292,3 +292,33 @@ th {
   top: 0;
   z-index: 10;
 }
+
+
+.book-modal {
+  --width: 100%;
+  --height: 100%;
+  --border-radius: 0;
+
+  @media (min-width: 992px) {
+    --width: 90%;
+    --max-width: 1000px;
+    --height: 85%;
+    --max-height: 800px;
+    --border-radius: 0px;
+
+    &::part(content) {
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+  }
+}
+
+
+// ELIMINAR LA LINEA DE LOS INPUT
+//ion-input,
+//ion-select,
+//ion-textarea {
+//  --highlight-height: 0px !important;
+//  --show-full-highlight: 0 !important;
+//  --inner-highligh-height: 0px !important; // Algunos componentes usan esta variante
+//}

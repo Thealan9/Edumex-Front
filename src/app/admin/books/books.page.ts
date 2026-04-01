@@ -90,7 +90,7 @@ export class BooksPage implements OnInit, OnDestroy {
     const modal = await this.modalCtrl.create({
       component: CreateEditComponent,
       componentProps: { data: book },
-      cssClass: 'large-modal'
+      cssClass: 'book-modal'
     });
 
     await modal.present();
@@ -104,7 +104,7 @@ export class BooksPage implements OnInit, OnDestroy {
     const modal = await this.modalCtrl.create({
       component: CreateEditEbooksComponent,
       componentProps: { data: ebook },
-      cssClass: 'large-modal'
+      cssClass: 'book-modal'
     });
     await modal.present();
     const { data } = await modal.onWillDismiss();
