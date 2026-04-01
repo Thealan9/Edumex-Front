@@ -65,14 +65,17 @@ export class LocationPage implements OnInit, OnDestroy {
 
   getProgressBarClass(loc: Location): string {
     const percent = this.calculatePercent(loc);
-    if (percent >= 90) return 'bg-red-500';      // Crítico
-    if (percent >= 70) return 'bg-orange-500';   // Advertencia
-    return 'bg-blue-500';                         // Correcto
+    if (percent >= 100) return 'bg-red-600';
+    if (percent >= 85) return 'bg-orange-500';
+    if (percent >= 50) return 'bg-blue-600';
+    return 'bg-emerald-500';
   }
 
   getCapacityColor(loc: Location): string {
     const percent = this.calculatePercent(loc);
-    return percent >= 90 ? 'text-red-600' : 'text-slate-700';
+    if (percent >= 100) return 'text-red-600';
+    if (percent >= 85) return 'text-orange-600';
+    return 'text-blue-700';
   }
 
   private async showError(message: string) {
