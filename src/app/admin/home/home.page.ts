@@ -118,7 +118,7 @@ export class HomePage implements OnInit {
   async openCreateOrderModal() {
     const modal = await this.modalCtrl.create({
       component: CreateOrderComponent,
-      cssClass: 'create-order-modal'
+      cssClass: 'book-modal'
     });
     await modal.present();
     const { data } = await modal.onWillDismiss();
@@ -128,7 +128,7 @@ export class HomePage implements OnInit {
   async openCreateOutputModal() {
     const modal = await this.modalCtrl.create({
       component: CreateOutputComponent,
-      cssClass: 'create-order-modal'
+      cssClass: 'book-modal'
     });
     await modal.present();
     const { data } = await modal.onWillDismiss();
