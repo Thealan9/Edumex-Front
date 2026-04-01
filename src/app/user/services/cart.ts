@@ -102,7 +102,7 @@ export class Cart {
   get totalSavings(): number {
     let savings = 0;
     this.items.forEach(item => {
-      if (item.buy_type === 'unit') {
+      if (item.buy_type === 'unit' && item.book.type === 'physical') {
         const rule = this.discountRules.find(r =>
           item.quantity >= r.min_quantity &&
           (r.max_quantity === null || item.quantity <= r.max_quantity)

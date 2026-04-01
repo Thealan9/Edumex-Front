@@ -218,7 +218,7 @@ export class NavbarUserComponent implements OnInit {
         this.isProcessing = false;
         await this.closeCart();
         this.resetAddressForm();
-        this.showAlert('¡Pago y Pedido confirmados!', 'success');
+        this.showAlert('¡Gracias por tu compra!', 'success');
         this.router.navigate(['/home/pedidos']);
       },
       error: (err) => {
