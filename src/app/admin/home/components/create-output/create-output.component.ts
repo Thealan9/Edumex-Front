@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
+import { MatSnackBar } from '@angular/material/snack-bar'; // <-- Importación necesaria
 import { AdminBooks, Book } from 'src/app/admin/services/admin-books';
 import { Output } from 'src/app/admin/services/output';
 import { finalize } from 'rxjs';
-import {AdminUsers} from "../../../services/admin-users";
+import { AdminUsers } from "../../../services/admin-users";
 
 interface OutputItem {
   book_id: number;
@@ -29,10 +30,9 @@ export class CreateOutputComponent implements OnInit {
   items: OutputItem[] = [];
 
   allBooks: Book[] = [];
-  searchResults: Book[] = [];
+  filteredBooks: Book[] = [];
   isSubmitting = false;
 
-  // Lista de motivos predefinidos
   reasons = [
     'Donación',
     'Daño',
@@ -49,19 +49,44 @@ export class CreateOutputComponent implements OnInit {
     private modalCtrl: ModalController,
     private bookService: AdminBooks,
     private adminService: Output,
-    private userService: AdminUsers
+    private userService: AdminUsers,
+    private snack: MatSnackBar // <-- Inyectamos el MatSnackBar
   ) {}
 
   ngOnInit() {
-    this.bookService.getBooks().subscribe(res => this.allBooks = res.data);
+    this.bookService.getBookNameId().subscribe(res => {
+      const rawBooks = Array.isArray(res) ? res : res.data;
+
+      this.allBooks = rawBooks.filter((book: any) => {
+        const stockTotal = Number(book.inventories_sum_quantity) || 0;
+        return stockTotal > 0;
+      });
+
+      this.filteredBooks = this.allBooks;
+    });
+
     this.userService.loadWarehousemen().subscribe(user => this.warehousemen = user);
+  }
+  showToast(message: string, type: 'success' | 'error' | 'warning') {
+    this.snack.open(message, '✖', {
+      duration: 5000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: [`snackbar-${type}`],
+    });
   }
 
   searchBook(event: any) {
-    const text = event.target.value.toLowerCase();
-    this.searchResults = text.length > 2
-      ? this.allBooks.filter(b => b.title.toLowerCase().includes(text) || b.isbn.includes(text))
-      : [];
+    const text = event.target.value?.toLowerCase() || '';
+
+    if (text.trim() === '') {
+      this.filteredBooks = this.allBooks;
+    } else {
+      this.filteredBooks = this.allBooks.filter(b =>
+        (b.title && b.title.toLowerCase().includes(text)) ||
+        (b.isbn && b.isbn.includes(text))
+      );
+    }
   }
 
   get filteredLocations(): any[] {
@@ -73,14 +98,13 @@ export class CreateOutputComponent implements OnInit {
 
   async addItem(book: Book) {
     this.selectedBook = book;
-    this.searchResults = [];
     this.tempLocationId = null;
     this.tempQty = 1;
 
     this.bookService.getLocationsByBook(book.id!).subscribe(res => {
       this.availableLocations = res.data;
       if(this.availableLocations.length === 0) {
-        alert('Este libro no tiene existencias en ninguna ubicación.');
+        this.showToast('Este material no tiene existencias registradas en ninguna ubicación.', 'warning');
         this.selectedBook = null;
       }
     });
@@ -90,9 +114,35 @@ export class CreateOutputComponent implements OnInit {
     this.items.splice(index, 1);
   }
 
+  confirmAddLocation() {
+    const selectedLocId = Number(this.tempLocationId);
+    if (!this.selectedBook || !selectedLocId || this.tempQty <= 0) return;
+
+    const loc = this.availableLocations.find(l => Number(l.id) === selectedLocId);
+    if (!loc) return;
+
+    if (this.tempQty > loc.current_stock) {
+      this.showToast(`Stock insuficiente en el pallet ${loc.code}. Solo hay ${loc.current_stock} disponibles.`, 'error');
+      return;
+    }
+
+    this.items.unshift({
+      book_id: this.selectedBook.id!,
+      title: this.selectedBook.title,
+      quantity: this.tempQty,
+      location_id: loc.id,
+      location_code: loc.code,
+      max_available: loc.current_stock
+    });
+
+    this.selectedBook = null;
+    this.tempLocationId = null;
+    this.availableLocations = [];
+  }
+
   submitOrder() {
     if (!this.reason || this.items.length === 0 || !this.warehousemanId){
-      alert('Por favor complete todos los campos y asigne un bodeguero.');
+      this.showToast('Por favor complete el motivo, asigne un bodeguero y agregue material.', 'warning');
       return;
     }
     this.isSubmitting = true;
@@ -107,37 +157,16 @@ export class CreateOutputComponent implements OnInit {
     this.adminService.createOrder(orderData)
       .pipe(finalize(() => this.isSubmitting = false))
       .subscribe({
-        next: () => this.modalCtrl.dismiss({ success: true }),
-        error: (err) => console.error(err)
+        next: () => {
+          this.showToast('Orden de salida autorizada con éxito.', 'success'); // Opcional: Toast de éxito
+          this.modalCtrl.dismiss({ success: true });
+        },
+        error: (err) => {
+          this.showToast('Ocurrió un error al procesar la orden.', 'error'); // Opcional: Toast de error
+          console.error(err);
+        }
       });
   }
-
-  confirmAddLocation() {
-    const selectedLocId = Number(this.tempLocationId);
-    if (!this.selectedBook || !selectedLocId || this.tempQty <= 0) return;
-
-    const loc = this.availableLocations.find(l => Number(l.id) === selectedLocId);
-    if (!loc) return;
-
-    if (this.tempQty > loc.current_stock) {
-      alert(`Stock insuficiente en ${loc.code}. Disponible: ${loc.current_stock}`);
-      return;
-    }
-
-    this.items.push({
-      book_id: this.selectedBook.id!,
-      title: this.selectedBook.title,
-      quantity: this.tempQty,
-      location_id: loc.id,
-      location_code: loc.code,
-      max_available: loc.current_stock
-    });
-
-    this.selectedBook = null;
-    this.tempLocationId = null;
-    this.availableLocations = [];
-  }
-
 
   close() {
     this.modalCtrl.dismiss();

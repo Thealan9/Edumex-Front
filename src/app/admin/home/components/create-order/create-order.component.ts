@@ -3,20 +3,22 @@ import { ModalController } from '@ionic/angular';
 import { AdminBooks, Book } from 'src/app/admin/services/admin-books';
 import { PurchaseOrder } from 'src/app/admin/services/purchase-order';
 import { finalize } from 'rxjs';
-import {AdminUsers} from "../../../services/admin-users";
+import { AdminUsers } from "../../../services/admin-users";
+
 interface OrderItem {
   book_id: number;
   title: string;
   quantity: number;
   unit_cost: number;
 }
+
 @Component({
   selector: 'app-create-order',
   templateUrl: './create-order.component.html',
   styleUrls: ['./create-order.component.scss'],
   standalone: false
 })
-export class CreateOrderComponent  implements OnInit {
+export class CreateOrderComponent implements OnInit {
   warehousemanId: number | null = null;
   warehousemen: any[] = [];
 
@@ -25,7 +27,7 @@ export class CreateOrderComponent  implements OnInit {
   items: OrderItem[] = [];
 
   allBooks: Book[] = [];
-  searchResults: Book[] = [];
+  filteredBooks: Book[] = []; // <-- Nueva variable para la lista renderizada
   isSubmitting = false;
 
   constructor(
@@ -36,27 +38,41 @@ export class CreateOrderComponent  implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.bookService.getBooks().subscribe(res => this.allBooks = res.data);
+    this.bookService.getBookNameId().subscribe(res => {
+      this.allBooks = Array.isArray(res) ? res : res.data;
+
+      this.filteredBooks = this.allBooks;
+    });
+
     this.userService.loadWarehousemen().subscribe(user => this.warehousemen = user);
   }
 
   searchBook(event: any) {
-    const text = event.target.value.toLowerCase();
-    this.searchResults = text.length > 2
-      ? this.allBooks.filter(b => b.title.toLowerCase().includes(text) || b.isbn.includes(text))
-      : [];
+    const text = event.target.value?.toLowerCase() || '';
+
+    if (text.trim() === '') {
+      this.filteredBooks = this.allBooks;
+    } else {
+      this.filteredBooks = this.allBooks.filter(b =>
+        (b.title && b.title.toLowerCase().includes(text)) ||
+        (b.isbn && b.isbn.includes(text))
+      );
+    }
   }
 
   addItem(book: Book) {
-    if (!this.items.find(i => i.book_id === book.id)) {
-      this.items.push({
+    // Verificamos si ya existe para no duplicar filas, sino sumar cantidad
+    const existingItem = this.items.find(i => i.book_id === book.id);
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      this.items.unshift({ // unshift para que aparezca arriba de la tabla
         book_id: book.id!,
         title: book.title,
         quantity: 1,
         unit_cost: 0
       });
     }
-    this.searchResults = [];
   }
 
   removeItem(index: number) {
@@ -69,7 +85,7 @@ export class CreateOrderComponent  implements OnInit {
 
   submitOrder() {
     if (!this.supplierName || this.items.length === 0 || !this.warehousemanId) {
-      alert('Por favor complete todos los campos y asigne un bodeguero.');
+      alert('Por favor complete todos los campos y asigne un responsable.');
       return;
     }
     this.isSubmitting = true;

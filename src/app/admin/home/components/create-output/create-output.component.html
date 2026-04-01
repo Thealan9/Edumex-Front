@@ -1,144 +1,179 @@
 <ion-header class="ion-no-border">
-  <ion-toolbar class="modal-toolbar">
-    <ion-title class="modal-title">
+  <ion-toolbar class="px-4 py-2 bg-white border-b border-slate-100">
+    <ion-title class="font-black text-xl text-slate-800">
       Nueva Orden de <span class="text-orange-500">Salida</span>
     </ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="close()" class="close-btn">
+      <ion-button (click)="close()" class="bg-slate-100 rounded-full text-slate-600">
         <ion-icon name="close-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="bg-slate-50">
-  <div class="p-6 space-y-6">
+<ion-content class="bg-slate-100">
+  <div class="flex flex-col lg:flex-row min-h-full lg:h-full w-full p-4 md:p-6 gap-6 max-w-[1400px] mx-auto">
 
-    <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
-      <div class="form-group">
-        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Motivo de Salida</label>
-        <div class="input-wrapper mt-2 w-full">
-          <ion-icon name="alert-circle-outline" class="input-icon text-orange-500"></ion-icon>
-          <ion-select [(ngModel)]="reason" placeholder="Seleccionar motivo de la lista..."
-                      interface="popover" class="w-full text-xs font-bold custom-select">
-            <ion-select-option *ngFor="let r of reasons" [value]="r">{{r}}</ion-select-option>
-          </ion-select>
+    <div class="w-full lg:w-5/12 flex flex-col bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden h-[450px] lg:h-full shrink-0 relative">
+
+      <div class="p-5 border-b border-slate-100 bg-slate-50/50">
+        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-2">Buscar Material a Retirar</label>
+        <div class="flex items-center bg-white rounded-xl px-4 py-2 border border-slate-200 focus-within:border-orange-500 focus-within:ring-2 focus-within:ring-orange-100 transition-all">
+          <ion-icon name="search-outline" class="text-slate-400 text-lg mr-2"></ion-icon>
+          <ion-input placeholder="Filtrar por título..." (ionInput)="searchBook($event)" class="font-medium"></ion-input>
         </div>
       </div>
-    </div>
 
-    <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
-      <div class="form-group">
-        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Asignar Bodeguero</label>
-        <div class="input-wrapper mt-2 border-orange-200">
-          <ion-icon name="person-outline" class="input-icon text-orange-500"></ion-icon>
-          <ion-select [(ngModel)]="warehousemanId" placeholder="Seleccionar encargado" class="w-full text-xs font-bold">
-            <ion-select-option *ngFor="let w of warehousemen" [value]="w.id">
-              {{ w.name }}
-            </ion-select-option>
-          </ion-select>
+      <div class="flex-1 overflow-y-auto p-3 space-y-2 bg-slate-50/30">
+        <div *ngIf="filteredBooks.length === 0" class="text-center p-10 text-slate-400">
+          <ion-icon name="book-outline" class="text-4xl mb-2 opacity-50"></ion-icon>
+          <p class="text-xs font-bold">No se encontraron libros</p>
         </div>
-      </div>
-    </div>
 
-    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
-      <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Seleccionar Material a Retirar</label>
-      <div class="input-wrapper mt-2">
-        <ion-icon name="search-outline" class="input-icon text-slate-400"></ion-icon>
-        <ion-input placeholder="Buscar por título..." (ionInput)="searchBook($event)" class="custom-input"></ion-input>
-      </div>
+        <div *ngFor="let book of filteredBooks"
+             class="group flex items-center justify-between p-3 bg-white rounded-2xl border border-slate-100 hover:border-orange-300 hover:shadow-md transition-all cursor-pointer"
+             (click)="addItem(book)">
 
-      <div *ngIf="searchResults.length > 0" class="mt-4 bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 animate__animated animate__fadeIn">
-        <div *ngFor="let book of searchResults" (click)="addItem(book)"
-             class="p-3 flex justify-between items-center hover:bg-orange-50 cursor-pointer border-b border-white last:border-0">
-          <div class="flex items-center gap-3">
-            <span class="bg-white px-2 py-0.5 rounded text-[8px] font-black text-orange-600 border border-slate-100">{{ book.level }}</span>
-            <span class="text-[11px] font-bold text-navy uppercase">{{ book.title }}</span>
+          <div class="flex items-center gap-4 overflow-hidden">
+            <div class="w-10 h-14 bg-slate-100 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden border border-slate-200">
+              <img *ngIf="book.image_url" [src]="book.image_url" class="w-full h-full object-cover">
+              <ion-icon *ngIf="!book.image_url" name="image-outline" class="text-slate-300 text-xl"></ion-icon>
+            </div>
+
+            <div class="flex flex-col">
+              <span class="text-xs font-black text-slate-800 line-clamp-1 group-hover:text-orange-600 transition-colors">{{ book.title }}</span>
+            </div>
           </div>
-          <ion-icon name="add-circle-outline" class="text-orange-500 text-xl"></ion-icon>
+
+          <button class="bg-slate-50 text-orange-500 p-2 rounded-xl group-hover:bg-orange-500 group-hover:text-white transition-colors flex-shrink-0">
+            <ion-icon name="arrow-forward-outline" class="text-xl"></ion-icon>
+          </button>
         </div>
       </div>
 
-      <div *ngIf="selectedBook" class="mt-4 p-4 bg-orange-50 rounded-2xl border border-orange-100 animate__animated animate__slideInDown">
-        <div class="flex justify-between items-start mb-3">
-          <p class="text-[10px] font-black text-orange-700 uppercase">Configurar salida: {{ selectedBook.title }}</p>
-          <ion-icon name="close" (click)="selectedBook = null" class="text-orange-400"></ion-icon>
+      <div *ngIf="selectedBook" class="absolute inset-0 bg-white/95 backdrop-blur-sm z-20 flex flex-col p-6 animate__animated animate__fadeIn">
+        <div class="flex justify-between items-start mb-6">
+          <div>
+            <p class="text-[10px] font-black text-orange-600 uppercase tracking-widest">Configurar Salida</p>
+            <p class="font-bold text-slate-800 mt-1 leading-tight">{{ selectedBook.title }}</p>
+          </div>
+          <button (click)="selectedBook = null" class="bg-slate-100 p-2 rounded-full text-slate-500 hover:bg-slate-200">
+            <ion-icon name="close-outline" class="text-xl flex"></ion-icon>
+          </button>
         </div>
 
-        <div class="grid grid-cols-12 gap-3 items-end">
-          <div class="col-span-7">
-            <label class="text-[9px] font-bold text-slate-500 uppercase ml-1">Ubicación / Pallet</label>
-            <div class="input-wrapper bg-white mt-1">
-              <ion-select [(ngModel)]="tempLocationId" placeholder="Seleccionar..." interface="popover" class="text-xs font-bold">
+        <div class="space-y-4 flex-1">
+          <div class="field">
+            <label class="text-[10px] font-black text-slate-500 uppercase ml-1">Ubicación / Pallet de Origen</label>
+            <div class="bg-slate-50 rounded-xl px-3 mt-1 border border-slate-200">
+              <ion-select [(ngModel)]="tempLocationId" placeholder="Seleccionar pallet disponible" interface="popover" class="font-bold text-slate-700 w-full">
                 <ion-select-option *ngFor="let loc of filteredLocations" [value]="loc.id">
                   {{ loc.code }} (Stock: {{ loc.current_stock }})
                 </ion-select-option>
               </ion-select>
             </div>
           </div>
-          <div class="col-span-3">
-            <label class="text-[9px] font-bold text-slate-500 uppercase ml-1">Cant.</label>
-            <div class="input-wrapper bg-white mt-1">
-              <ion-input type="number" [(ngModel)]="tempQty" class="text-center font-black text-xs"></ion-input>
-            </div>
+
+          <div class="field">
+            <label class="text-[10px] font-black text-slate-500 uppercase ml-1">Cantidad a Retirar</label>
+            <ion-input type="number" [(ngModel)]="tempQty" class="bg-slate-50 rounded-xl px-4 py-2 mt-1 border border-slate-200 font-black text-center text-lg text-slate-800"></ion-input>
           </div>
-          <div class="col-span-2">
-            <button (click)="confirmAddLocation()"
-                    [disabled]="!tempLocationId || tempQty <= 0"
-                    class="w-full h-[48px] submit-modal-btn !shadow-lg rounded-xl shadow-md active:scale-95 transition-all flex items-center justify-center">
-              <ion-icon name="checkmark" class="text-xl"></ion-icon>
-            </button>
+        </div>
+
+        <button (click)="confirmAddLocation()" [disabled]="!tempLocationId || tempQty <= 0"
+                class="w-full py-4 bg-orange-500 text-white rounded-2xl font-black shadow-lg shadow-orange-200 active:scale-95 transition-all disabled:opacity-50 mt-auto flex items-center justify-center gap-2">
+          <ion-icon name="checkmark-circle-outline" class="text-xl"></ion-icon>
+          Confirmar Extracción
+        </button>
+      </div>
+
+    </div>
+
+    <div class="w-full lg:w-7/12 flex flex-col bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden h-auto lg:h-full">
+
+      <div class="p-6 border-b border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-4 bg-white z-10">
+        <div class="field">
+          <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Motivo de Salida</label>
+          <div class="flex items-center bg-slate-50 rounded-xl px-3 mt-1 border border-slate-100 focus-within:border-orange-400 transition-all">
+            <ion-icon name="alert-circle-outline" class="text-orange-500 mr-2"></ion-icon>
+            <ion-select [(ngModel)]="reason" placeholder="Seleccionar motivo..." interface="popover" class="font-bold text-slate-700 w-full">
+              <ion-select-option *ngFor="let r of reasons" [value]="r">{{r}}</ion-select-option>
+            </ion-select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Bodeguero Responsable</label>
+          <div class="flex items-center bg-slate-50 rounded-xl px-3 mt-1 border border-slate-100">
+            <ion-icon name="person-circle-outline" class="text-slate-400 mr-2"></ion-icon>
+            <ion-select [(ngModel)]="warehousemanId" placeholder="Seleccionar" interface="popover" class="font-bold text-slate-700 w-full">
+              <ion-select-option *ngFor="let w of warehousemen" [value]="w.id">{{ w.name }}</ion-select-option>
+            </ion-select>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden" *ngIf="items.length > 0">
-      <div class="p-4 bg-[#181848] text-white flex justify-between items-center">
-        <h3 class="text-[10px] font-black uppercase tracking-widest text-white">Lista de Material a Egresar</h3>
-        <span class="text-[9px] bg-white/20 px-3 py-1 rounded-full font-bold">{{ items.length }} Items</span>
-      </div>
+      <div class="flex-1 overflow-y-auto bg-slate-50/50 w-full min-h-[250px]">
 
-      <div class="p-4 space-y-2">
-        <div *ngFor="let item of items; let i = index" class="flex items-center justify-between bg-slate-50 p-3 rounded-2xl border border-slate-100 animate__animated animate__fadeIn">
-          <div class="flex-1">
-            <p class="text-[10px] font-black text-navy uppercase leading-tight">{{ item.title }}</p>
-            <p class="text-[9px] font-bold text-orange-600 mt-0.5">PALLET: {{ item.location_code }}</p>
-          </div>
+        <div *ngIf="items.length === 0" class="h-full flex flex-col items-center justify-center text-slate-400 py-10">
+          <ion-icon name="log-out-outline" class="text-6xl mb-4 opacity-30"></ion-icon>
+          <p class="font-bold text-sm">Aún no hay material a egresar</p>
+          <p class="text-xs text-center max-w-[250px] mt-2">Selecciona libros del catálogo y configúrales el pallet de origen.</p>
+        </div>
 
-          <div class="flex items-center gap-3">
-            <div class="bg-white px-3 py-1.5 rounded-xl border border-slate-200">
-              <span class="text-[11px] font-black text-navy">x{{ item.quantity }}</span>
+        <div *ngIf="items.length > 0" class="p-4 space-y-3">
+          <div *ngFor="let item of items; let i = index"
+               class="flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-200 shadow-sm animate__animated animate__fadeIn">
+
+            <div class="flex-1 pr-4">
+              <p class="text-[11px] font-black text-slate-800 uppercase leading-tight line-clamp-2">{{ item.title }}</p>
+              <div class="flex items-center gap-2 mt-2">
+                <span class="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-[9px] font-black uppercase border border-orange-200">
+                  Pallet: {{ item.location_code }}
+                </span>
+              </div>
             </div>
-            <button (click)="removeItem(i)" class="text-red-500 p-1">
-              <ion-icon name="trash-outline" class="text-lg"></ion-icon>
-            </button>
+
+            <div class="flex items-center gap-4 shrink-0">
+              <div class="bg-slate-100 px-4 py-2 rounded-xl border border-slate-200 text-center min-w-[60px]">
+                <span class="text-xs font-black text-slate-600 block leading-none">x{{ item.quantity }}</span>
+              </div>
+
+              <button (click)="removeItem(i)" class="text-red-400 hover:text-red-600 transition-colors p-2 bg-red-50 rounded-xl hover:bg-red-100">
+                <ion-icon name="trash-outline" class="text-xl flex"></ion-icon>
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="p-5 border-t border-slate-100 bg-slate-50/50">
-        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Observaciones / Justificación</label>
-        <ion-textarea [(ngModel)]="notes" rows="2"
-                      placeholder="Escriba aquí los detalles adicionales de la salida..."
-                      class="bg-white rounded-2xl border border-slate-200 p-3 text-[11px] mt-2 shadow-inner">
-        </ion-textarea>
+      <div class="p-6 bg-white border-t border-slate-100 z-10 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.03)] mt-auto shrink-0">
+        <div class="flex flex-col md:flex-row gap-6 justify-between items-stretch">
+
+          <div class="w-full md:flex-1 flex flex-col">
+            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-1 block">Justificación / Observaciones</label>
+            <ion-textarea [(ngModel)]="notes" autoGrow="true" placeholder="Detalles de la salida, a quién se entrega, etc..."
+                          class="bg-slate-50 rounded-xl px-4 py-2 border border-slate-100 w-full min-h-[70px] flex-1"></ion-textarea>
+          </div>
+
+          <div class="w-full md:w-auto flex flex-col items-end justify-end gap-3 shrink-0">
+            <div class="text-right w-full flex flex-row md:flex-col justify-between items-end mb-2 md:mb-0">
+              <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total de Items</p>
+              <p class="text-3xl font-black text-orange-500 leading-none mt-1">{{ items.length }}</p>
+            </div>
+
+            <button (click)="submitOrder()"
+                    [disabled]="items.length === 0 || !reason || !warehousemanId || isSubmitting"
+                    class="w-full md:w-auto px-8! py-3! bg-slate-900 text-white rounded-2xl! font-black shadow-lg hover:bg-slate-800 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+              <span *ngIf="!isSubmitting">Autorizar Salida</span>
+              <ion-spinner *ngIf="isSubmitting" name="crescent" class="scale-75"></ion-spinner>
+              <ion-icon *ngIf="!isSubmitting" name="log-out-outline"></ion-icon>
+            </button>
+          </div>
+
+        </div>
       </div>
+
     </div>
-
-    <div class="flex items-center gap-4 pt-4">
-      <button (click)="close()" class="flex-1 py-4 text-slate-500 font-bold uppercase text-[10px] tracking-widest">
-        Cancelar
-      </button>
-
-      <button
-        (click)="submitOrder()"
-        [disabled]="items.length === 0 || !reason || isSubmitting"
-        class="submit-modal-btn group flex-[2] !shadow-lg btn-approve disabled:opacity-50">
-        <span *ngIf="!isSubmitting">Autorizar Salida</span>
-        <ion-spinner *ngIf="isSubmitting" name="crescent"></ion-spinner>
-      </button>
-    </div>
-
   </div>
 </ion-content>

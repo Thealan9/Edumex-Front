@@ -72,6 +72,10 @@ export class AdminBooks {
     return this.http.get<{success: boolean, data: Book[]}>(this.baseUrl, { params });
   }
 
+  getBookNameId():Observable<any> {
+    return this.http.get(`${this.baseUrl}/nameBooks`,);
+  }
+
   storeBook(book: FormData): Observable<any> {
     return this.http.post(this.baseUrl, book).pipe(
       tap(() => this._refresh.next())
