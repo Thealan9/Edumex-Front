@@ -98,8 +98,8 @@ export class CreateEditComponent implements OnInit {
       formData.append('image', this.selectedFile);
     }
     const request = this.isEdit
-      ? this.bookService.updateBook(this.data!.id!, formData as any)
-      : this.bookService.storeBook(formData as any);
+      ? this.bookService.updateBook(this.data!.id!, formData)
+      : this.bookService.storeBook(formData);
 
     request.pipe(finalize(() => this.isSubmitting = false))
       .subscribe({

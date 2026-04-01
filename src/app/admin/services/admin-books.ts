@@ -79,7 +79,8 @@ export class AdminBooks {
   }
 
   updateBook(id: number, formData: FormData): Observable<any> {
-    return this.http.put(`${this.baseUrl}/${id}`, formData).pipe(
+    formData.append('_method', 'PUT');
+    return this.http.post(`${this.baseUrl}/${id}`, formData).pipe(
       tap(() => this._refresh.next())
     );
   }
